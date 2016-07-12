@@ -4,7 +4,7 @@ A SA-MP include that makes it possible to create boss fights like in [World of W
 
 Created by [Freaksken](http://forum.sa-mp.com/member.php?u=46764).
 
-[Forum thread](TODO) on the [SA-MP forums](http://forum.sa-mp.com/).
+[Forum thread](http://forum.sa-mp.com/showthread.php?p=3733074) on the [SA-MP forums](http://forum.sa-mp.com/).
 
 ##Features
 * [Functions](../../wiki/Boss-functions) to control the features of the bosses.
@@ -19,7 +19,7 @@ Created by [Freaksken](http://forum.sa-mp.com/member.php?u=46764).
 * Bosses can have a lot more [health](../../wiki/Boss-functions#wow_setbossmaxhealth) than normal players, say for example 1 million.
 
 ##Media
-A demonstration of what is possible with this include can be found on [YouTube](TODO). Demonstrations of earlier versions are present as well.
+A demonstration of what is possible with this include can be found on [YouTube](https://www.youtube.com/watch?v=SFhR3oi12oY&list=PLoh7sSsjdgnS3PPWbZ350A5eUo2HuyoTc&index=3). Demonstrations of earlier versions are present as well.
 
 ##Documentation
 The workings of every define, function, callback or feature is extensively explained on the [wiki](../../wiki).
@@ -35,7 +35,7 @@ The latest version can be found on the [releases page](../../releases).
 Please report any bug with detailed steps on how to reproduce it.
 
 ##Suggestions:
-If you have any constructive criticism or suggestions, please [share](TODO) your opinion.
+If you have any constructive criticism or suggestions, please [share](http://forum.sa-mp.com/showthread.php?p=3733074) your opinion.
 
 ##Possible upcoming changes/features
 * [Status effects](https://en.wikipedia.org/wiki/Status_effect) (buffs and debuffs).
