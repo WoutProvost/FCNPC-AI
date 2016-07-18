@@ -19,7 +19,7 @@ Created by [Freaksken](http://forum.sa-mp.com/member.php?u=46764).
 * Bosses can have a lot more [health](../../wiki/Boss-functions#wow_setbossmaxhealth) than normal players, say for example 1 million.
 
 ##Media
-A demonstration of what is possible with this include can be found on [YouTube](https://www.youtube.com/watch?v=SFhR3oi12oY&list=PLoh7sSsjdgnS3PPWbZ350A5eUo2HuyoTc&index=3). Demonstrations of earlier versions are present as well.
+A couple of demonstrations of what is possible with this include can be found on [YouTube](https://www.youtube.com/watch?v=SFhR3oi12oY&list=PLoh7sSsjdgnS3PPWbZ350A5eUo2HuyoTc&index=3). Demonstrations of earlier versions are present as well.
 
 ##Documentation
 The workings of every define, function, callback or feature is extensively explained on the [wiki](../../wiki).
