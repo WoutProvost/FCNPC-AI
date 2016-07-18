@@ -274,21 +274,25 @@ public WOW_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 
 public WOW_OnPlayerGetAggro(playerid, bossid)
 {
-	new bossPlayerColor = GetPlayerColor(WOW_GetBossNPCId(bossid));
-	new string[144 + 1], fullName[WOW_MAX_BOSS_FULL_NAME + 1];
-	WOW_GetBossFullName(bossid, fullName, sizeof(fullName));
-	format(string, sizeof(string), "{%06x}[Boss] %s whispers:{%06x} Come here, I will get you!", bossPlayerColor >>> 8, fullName, 0xffffffff >>> 8);
-	SendClientMessage(playerid, -1, string);
+	if(bossid == BossBigSmoke) {
+		new bossPlayerColor = GetPlayerColor(WOW_GetBossNPCId(bossid));
+		new string[144 + 1], fullName[WOW_MAX_BOSS_FULL_NAME + 1];
+		WOW_GetBossFullName(bossid, fullName, sizeof(fullName));
+		format(string, sizeof(string), "{%06x}[Boss] %s whispers:{%06x} Come here, I will get you!", bossPlayerColor >>> 8, fullName, 0xffffffff >>> 8);
+		SendClientMessage(playerid, -1, string);
+	}
 	return 1;
 }
 
 public WOW_OnPlayerLoseAggro(playerid, bossid)
 {
-	new bossPlayerColor = GetPlayerColor(WOW_GetBossNPCId(bossid));
-	new string[144 + 1], fullName[WOW_MAX_BOSS_FULL_NAME + 1];
-	WOW_GetBossFullName(bossid, fullName, sizeof(fullName));
-	format(string, sizeof(string), "{%06x}[Boss] %s whispers:{%06x} Maybe next time when our paths cross...", bossPlayerColor >>> 8, fullName, 0xffffffff >>> 8);
-	SendClientMessage(playerid, -1, string);
+	if(bossid == BossBigSmoke) {
+		new bossPlayerColor = GetPlayerColor(WOW_GetBossNPCId(bossid));
+		new string[144 + 1], fullName[WOW_MAX_BOSS_FULL_NAME + 1];
+		WOW_GetBossFullName(bossid, fullName, sizeof(fullName));
+		format(string, sizeof(string), "{%06x}[Boss] %s whispers:{%06x} Maybe next time when our paths cross...", bossPlayerColor >>> 8, fullName, 0xffffffff >>> 8);
+		SendClientMessage(playerid, -1, string);
+	}
 	return 1;
 }
 
@@ -637,6 +641,7 @@ public SetBossAtSpawn(bossid) {
 	    	if(FCNPC_IsDead(bossplayerid)) {
 		    	FCNPC_Respawn(bossplayerid);
 		    }
+			FCNPC_SetSkin(bossplayerid, 149);
 			FCNPC_SetPosition(bossplayerid, 1086.9752, 1074.7021, 10.8382);
 		}
 	    FCNPC_SetAngle(bossplayerid, 39.3813);
