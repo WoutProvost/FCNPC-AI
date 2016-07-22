@@ -24,7 +24,7 @@ native WOW_CreateBoss(name[]);
 native WOW_GetBossFullName(bossid, name[], len);
 native WOW_SetBossFullName(bossid, name[]);
 native WOW_GetBossMapiconInfo(bossid, &iconid, &iconMarker, &iconColor, &iconStyle);
-native WOW_SetBossMapiconInfo(bossid, iconid, iconMarker, iconColor, iconStyle);
+native WOW_SetBossMapiconInfo(bossid, iconid = WOW_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL);
 native WOW_GetBossMaxHealth(bossid, &Float:health);
 native WOW_SetBossMaxHealth(bossid, Float:health, bool:keepHealthPercent = false);
 native WOW_GetBossDisplayRange(bossid, &Float:range);
@@ -38,11 +38,11 @@ native WOW_SetBossCurrentHealth(bossid, Float:health, bool:keepHealthPercent = f
 native WOW_GetBossTarget(bossid);
 native WOW_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false);
 native WOW_GetBossMoveInfo(bossid, &type, &Float:speed, &Float:radius, &bool:setAngle);
-native WOW_SetBossMoveInfo(bossid, type, Float:speed, Float:radius, bool:setAngle);
+native WOW_SetBossMoveInfo(bossid, type = MOVE_TYPE_SPRINT, Float:speed = -1.0, Float:radius = 0.0, bool:setAngle = true);
 native WOW_GetBossRangedAttackInfo(bossid, &Float:distance, &delay, &bool:setAngle);
-native WOW_SetBossRangedAttackInfo(bossid, Float:distance, delay, bool:setAngle);
+native WOW_SetBossRangedAttackInfo(bossid, Float:distance = 20.0, delay = 0, bool:setAngle = true);
 native WOW_GetBossMeleeAttackInfo(bossid, &Float:distance, &delay, &bool:useFightStyle);
-native WOW_SetBossMeleeAttackInfo(bossid, Float:distance, delay, bool:useFightStyle);
+native WOW_SetBossMeleeAttackInfo(bossid, Float:distance = 1.0, delay = -1, bool:useFightStyle = true);
 native WOW_DestroyBoss(bossid);
 native WOW_DestroyAllBosses();
 native bool:WOW_IsValidBoss(bossid);
@@ -1064,7 +1064,7 @@ stock WOW_GetBossMapiconInfo(bossid, &iconid, &iconMarker, &iconColor, &iconStyl
 	}
 	return 0;
 }
-stock WOW_SetBossMapiconInfo(bossid, iconid, iconMarker, iconColor, iconStyle) {
+stock WOW_SetBossMapiconInfo(bossid, iconid = WOW_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL) {
 	if(WOW_IsValidBoss(bossid)) {
 		if(iconid == WOW_INVALID_ICON_ID) {
 			for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
@@ -1316,7 +1316,7 @@ stock WOW_GetBossMoveInfo(bossid, &type, &Float:speed, &Float:radius, &bool:setA
 	}
 	return 0;
 }
-stock WOW_SetBossMoveInfo(bossid, type, Float:speed, Float:radius, bool:setAngle) {
+stock WOW_SetBossMoveInfo(bossid, type = MOVE_TYPE_SPRINT, Float:speed = -1.0, Float:radius = 0.0, bool:setAngle = true) {
 	if(WOW_IsValidBoss(bossid)) {
 	    WOW_Bosses[bossid][MOVE_TYPE] = type;
 	    WOW_Bosses[bossid][MOVE_SPEED] = speed;
@@ -1338,7 +1338,7 @@ stock WOW_GetBossRangedAttackInfo(bossid, &Float:distance, &delay, &bool:setAngl
 	}
 	return 0;
 }
-stock WOW_SetBossRangedAttackInfo(bossid, Float:distance, delay, bool:setAngle) {
+stock WOW_SetBossRangedAttackInfo(bossid, Float:distance = 20.0, delay = 0, bool:setAngle = true) {
 	if(WOW_IsValidBoss(bossid)) {
 	    WOW_Bosses[bossid][RANGED_ATTACK_DISTANCE] = distance;
 	    WOW_Bosses[bossid][RANGED_ATTACK_DELAY] = delay;
@@ -1359,7 +1359,7 @@ stock WOW_GetBossMeleeAttackInfo(bossid, &Float:distance, &delay, &bool:useFight
 	}
 	return 0;
 }
-stock WOW_SetBossMeleeAttackInfo(bossid, Float:distance, delay, bool:useFightStyle) {
+stock WOW_SetBossMeleeAttackInfo(bossid, Float:distance = 1.0, delay = -1, bool:useFightStyle = true) {
 	if(WOW_IsValidBoss(bossid)) {
 	    WOW_Bosses[bossid][MELEE_ATTACK_DISTANCE] = distance;
 	    WOW_Bosses[bossid][MELEE_ATTACK_DELAY] = delay;
