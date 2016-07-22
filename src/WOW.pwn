@@ -433,7 +433,10 @@ static WOW_RemoveUnnecessaryDecimals(Float:amount, maxDecimals = 6, minDecimals 
 static WOW_InitScript() {
 	//General
 	#if WOW_USE_MAP_ANDREAS == true
-	    MapAndreas_Init(WOW_MAP_ANDREAS_MODE); //MapAndreas
+		new MapAndreasAddress = MapAndreas_GetAddress(); //Don't init MapAndreas when it was already initialized
+		if(MapAndreasAddress == 0) {
+	    	MapAndreas_Init(WOW_MAP_ANDREAS_MODE); //MapAndreas
+	    }
 		FCNPC_InitMapAndreas(MapAndreas_GetAddress()); //MapAndreas
 	#endif
 	FCNPC_SetUpdateRate(50);
