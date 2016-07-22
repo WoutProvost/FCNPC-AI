@@ -2105,7 +2105,7 @@ stock WOW_SetSpellInfo(spellid, info[]) {
 stock WOW_SpellToString(spellid, string[], len, bool:allowDefaultColors = true) {
 	if(WOW_IsValidSpell(spellid)) {
 	    if(allowDefaultColors) {
-	    	format(string, len, "%s: {%06x}%s", WOW_Spells[spellid][NAME], 0xffd517ff >>> 8, WOW_Spells[spellid][INFO]);
+	    	format(string, len, "{%06x}%s: {%06x}%s", 0xffffffff >>> 8, WOW_Spells[spellid][NAME], 0xffd517ff >>> 8, WOW_Spells[spellid][INFO]);
 	    } else {
 	    	format(string, len, "%s: %s", WOW_Spells[spellid][NAME], WOW_Spells[spellid][INFO]);
 	    }
