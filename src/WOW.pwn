@@ -19,7 +19,7 @@
 /*
 //Boss
 native WOW_CreateBossFull(name[], fullName[] = WOW_INVALID_STRING, iconid = WOW_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL, Float:maxHealth = 100000.0, Float:rangeDisplay = 100.0, Float:rangeAggro = 20.0, bool:displayIfDead = true, Float:currentHealth = -1.0, targetid = INVALID_PLAYER_ID
-, moveType = MOVE_TYPE_SPRINT, Float:moveSpeed = -1.0, Float:moveRadius = 0.0, bool:moveSetAngle = true, Float:rangedAttackDistance = 20.0, rangedAttackDelay = 0, bool:rangedAttackSetAngle = true, Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = true);
+, moveType = MOVE_TYPE_SPRINT, Float:moveSpeed = -1.0, Float:moveRadius = 0.0, bool:moveSetAngle = true, Float:rangedAttackDistance = 20.0, rangedAttackDelay = -1, bool:rangedAttackSetAngle = true, Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = true);
 native WOW_CreateBoss(name[]);
 native WOW_GetBossFullName(bossid, name[], len);
 native WOW_SetBossFullName(bossid, name[]);
@@ -40,7 +40,7 @@ native WOW_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false);
 native WOW_GetBossMoveInfo(bossid, &type, &Float:speed, &Float:radius, &bool:setAngle);
 native WOW_SetBossMoveInfo(bossid, type = MOVE_TYPE_SPRINT, Float:speed = -1.0, Float:radius = 0.0, bool:setAngle = true);
 native WOW_GetBossRangedAttackInfo(bossid, &Float:distance, &delay, &bool:setAngle);
-native WOW_SetBossRangedAttackInfo(bossid, Float:distance = 20.0, delay = 0, bool:setAngle = true);
+native WOW_SetBossRangedAttackInfo(bossid, Float:distance = 20.0, delay = -1, bool:setAngle = true);
 native WOW_GetBossMeleeAttackInfo(bossid, &Float:distance, &delay, &bool:useFightStyle);
 native WOW_SetBossMeleeAttackInfo(bossid, Float:distance = 1.0, delay = -1, bool:useFightStyle = true);
 native WOW_DestroyBoss(bossid);
@@ -999,7 +999,7 @@ static WOW_DestroyBossNoFCNPC_Destroy(bossid) {
 }
 stock WOW_CreateBossFull(name[], fullName[] = WOW_INVALID_STRING, iconid = WOW_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL, Float:maxHealth = 100000.0,
 Float:rangeDisplay = 100.0, Float:rangeAggro = 20.0, bool:displayIfDead = true, Float:currentHealth = -1.0, targetid = INVALID_PLAYER_ID,
-moveType = MOVE_TYPE_SPRINT, Float:moveSpeed = -1.0, Float:moveRadius = 0.0, bool:moveSetAngle = true, Float:rangedAttackDistance = 20.0, rangedAttackDelay = 0, bool:rangedAttackSetAngle = true,
+moveType = MOVE_TYPE_SPRINT, Float:moveSpeed = -1.0, Float:moveRadius = 0.0, bool:moveSetAngle = true, Float:rangedAttackDistance = 20.0, rangedAttackDelay = -1, bool:rangedAttackSetAngle = true,
 Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = true) {
 	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
 		if(WOW_Bosses[bossid][NPCID] == INVALID_PLAYER_ID) {
@@ -1338,7 +1338,7 @@ stock WOW_GetBossRangedAttackInfo(bossid, &Float:distance, &delay, &bool:setAngl
 	}
 	return 0;
 }
-stock WOW_SetBossRangedAttackInfo(bossid, Float:distance = 20.0, delay = 0, bool:setAngle = true) {
+stock WOW_SetBossRangedAttackInfo(bossid, Float:distance = 20.0, delay = -1, bool:setAngle = true) {
 	if(WOW_IsValidBoss(bossid)) {
 	    WOW_Bosses[bossid][RANGED_ATTACK_DISTANCE] = distance;
 	    WOW_Bosses[bossid][RANGED_ATTACK_DELAY] = delay;
