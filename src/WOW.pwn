@@ -1661,40 +1661,48 @@ static WOW_BossAttackAim(bossid, targetid) {
  			FCNPC_Stop(bossplayerid);
 	    }
 	    if(!isMelee) {
-			FCNPC_AimAtPlayer(bossplayerid, targetid, true, WOW_Bosses[bossid][RANGED_ATTACK_DELAY], WOW_Bosses[bossid][RANGED_ATTACK_SET_ANGLE]);
+	        if(FCNPC_IsAttacking(bossplayerid)) { //In case the npc switched weapons
+	    		FCNPC_StopAttack(bossplayerid);
+		    }
+	        if(!FCNPC_IsAimingAtPlayer(bossplayerid, targetid)) { //So we don't aim again when we were already aiming at that same player. If aiming at another player, this will execute
+				FCNPC_AimAtPlayer(bossplayerid, targetid, true, WOW_Bosses[bossid][RANGED_ATTACK_DELAY], WOW_Bosses[bossid][RANGED_ATTACK_SET_ANGLE]);
+			}
 		} else {
-		    FCNPC_MeleeAttack(bossplayerid, WOW_Bosses[bossid][MELEE_ATTACK_DELAY], WOW_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE]);
+		    if(FCNPC_IsAiming(bossplayerid)) { //In case the npc switched weapons
+			    FCNPC_StopAim(bossplayerid);
+		    }
+	        if(!FCNPC_IsAttacking(bossplayerid)) { //So we don't attack again when we were already attacking
+		    	FCNPC_MeleeAttack(bossplayerid, WOW_Bosses[bossid][MELEE_ATTACK_DELAY], WOW_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE]);
+		    }
 		}
 	}
 }
 static WOW_BossAttackMove(bossid, targetid) {
 	if(WOW_IsValidBoss(bossid) && WOW_IsBossValidForPlayer(targetid, bossid)) {
 	    new bossplayerid = WOW_GetBossNPCId(bossid);
-		new bool:isMelee = WOW_BossHasMeleeWeapons(bossid);
-	    if(!isMelee) {
-		    if(FCNPC_IsAiming(bossplayerid)) {
-			    FCNPC_StopAim(bossplayerid);
-		    }
-	    } else {
-	    	FCNPC_StopAttack(bossplayerid);
+	    if(FCNPC_IsAiming(bossplayerid)) {
+		    FCNPC_StopAim(bossplayerid);
 	    }
-		FCNPC_GoToPlayer(bossplayerid, targetid, WOW_Bosses[bossid][MOVE_TYPE], WOW_Bosses[bossid][MOVE_SPEED], WOW_USE_MAP_ANDREAS, WOW_Bosses[bossid][MOVE_RADIUS], WOW_Bosses[bossid][MOVE_SET_ANGLE]);
+        if(FCNPC_IsAttacking(bossplayerid)) {
+    		FCNPC_StopAttack(bossplayerid);
+    	}
+    	if(!FCNPC_IsMovingAtPlayer(bossplayerid, targetid)) { //So we don't move again when we were already moving to that same player. If moving at another player, this will execute
+			FCNPC_GoToPlayer(bossplayerid, targetid, WOW_Bosses[bossid][MOVE_TYPE], WOW_Bosses[bossid][MOVE_SPEED], WOW_USE_MAP_ANDREAS, WOW_Bosses[bossid][MOVE_RADIUS], WOW_Bosses[bossid][MOVE_SET_ANGLE]);
+		}
 	}
 }
 static WOW_BossStopAttack(bossid) {
 	if(WOW_IsValidBoss(bossid)) {
 		new bossplayerid = WOW_GetBossNPCId(bossid);
-		new bool:isMelee = WOW_BossHasMeleeWeapons(bossid);
 	    if(FCNPC_IsMoving(bossplayerid)) {
 			FCNPC_Stop(bossplayerid);
 	    }
-	    if(!isMelee) {
-		    if(FCNPC_IsAiming(bossplayerid)) {
-			    FCNPC_StopAim(bossplayerid);
-		    }
-	    } else {
-	    	FCNPC_StopAttack(bossplayerid);
+	    if(FCNPC_IsAiming(bossplayerid)) {
+		    FCNPC_StopAim(bossplayerid);
 	    }
+        if(FCNPC_IsAttacking(bossplayerid)) {
+    		FCNPC_StopAttack(bossplayerid);
+    	}
     }
 }
 
