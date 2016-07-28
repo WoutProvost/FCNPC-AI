@@ -639,6 +639,7 @@ stock WOW_DamageBoss(bossid, damagerid, Float:amount) {
 		//2nd part of condition: if the npc is dead, this function can still be called before the OnDeath callback gets called (mainly when shot with fast guns: minigun, ...)
 		//3rd part of condition: damage not inflicted by players (falling, ...)
 		//4th part of condition: neccesary to reject invalid damage done: the NPC is visible and thus damagable in other interiors
+	 	if(FCNPC_IsSpawned(bossplayerid) && !FCNPC_IsDead(bossplayerid) && (damagerid == INVALID_PLAYER_ID || WOW_IsBossValidForPlayer(damagerid, bossid))) {
 			//Set target to damagerid if no target yet (valid damagerid + no target yet check in setter)
 			WOW_SetBossTargetWithReason(bossid, damagerid, 1);
 			//Dont damage below 0
@@ -770,6 +771,7 @@ public WOW_Update() {
 	
 	//Update boss
 	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
+	    if(WOW_IsValidBoss(bossid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID]) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID])) {
 	        //Update casting bar
 			WOW_IncreaseBossCastProgress(bossid);
 			//Get new target if no target, or if old target invalid, or if the boss is not streamed in anymore for his old target
@@ -2296,6 +2298,7 @@ Other conditions:
 In other words: if the new progress is >= the casttime, make it equal to the casttime, to allow for a consistent showextra time.
 */
 stock WOW_SetBossCastingProgress(bossid, progress) {
+	if(WOW_IsValidBoss(bossid) && WOW_IsBossCasting(bossid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID]) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID])) {
 	    if(progress < 0) {
 	        progress = 0;
 	    }
@@ -2359,6 +2362,7 @@ Other conditions:
 In other words: if the new showextra is >= the casttime + showextramax, init cast immediately, to allow for a consistent showextra time.
 */
 stock WOW_SetBossCastingExtraProgress(bossid, progress) {
+	if(WOW_IsValidBoss(bossid) && WOW_IsBossCastBarExtra(bossid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID]) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID]) ) {
 		if(progress < 0) {
 	        progress = 0;
 	    }
