@@ -636,10 +636,9 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 stock WOW_DamageBoss(bossid, damagerid, Float:amount) {
 	if(WOW_IsValidBoss(bossid) && (IsPlayerConnected(damagerid) || damagerid == INVALID_PLAYER_ID)) {
 	    new bossplayerid = WOW_GetBossNPCId(bossid);
-		//1st part of condition: if the npc is dead, this function can still be called before the OnDeath callback gets called (mainly when shot with fast guns: minigun, ...)
-		//2nd part of condition: damage not inflicted by players (falling, ...)
-		//3rd part of condition: neccesary to reject invalid damage done: the NPC is visible and thus damagable in other interiors
-	 	if(!FCNPC_IsDead(bossplayerid) && (damagerid == INVALID_PLAYER_ID || GetPlayerInterior(damagerid) == FCNPC_GetInterior(bossplayerid))) {
+		//2nd part of condition: if the npc is dead, this function can still be called before the OnDeath callback gets called (mainly when shot with fast guns: minigun, ...)
+		//3rd part of condition: damage not inflicted by players (falling, ...)
+		//4th part of condition: neccesary to reject invalid damage done: the NPC is visible and thus damagable in other interiors
 			//Set target to damagerid if no target yet (valid damagerid + no target yet check in setter)
 			WOW_SetBossTargetWithReason(bossid, damagerid, 1);
 			//Dont damage below 0
@@ -660,7 +659,7 @@ stock WOW_DamageBoss(bossid, damagerid, Float:amount) {
 stock WOW_HealBoss(bossid, healerid, Float:amount) {
 	if(WOW_IsValidBoss(bossid) && (IsPlayerConnected(healerid) || healerid == INVALID_PLAYER_ID)) {
 		new bossplayerid = WOW_GetBossNPCId(bossid);
-		if(!FCNPC_IsDead(bossplayerid)) {
+		if(FCNPC_IsSpawned(bossplayerid) && !FCNPC_IsDead(bossplayerid)) {
 			//Don't heal above MAX_HEALTH
 			if(WOW_Bosses[bossid][MAX_HEALTH] - WOW_Bosses[bossid][CUR_HEALTH] <= amount) {
 				WOW_SetBossCurrentHealth(bossid, WOW_Bosses[bossid][MAX_HEALTH]);
@@ -771,7 +770,6 @@ public WOW_Update() {
 	
 	//Update boss
 	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-	    if(WOW_IsValidBoss(bossid) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID])) {
 	        //Update casting bar
 			WOW_IncreaseBossCastProgress(bossid);
 			//Get new target if no target, or if old target invalid, or if the boss is not streamed in anymore for his old target
@@ -1402,7 +1400,7 @@ stock bool:WOW_IsBossValidForPlayer(playerid, bossid) {
 	if(IsPlayerConnected(playerid) && WOW_IsValidBoss(bossid)) {
 	    new playerState = GetPlayerState(playerid);
 	    new bossplayerid = WOW_GetBossNPCId(bossid);
-		if(bossplayerid != playerid && (!FCNPC_IsDead(bossplayerid) || WOW_Bosses[bossid][DISPLAY_IF_DEAD])) {
+		if(bossplayerid != playerid && FCNPC_IsSpawned(bossplayerid) && (!FCNPC_IsDead(bossplayerid) || WOW_Bosses[bossid][DISPLAY_IF_DEAD])) {
 		    new bossInterior = FCNPC_GetInterior(bossplayerid);
 		    new bossWorld = FCNPC_GetVirtualWorld(bossplayerid);
 		    if(!IsPlayerNPC(playerid)) {
@@ -2211,7 +2209,7 @@ static WOW_BossCastProgressComplete(bossid, spellid) {
 }
 stock WOW_StartBossCastingSpell(bossid, spellid, targetid = INVALID_PLAYER_ID) {
 	//Don't replace if casting already, do replace if showExtra
-	if(WOW_IsValidBoss(bossid) && WOW_IsValidSpell(spellid) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID) && !WOW_IsBossCasting(bossid)) {
+	if(WOW_IsValidBoss(bossid) && WOW_IsValidSpell(spellid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID) && !WOW_IsBossCasting(bossid)) {
         if(WOW_IsBossCastBarExtra(bossid)) {
     		WOW_InitBossCasting(bossid);
         }
@@ -2248,7 +2246,7 @@ Dont keeppercent:
 - casttime 500, progress 250 => casttime 600, progress stays 250
 */
 stock WOW_SetBossCastingSpell(bossid, spellid, bool:keepCastPercent = false) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsValidSpell(spellid) && WOW_IsBossCasting(bossid) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID])) {
+	if(WOW_IsValidBoss(bossid) && WOW_IsValidSpell(spellid) && WOW_IsBossCasting(bossid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID])) {
 		new oldCastTime = WOW_Spells[WOW_Casting[bossid][SPELLID]][CAST_TIME];
 		new newCastTime = WOW_Spells[spellid][CAST_TIME];
 		WOW_Casting[bossid][SPELLID] = spellid; //Must be called before
@@ -2298,7 +2296,6 @@ Other conditions:
 In other words: if the new progress is >= the casttime, make it equal to the casttime, to allow for a consistent showextra time.
 */
 stock WOW_SetBossCastingProgress(bossid, progress) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsBossCasting(bossid) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID])) {
 	    if(progress < 0) {
 	        progress = 0;
 	    }
@@ -2333,7 +2330,7 @@ stock WOW_GetBossCastingTarget(bossid) {
 //The casting target doesn't have to be streamed in
 //The casting target doesn't have to be in aggro range
 stock WOW_SetBossCastingTarget(bossid, targetid) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsBossCasting(bossid) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)) {
+	if(WOW_IsValidBoss(bossid) && WOW_IsBossCasting(bossid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)) {
 		WOW_Casting[bossid][TARGETID] = targetid;
 		return 1;
 	}
@@ -2362,7 +2359,6 @@ Other conditions:
 In other words: if the new showextra is >= the casttime + showextramax, init cast immediately, to allow for a consistent showextra time.
 */
 stock WOW_SetBossCastingExtraProgress(bossid, progress) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsBossCastBarExtra(bossid) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID]) ) {
 		if(progress < 0) {
 	        progress = 0;
 	    }
