@@ -1448,7 +1448,11 @@ static WOW_GetClosestPlayerToTakeAggro(bossid) {
     	new Float:bossRange;
 		for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
 		    if(WOW_IsBossValidForPlayer(playerid, bossid)) {
-		        GetPlayerPos(playerid, playerX, playerY, playerZ);
+		        if(!IsPlayerNPC(playerid)) {
+		        	GetPlayerPos(playerid, playerX, playerY, playerZ);
+		        } else {
+		        	FCNPC_GetPosition(playerid, playerX, playerY, playerZ);
+		        }
 	            bossRange = GetPlayerDistanceFromPoint(WOW_Bosses[bossid][NPCID], playerX, playerY, playerZ);
 		  		if(WOW_IsPlayerInAggroRange(playerid, bossid) && (closestPlayer == INVALID_PLAYER_ID || bossRange < closestPlayerRange)) {
 			        closestPlayerRange = bossRange;
@@ -1476,7 +1480,11 @@ forward bool:WOW_IsPlayerInAggroRange(playerid, bossid); //Silence 'used before 
 stock bool:WOW_IsPlayerInAggroRange(playerid, bossid) {
 	if(IsPlayerConnected(playerid) && WOW_IsValidBoss(bossid)) {
 		new Float:playerX, Float:playerY, Float:playerZ;
-		GetPlayerPos(playerid, playerX, playerY, playerZ);
+        if(!IsPlayerNPC(playerid)) {
+        	GetPlayerPos(playerid, playerX, playerY, playerZ);
+        } else {
+        	FCNPC_GetPosition(playerid, playerX, playerY, playerZ);
+        }
 		new Float:bossRange = GetPlayerDistanceFromPoint(WOW_Bosses[bossid][NPCID], playerX, playerY, playerZ);
 		//Don't aggro if aggro range is <= 0.0
 		if(WOW_Bosses[bossid][RANGE_AGGRO] > 0.0 && bossRange <= WOW_Bosses[bossid][RANGE_AGGRO]) {
