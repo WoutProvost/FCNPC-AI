@@ -55,6 +55,92 @@ public OnFilterScriptInit()
 	
 	SetBossAtSpawn(BossLeatherface);
 	PlayerInRangeTimer = SetTimer("CheckPlayerInRange", 100, true);
+	CreateBossObjects();
+	return 1;
+}
+
+public OnFilterScriptExit()
+{
+	WOW_DestroyBoss(BossLeatherface);
+	BossLeatherface = WOW_INVALID_BOSS_ID;
+	KillTimer(PlayerInRangeTimer);
+	PlayerInRangeTimer = WOW_INVALID_TIMER_ID;
+	for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
+		if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid)) {
+	        if(AlreadyInOutRange[playerid]) {
+	        	AlreadyInOutRange[playerid] = false;
+		        SetPlayerWeather(playerid, DEFAULT_WEATHER);
+		        SetPlayerTime(playerid, DEFAULT_TIME_H, DEFAULT_TIME_M);
+		        if(AudioStreamCount[playerid] != -1) {
+		        	StopAudioStreamForPlayer(playerid);
+		        	AudioStreamCount[playerid] = -1;
+		        }
+	        }
+    	}
+    }
+	DestroyBossObjects();
+	return 1;
+}
+#endif
+
+public FCNPC_OnReachDestination(npcid)
+{
+	if(WOW_GetBossIdFromPlayerid(npcid) == BossLeatherface) {
+	    if(IdleCount != -1) {
+			new Float:x, Float:y, Float:z;
+			FCNPC_GetPosition(npcid, x, y, z);
+			if(x <= -2812.0 && x >= -2814.0 && y <= -1516.0 && y >= -1518.0 && z <= 141.0 && z >= 139.0) {
+				FCNPC_ApplyAnimation(npcid, "CHAINSAW", "WEAPON_csawlo", 4.1, 0, 1, 1, 0, 0);
+			} else if(x <= -2818.0 && x >= -2820.0 && y <= -1515.0 && y >= -1517.0 && z <= 141.0 && z >= 139.0) {
+				FCNPC_ApplyAnimation(npcid, "CHAINSAW", "WEAPON_csaw", 4.1, 0, 1, 1, 0, 0);
+			} else if(x <= -2819.0 && x >= -2821.0 && y <= -1517.0 && y >= -1519.0 && z <= 141.0 && z >= 139.0) {
+				FCNPC_GoTo(npcid, -2822.3176, -1518.7068, 140.7656, MOVE_TYPE_WALK);
+			} else if(x <= -2816.0 && x >= -2818.0 && y <= -1523.0 && y >= -1525.0 && z <= 141.0 && z >= 139.0) {
+				FCNPC_ApplyAnimation(npcid, "CHAINSAW", "CSAW_G", 4.1, 0, 1, 1, 0, 0);
+			} else if(x <= -2810.0 && x >= -2812.0 && y <= -1523.0 && y >= -1525.0 && z <= 141.0 && z >= 139.0) {
+				FCNPC_GoTo(npcid, -2818.3503, -1530.7013, 140.8438, MOVE_TYPE_WALK);
+			}
+		}
+	}
+	return 1;
+}
+
+public WOW_OnBossEncounterStart(bossid, bool:reasonShot, firstTarget)
+{
+	if(bossid == BossLeatherface) {
+	    IdleCount = -1;
+	}
+	return 1;
+}
+
+public WOW_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
+{
+	if(bossid == BossLeatherface) {
+		if(!reasonDeath) {
+			SetBossAtSpawn(bossid);
+	    } else {
+	        //Respawn the boss somewhere between 5 and 10 minutes (both included)
+	    	new randomMinutes = random(6) + 5;
+			DeathCount = randomMinutes * 60 * 10;
+			for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
+				if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid)) {
+			        if(AlreadyInOutRange[playerid]) {
+			        	AlreadyInOutRange[playerid] = false;
+				        SetPlayerWeather(playerid, DEFAULT_WEATHER);
+				        SetPlayerTime(playerid, DEFAULT_TIME_H, DEFAULT_TIME_M);
+				        if(AudioStreamCount[playerid] != -1) {
+				        	StopAudioStreamForPlayer(playerid);
+				        	AudioStreamCount[playerid] = -1;
+				        }
+			        }
+				}
+			}
+	    }
+    }
+	return 1;
+}
+
+stock CreateBossObjects() {
 	#if USE_STREAMER == true
 		Objects[0] = CreateDynamicObject(2589, -2820.283447, -1515.626831, 137.583969, 176.600158, 2.899999, -15.600064, VIRTUAL_WORLD_NORMAL, INTERIOR_NORMAL);
 		Objects[1] = CreateDynamicObject(2590, -2809.102050, -1519.912963, 142.724533, 180.0, 180.0, 133.0, VIRTUAL_WORLD_NORMAL, INTERIOR_NORMAL);
@@ -192,28 +278,9 @@ public OnFilterScriptInit()
 		Objects[64] = CreateObject(3010, -2812.721679, -1516.216552, 140.636306, 1.900001, 100.699928, -105.899925);
 		Objects[65] = CreateObject(3011, -2813.620849, -1516.083129, 139.596343, 27.699987, 91.599990, -107.499984);
 	#endif
-	return 1;
 }
 
-public OnFilterScriptExit()
-{
-	WOW_DestroyBoss(BossLeatherface);
-	BossLeatherface = WOW_INVALID_BOSS_ID;
-	KillTimer(PlayerInRangeTimer);
-	PlayerInRangeTimer = WOW_INVALID_TIMER_ID;
-	for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
-		if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid)) {
-	        if(AlreadyInOutRange[playerid]) {
-	        	AlreadyInOutRange[playerid] = false;
-		        SetPlayerWeather(playerid, DEFAULT_WEATHER);
-		        SetPlayerTime(playerid, DEFAULT_TIME_H, DEFAULT_TIME_M);
-		        if(AudioStreamCount[playerid] != -1) {
-		        	StopAudioStreamForPlayer(playerid);
-		        	AudioStreamCount[playerid] = -1;
-		        }
-	        }
-    	}
-    }
+stock DestroyBossObjects() {
     for(new object = 0; object < sizeof(Objects); object++) {
 		#if USE_STREAMER == true
         	DestroyDynamicObject(Objects[object]);
@@ -221,65 +288,6 @@ public OnFilterScriptExit()
             DestroyObject(Objects[object]);
         #endif
     }
-	return 1;
-}
-#endif
-
-public FCNPC_OnReachDestination(npcid)
-{
-	if(WOW_GetBossIdFromPlayerid(npcid) == BossLeatherface) {
-	    if(IdleCount != -1) {
-			new Float:x, Float:y, Float:z;
-			FCNPC_GetPosition(npcid, x, y, z);
-			if(x <= -2812.0 && x >= -2814.0 && y <= -1516.0 && y >= -1518.0 && z <= 141.0 && z >= 139.0) {
-				FCNPC_ApplyAnimation(npcid, "CHAINSAW", "WEAPON_csawlo", 4.1, 0, 1, 1, 0, 0);
-			} else if(x <= -2818.0 && x >= -2820.0 && y <= -1515.0 && y >= -1517.0 && z <= 141.0 && z >= 139.0) {
-				FCNPC_ApplyAnimation(npcid, "CHAINSAW", "WEAPON_csaw", 4.1, 0, 1, 1, 0, 0);
-			} else if(x <= -2819.0 && x >= -2821.0 && y <= -1517.0 && y >= -1519.0 && z <= 141.0 && z >= 139.0) {
-				FCNPC_GoTo(npcid, -2822.3176, -1518.7068, 140.7656, MOVE_TYPE_WALK);
-			} else if(x <= -2816.0 && x >= -2818.0 && y <= -1523.0 && y >= -1525.0 && z <= 141.0 && z >= 139.0) {
-				FCNPC_ApplyAnimation(npcid, "CHAINSAW", "CSAW_G", 4.1, 0, 1, 1, 0, 0);
-			} else if(x <= -2810.0 && x >= -2812.0 && y <= -1523.0 && y >= -1525.0 && z <= 141.0 && z >= 139.0) {
-				FCNPC_GoTo(npcid, -2818.3503, -1530.7013, 140.8438, MOVE_TYPE_WALK);
-			}
-		}
-	}
-	return 1;
-}
-
-public WOW_OnBossEncounterStart(bossid, bool:reasonShot, firstTarget)
-{
-	if(bossid == BossLeatherface) {
-	    IdleCount = -1;
-	}
-	return 1;
-}
-
-public WOW_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
-{
-	if(bossid == BossLeatherface) {
-		if(!reasonDeath) {
-			SetBossAtSpawn(bossid);
-	    } else {
-	        //Respawn the boss somewhere between 5 and 10 minutes (both included)
-	    	new randomMinutes = random(6) + 5;
-			DeathCount = randomMinutes * 60 * 10;
-			for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
-				if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid)) {
-			        if(AlreadyInOutRange[playerid]) {
-			        	AlreadyInOutRange[playerid] = false;
-				        SetPlayerWeather(playerid, DEFAULT_WEATHER);
-				        SetPlayerTime(playerid, DEFAULT_TIME_H, DEFAULT_TIME_M);
-				        if(AudioStreamCount[playerid] != -1) {
-				        	StopAudioStreamForPlayer(playerid);
-				        	AudioStreamCount[playerid] = -1;
-				        }
-			        }
-				}
-			}
-	    }
-    }
-	return 1;
 }
 
 forward SetBossAtSpawn(bossid);
@@ -313,9 +321,26 @@ public SetBossAtSpawn(bossid) {
 		IdleCount = 0;
 		DeathCount = -1;
 		AnimationApplied = false;
+		//Recreate objects, some objects can change positions and roll away
+		DestroyBossObjects();
+		CreateBossObjects();
+		#if USE_STREAMER == true
+			StreamerUpdateForValidPlayers(bossid);
+		#endif
 	}
 	return 1;
 }
+
+#if USE_STREAMER == true
+	stock StreamerUpdateForValidPlayers(bossid) {
+		for(new playerid = 0, maxplayerid = GetPlayerPoolSize(); playerid <= maxplayerid; playerid++) {
+	 	    if(WOW_IsBossValidForPlayer(playerid, bossid)) {
+				Streamer_Update(playerid, STREAMER_TYPE_OBJECT);
+			}
+		}
+		return 1;
+	}
+#endif
 
 forward CheckPlayerInRange();
 public CheckPlayerInRange() {
