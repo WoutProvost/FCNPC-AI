@@ -2211,7 +2211,7 @@ static WOW_BossCastProgressComplete(bossid, spellid) {
 }
 stock WOW_StartBossCastingSpell(bossid, spellid, targetid = INVALID_PLAYER_ID) {
 	//Don't replace if casting already, do replace if showExtra
-	if(WOW_IsValidBoss(bossid) && WOW_IsValidSpell(spellid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID) && !WOW_IsBossCasting(bossid)) {
+	if(WOW_IsValidBoss(bossid) && WOW_IsValidSpell(spellid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID]) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID) && !WOW_IsBossCasting(bossid)) {
         if(WOW_IsBossCastBarExtra(bossid)) {
     		WOW_InitBossCasting(bossid);
         }
@@ -2248,7 +2248,7 @@ Dont keeppercent:
 - casttime 500, progress 250 => casttime 600, progress stays 250
 */
 stock WOW_SetBossCastingSpell(bossid, spellid, bool:keepCastPercent = false) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsValidSpell(spellid) && WOW_IsBossCasting(bossid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID])) {
+	if(WOW_IsValidBoss(bossid) && WOW_IsValidSpell(spellid) && WOW_IsBossCasting(bossid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID]) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID])) {
 		new oldCastTime = WOW_Spells[WOW_Casting[bossid][SPELLID]][CAST_TIME];
 		new newCastTime = WOW_Spells[spellid][CAST_TIME];
 		WOW_Casting[bossid][SPELLID] = spellid; //Must be called before
@@ -2333,7 +2333,7 @@ stock WOW_GetBossCastingTarget(bossid) {
 //The casting target doesn't have to be streamed in
 //The casting target doesn't have to be in aggro range
 stock WOW_SetBossCastingTarget(bossid, targetid) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsBossCasting(bossid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)) {
+	if(WOW_IsValidBoss(bossid) && WOW_IsBossCasting(bossid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID]) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)) {
 		WOW_Casting[bossid][TARGETID] = targetid;
 		return 1;
 	}
