@@ -17,7 +17,6 @@
 -general defines boss/spell specific.
 -MySQL or change to plugin, instead of using the various WOW_MAX_BOSS and WOW_MAX_SPELL defines
 -Change to plugin, so everything is shared server-wide
--colandreas/cimulator ipv mapandreas voor line of sight en onder bruggen lopen
 */
 
 //EFFECTS

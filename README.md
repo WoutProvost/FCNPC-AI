@@ -50,7 +50,6 @@ If you have any constructive criticism or suggestions, please [share](http://for
 * Make the [general defines](../../wiki/General-defines) boss/spell specific.
 * Use MySQL or change to plugin, instead of using the various [WOW_MAX_BOSS](../../wiki/Boss-defines) and [WOW_MAX_SPELL](../../wiki/Spell-defines) defines.
 * Change to plugin, so everything is shared server-wide. Currently only the callbacks are called server-wide.
-* Use [ColAndreas](http://forum.sa-mp.com/showthread.php?t=560218) instead of [MapAndreas](http://forum.sa-mp.com/showthread.php?t=275492) to give the bosses the ability to walk under bridges or inside garages.
 
 ##License
 * The author(s) of this software retain the right to modify/revoke this license at any time under any conditions seen appropriate by the author(s).
