@@ -17,6 +17,8 @@
 
 #define FILTERSCRIPT
 
+#define WOW_USE_MAP_ANDREAS             true //Redefinition before #include <WOW>
+
 #define WOW_DECIMAL_MARK                ',' //Redefinition before #include <WOW>
 #include <WOW>
 
@@ -54,6 +56,7 @@ new ExplosionCount = 0;
 public OnFilterScriptInit()
 {
 	BossBigSmoke = WOW_CreateBossFull("BossBigSmoke", "Melvin \"Big Smoke\" Harris", 65, 8, 0xff0000ff, MAPICON_LOCAL, 5000.0);
+	WOW_SetBossMoveInfo(BossBigSmoke, MOVE_TYPE_SPRINT, MOVE_SPEED_AUTO, true);
 	SetBossAtSpawn(BossBigSmoke);
     SpellCarpetOfFire = WOW_CreateSpell("Carpet of Fire");
     SpellWallOfFire = WOW_CreateSpell("Wall of Fire");
@@ -80,7 +83,6 @@ public OnFilterScriptExit()
 	SpellFlightOfTheBumblebee = WOW_INVALID_SPELL_ID;
 	WOW_DestroySpell(SpellRockOfLife);
 	SpellRockOfLife = WOW_INVALID_SPELL_ID;
-	
 	for(new groundMark = 0, groundMarkCount = sizeof(GroundMarks); groundMark < groundMarkCount; groundMark++) {
 		#if USE_STREAMER == false
 		    DestroyObject(GroundMarks[groundMark]);

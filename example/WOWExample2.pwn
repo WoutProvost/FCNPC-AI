@@ -17,8 +17,6 @@
 
 #define FILTERSCRIPT
 
-#define WOW_USE_MAP_ANDREAS             false
-
 #include <WOW>
 
 #define USE_STREAMER    true //Set this to false, if you don't use Incognito's streamer. This example script uses this streamer to create dynamic pickups and objects
@@ -30,7 +28,7 @@
 #define VIRTUAL_WORLD_NORMAL        	0
 #define ATTACHED_OBJECT_INDEX           0
 #define AUDIO_STREAM_HALLOWEEN          "http://dl.dropboxusercontent.com/s/oddvow4138cf204/Halloween.mp3"
-#define DEFAULT_WEATHER                 0  //Default samp weather
+#define DEFAULT_WEATHER                 1  //Default samp weather
 #define DEFAULT_TIME_H                  12 //Default samp time
 #define DEFAULT_TIME_M                 	0  //Default samp time
 
@@ -50,9 +48,7 @@ public OnFilterScriptInit()
 	WOW_SetBossMaxHealth(BossLeatherface, 2000.0);
 	WOW_SetBossDisplayRange(BossLeatherface, 0.0);
 	WOW_SetBossAggroRange(BossLeatherface, 0.0);
-	
 	WOW_SetBossMeleeAttackInfo(BossLeatherface, 1.5, -1, false);
-	
 	SetBossAtSpawn(BossLeatherface);
 	PlayerInRangeTimer = SetTimer("CheckPlayerInRange", 100, true);
 	CreateBossObjects();
