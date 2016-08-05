@@ -124,7 +124,7 @@ forward WOW_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete);
 //General
 //Include guards are already built into pawn, so no need to check
 #include <a_samp>
-#define WOW_VERSION                       	"1.0.1"
+#define WOW_VERSION                       	"1.0.2"
 #if !defined WOW_USE_MAP_ANDREAS
 	#define WOW_USE_MAP_ANDREAS           	false
 #endif
