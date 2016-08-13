@@ -809,28 +809,13 @@ public WOW_CheckPausedPlayers() {
 	return 1;
 }
 //This fixes the problem with GetTickCount integer overflow when the server is run for 24+ days
-static WOW_GetTickCountAbs(integer) {
-	if(integer < 0) {
-		return integer * -1;
-	}
-	return integer;
-}
-static WOW_GetTickCountIntDiffAbs(oldInteger, newInteger) {
-	if(oldInteger > newInteger) {
-		return WOW_GetTickCountAbs(oldInteger - newInteger);
-	}
-	return WOW_GetTickCountAbs(newInteger - oldInteger);
-}
 static WOW_GetTickCountDiff(oldInteger, newInteger) {
-	//Integer max: 2147483647
-	if(oldInteger < 0 && newInteger > 0) {
-		new dist = WOW_GetTickCountIntDiffAbs(oldInteger, newInteger);
-		if(dist > 2147483647) {
-			return WOW_GetTickCountIntDiffAbs(oldInteger - 2147483647, newInteger - 2147483647);
-		}
-		return dist;
+	if (oldInteger < 0 && newInteger >= 0) {
+		return newInteger - oldInteger;
+	} else if (oldInteger >= 0 && newInteger < 0 || oldInteger > newInteger) {
+		return (cellmax - oldInteger + 1) - (cellmin - newInteger);
 	}
-	return WOW_GetTickCountIntDiffAbs(oldInteger, newInteger);
+	return newInteger - oldInteger;
 }
 
 //Boss
