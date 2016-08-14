@@ -7,7 +7,8 @@
 
  * Credits:
  * Freaksken (http://forum.sa-mp.com/member.php?u=46764) for this include.
- * Southclaw (http://forum.sa-mp.com/member.php?u=50199) for the GetTickCount overflow fix (http://pastebin.com/BZyaJpzs) and Ralfie (http://forum.sa-mp.com/member.php?u=218502) for an example on how to use the fix.
+ * ZiGGi (http://forum.sa-mp.com/member.php?u=36935) for the stringcopy improvement.
+ * ZiGGi (http://forum.sa-mp.com/member.php?u=36935) for the GetTickCount overflow fix (https://gist.github.com/ziggi/5d7d8dc42f54531feba7ae924c608e73) and an example on how to use the fix.
  * OrMisicL (http://forum.sa-mp.com/member.php?u=197901) and ZiGGi (http://forum.sa-mp.com/member.php?u=36935) (and any others who worked on this awesome plugin) for FCNPC (http://forum.sa-mp.com/showthread.php?t=428066).
  * Kalcor (http://forum.sa-mp.com/member.php?u=3), Mauzen (http://forum.sa-mp.com/member.php?u=10237) and pamdex (http://forum.sa-mp.com/member.php?u=78089) for MapAndreas v1.2.1 (http://forum.sa-mp.com/showthread.php?t=275492).
  * Incognito (http://forum.sa-mp.com/member.php?u=925) for his streamer (http://forum.sa-mp.com/showthread.php?t=102865) used in the example scripts.
@@ -271,6 +272,10 @@ enum WOW_ENUM_CASTING {
 static WOW_Casting[WOW_MAX_BOSSES][WOW_ENUM_CASTING];
 
 //General
+static WOW_strcpy(dest[], const source[], maxlength = sizeof dest) {
+	dest[0] = '\0';
+	return strcat(dest, source, maxlength);
+}
 static WOW_strtokdelim(const string[], delimiter, &index) {
 	new length = strlen(string);
 	while ((index < length) && (string[index] <= delimiter)) {
@@ -310,7 +315,7 @@ static WOW_DisplayReadableInteger(amount) {
 }
 static WOW_DisplayReadableFloat(Float:amount, maxDecimals = 6, minDecimals = 0) {
     new amountAsString[21 + 1], front[21 + 1], end[21 + 1], idx, frontval;
-    format(amountAsString, sizeof(amountAsString), "%s", WOW_RemoveUnnecessaryDecimals(amount, maxDecimals, minDecimals));
+    WOW_strcpy(amountAsString, WOW_RemoveUnnecessaryDecimals(amount, maxDecimals, minDecimals));
 	front = WOW_strtokdelim(amountAsString, '.', idx); //Bij een negatief getal wordt de - eraf gedaan? Oplossing zie hieronder.
 	end = WOW_strtokdelim(amountAsString, '.', idx);
 	frontval = strval(front);
@@ -809,28 +814,14 @@ public WOW_CheckPausedPlayers() {
 	return 1;
 }
 //This fixes the problem with GetTickCount integer overflow when the server is run for 24+ days
-static WOW_GetTickCountAbs(integer) {
-    if(integer < 0) {
-        return integer * -1;
-    }
-    return integer;
-}
-static WOW_GetTickCountIntDiffAbs(oldInteger, newInteger) {
-    if(oldInteger > newInteger) {
-    	return WOW_GetTickCountAbs(oldInteger - newInteger);
-    }
-    return WOW_GetTickCountAbs(newInteger - oldInteger);
-}
 static WOW_GetTickCountDiff(oldInteger, newInteger) {
 	//Integer max: 2147483647
-    if(oldInteger < 0 && newInteger > 0) {
-        new dist = WOW_GetTickCountIntDiffAbs(oldInteger, newInteger);
-        if(dist > 2147483647) {
-            return WOW_GetTickCountIntDiffAbs(oldInteger - 2147483647, newInteger - 2147483647);
-        }
-        return dist;
-    }
-    return WOW_GetTickCountIntDiffAbs(oldInteger, newInteger);
+	if(oldInteger < 0 && newInteger >= 0) {
+		return newInteger - oldInteger;
+	} else if(oldInteger >= 0 && newInteger < 0 || oldInteger > newInteger) {
+		return (cellmax - oldInteger + 1) - (cellmin - newInteger);
+	}
+	return newInteger - oldInteger;
 }
 
 //Boss
@@ -918,7 +909,7 @@ static WOW_InitBoss(bossid) {
 static WOW_ResetBossStats(bossid) {
 	//Don't use WOW_IsValidBoss(bossid)
 	if(bossid >= 0 && bossid < WOW_MAX_BOSSES) {
-		format(WOW_Bosses[bossid][FULL_NAME], WOW_MAX_BOSS_FULL_NAME + 1, "%s", WOW_INVALID_STRING);
+		WOW_strcpy(WOW_Bosses[bossid][FULL_NAME], WOW_INVALID_STRING, WOW_MAX_BOSS_FULL_NAME + 1);
 		WOW_Bosses[bossid][ICONID] = WOW_INVALID_ICON_ID;
 		WOW_Bosses[bossid][ICON_MARKER] = 0;
 		WOW_Bosses[bossid][ICON_COLOR] = WOW_INVALID_COLOR;
@@ -1034,7 +1025,7 @@ stock WOW_CreateBoss(name[]) {
 }
 stock WOW_GetBossFullName(bossid, name[], len) {
 	if(WOW_IsValidBoss(bossid)) {
-	    format(name, len, "%s", WOW_Bosses[bossid][FULL_NAME]);
+	    WOW_strcpy(name, WOW_Bosses[bossid][FULL_NAME], len);
 		return strlen(name);
 	}
 	return -1;
@@ -1045,11 +1036,11 @@ stock WOW_SetBossFullName(bossid, name[]) {
 	    if(!WOW_isnull(name) && !strcmp(name, WOW_INVALID_STRING, true)) {
 	        new playerName[MAX_PLAYER_NAME + 1];
 	        GetPlayerName(WOW_Bosses[bossid][NPCID], playerName, sizeof(playerName));
-			format(WOW_Bosses[bossid][FULL_NAME], WOW_MAX_BOSS_FULL_NAME + 1, "%s", playerName);
+			WOW_strcpy(WOW_Bosses[bossid][FULL_NAME], playerName, WOW_MAX_BOSS_FULL_NAME + 1);
 		}
 	    //If the user did provide a valid fullName, use that one
  		else {
-			format(WOW_Bosses[bossid][FULL_NAME], WOW_MAX_BOSS_FULL_NAME + 1, "%s", name);
+			WOW_strcpy(WOW_Bosses[bossid][FULL_NAME], name, WOW_MAX_BOSS_FULL_NAME + 1);
 		}
 		TextDrawSetString(WOW_Bosses[bossid][TEXTDRAW][3], WOW_Bosses[bossid][FULL_NAME]);
 		//FullName textdraw updates automatically
@@ -1523,7 +1514,7 @@ static WOW_UpdateBossHealthDisplay(bossid) {
 			} else if(float(healthInteger) / 1000 >= 1) {
 				format(string, sizeof(string), "%s K", WOW_DisplayReadableFloat(float(healthInteger) / 1000, 2, 2));
 			} else {
-				format(string, sizeof(string), "%s", WOW_DisplayReadableInteger(healthInteger));
+				WOW_strcpy(string, WOW_DisplayReadableInteger(healthInteger));
 			}
 			TextDrawSetString(WOW_Bosses[bossid][TEXTDRAW][2], string);
 		#endif
@@ -1732,7 +1723,7 @@ static WOW_InitAllSpells() {
 static WOW_InitSpell(spellid) {
 	//Don't use WOW_IsValidSpell(spellid)
 	if(spellid >= 0 && spellid < WOW_MAX_SPELLS) {
-		format(WOW_Spells[spellid][NAME], WOW_MAX_SPELL_NAME + 1, "%s", WOW_INVALID_STRING);
+		WOW_strcpy(WOW_Spells[spellid][NAME], WOW_INVALID_STRING, WOW_MAX_SPELL_NAME + 1);
 		WOW_Spells[spellid][TYPE] = WOW_SPELL_TYPE_INVALID;
 		WOW_Spells[spellid][CAST_TIME] = 0;
 		WOW_Spells[spellid][AMOUNT] = 0.0;
@@ -1743,7 +1734,7 @@ static WOW_InitSpell(spellid) {
 		WOW_Spells[spellid][CAST_TIME_INVERTED] = false;
 		WOW_Spells[spellid][CAN_MOVE] = false;
 		WOW_Spells[spellid][CAN_ATTACK] = false;
-		format(WOW_Spells[spellid][INFO], WOW_MAX_SPELL_INFO + 1, "%s", WOW_INVALID_STRING);
+		WOW_strcpy(WOW_Spells[spellid][INFO], WOW_INVALID_STRING, WOW_MAX_SPELL_INFO + 1);
 	}
 }
 stock bool:WOW_IsValidSpell(spellid) {
@@ -1796,14 +1787,14 @@ stock WOW_CreateSpell(name[]) {
 }
 stock WOW_GetSpellName(spellid, name[], len) {
 	if(WOW_IsValidSpell(spellid)) {
-	    format(name, len, "%s", WOW_Spells[spellid][NAME]);
+	    WOW_strcpy(name, WOW_Spells[spellid][NAME], len);
 		return strlen(name);
 	}
 	return -1;
 }
 stock WOW_SetSpellName(spellid, name[]) {
 	if(WOW_IsValidSpell(spellid)) {
-	    format(WOW_Spells[spellid][NAME], WOW_MAX_SPELL_NAME + 1, "%s", name);
+	    WOW_strcpy(WOW_Spells[spellid][NAME], name, WOW_MAX_SPELL_NAME + 1);
 	    for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
 	        if(WOW_IsValidBoss(bossid) && (WOW_IsBossCastingSpell(bossid, spellid) || WOW_IsBossCastBarExtraForSpell(bossid, spellid))) {
 				TextDrawSetString(WOW_Bosses[bossid][TEXTDRAW][6], WOW_Spells[spellid][NAME]);
@@ -2068,8 +2059,7 @@ stock WOW_SetSpellCanAttack(spellid, bool:canAttack) {
 }
 stock WOW_GetSpellInfo(spellid, info[], len) {
 	if(WOW_IsValidSpell(spellid)) {
-	    format(info, len, "%s", WOW_Spells[spellid][INFO]);
-		return strlen(info);
+	    return WOW_strcpy(info, WOW_Spells[spellid][INFO], len);
 	}
 	return -1;
 }
@@ -2079,9 +2069,9 @@ stock WOW_SetSpellInfo(spellid, info[]) {
 		if(!WOW_isnull(info) && !strcmp(info, WOW_INVALID_STRING, true)) {
 			new string[WOW_MAX_SPELL_INFO + 1];
 			new percentString[21 + 26 + 1];
-			format(percentString, sizeof(percentString), "%s", WOW_DisplayReadableFloat(WOW_Spells[spellid][AMOUNT], 2, 0));
+			WOW_strcpy(percentString, WOW_DisplayReadableFloat(WOW_Spells[spellid][AMOUNT], 2, 0));
 			switch(WOW_Spells[spellid][PERCENT_TYPE]) {
-			    case WOW_PERCENT_TYPE_NOT: {format(percentString, sizeof(percentString), "%s", percentString);}
+			    case WOW_PERCENT_TYPE_NOT: {}
 				case WOW_PERCENT_TYPE_TARG_MAX_HP_AP: {format(percentString, sizeof(percentString), "%s\% of target's max health + armour", percentString);}
 				case WOW_PERCENT_TYPE_CAST_MAX_HP_AP: {format(percentString, sizeof(percentString), "%s\% of caster's max health + armour", percentString);}
 				case WOW_PERCENT_TYPE_TARG_CUR_HP_AP: {format(percentString, sizeof(percentString), "%s\% of target's remaining health + armour", percentString);}
@@ -2109,7 +2099,7 @@ stock WOW_SetSpellInfo(spellid, info[]) {
 					format(castTimeString, sizeof(castTimeString), "%s second", WOW_DisplayReadableFloat(float(WOW_Spells[spellid][CAST_TIME]) / 1000, 2, 0));
 				}
 			} else {
-				format(castTimeString, sizeof(castTimeString), "%s", "Instant");
+				WOW_strcpy(castTimeString, "Instant");
 			}
 		    switch(WOW_Spells[spellid][TYPE]) {
 				case WOW_SPELL_TYPE_CUSTOM: {format(string, sizeof(string), "Has a custom effect. %s cast.", castTimeString);}
@@ -2117,11 +2107,11 @@ stock WOW_SetSpellInfo(spellid, info[]) {
 				case WOW_SPELL_TYPE_HEAL: {format(string, sizeof(string), "Heals %s. %s cast.", percentString, castTimeString);}
 				case WOW_SPELL_TYPE_CROWD_CONTROL: {format(string, sizeof(string), "Applies a crowd control effect. %s cast.", percentString, castTimeString);}
 			}
-		    format(WOW_Spells[spellid][INFO], WOW_MAX_SPELL_INFO + 1, "%s", string);
+		    WOW_strcpy(WOW_Spells[spellid][INFO], string, WOW_MAX_SPELL_INFO + 1);
 		}
 		//If the user did provide info, use that one
 		else {
-		    format(WOW_Spells[spellid][INFO], WOW_MAX_SPELL_INFO + 1, "%s", info);
+		    WOW_strcpy(WOW_Spells[spellid][INFO], info, WOW_MAX_SPELL_INFO + 1);
 		}
 		return 1;
 	}
