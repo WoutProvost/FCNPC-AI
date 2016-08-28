@@ -21,7 +21,8 @@
 /*
 //Boss
 native WOW_CreateBossFull(name[], fullName[] = WOW_INVALID_STRING, iconid = WOW_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL, Float:maxHealth = 100000.0, Float:rangeDisplay = 100.0, Float:rangeAggro = 20.0, bool:displayIfDead = true, Float:currentHealth = -1.0, targetid = INVALID_PLAYER_ID
-, moveType = MOVE_TYPE_SPRINT, Float:moveSpeed = MOVE_SPEED_AUTO, bool:moveUseMapAndreas = false, Float:moveRadius = 0.0, bool:moveSetAngle = true, Float:rangedAttackDistance = 20.0, rangedAttackDelay = -1, bool:rangedAttackSetAngle = true, Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = false);
+, moveType = MOVE_TYPE_SPRINT, Float:moveSpeed = MOVE_SPEED_AUTO, bool:moveUseMapAndreas = false, Float:moveRadius = 0.0, bool:moveSetAngle = true, Float:rangedAttackDistance = 20.0, rangedAttackDelay = -1, bool:rangedAttackSetAngle = true, Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = false
+, bool:allowNPCTargets = false);
 native WOW_CreateBoss(name[]);
 native WOW_GetBossFullName(bossid, name[], len);
 native WOW_SetBossFullName(bossid, name[]);
@@ -45,6 +46,8 @@ native WOW_GetBossRangedAttackInfo(bossid, &Float:distance, &delay, &bool:setAng
 native WOW_SetBossRangedAttackInfo(bossid, Float:distance = 20.0, delay = -1, bool:setAngle = true);
 native WOW_GetBossMeleeAttackInfo(bossid, &Float:distance, &delay, &bool:useFightStyle);
 native WOW_SetBossMeleeAttackInfo(bossid, Float:distance = 1.0, delay = -1, bool:useFightStyle = false);
+native WOW_GetBossAllowNPCTargets(bossid);
+native WOW_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarget = false);
 native WOW_DestroyBoss(bossid);
 native WOW_DestroyAllBosses();
 native bool:WOW_IsValidBoss(bossid);
@@ -191,6 +194,7 @@ enum WOW_ENUM_BOSS {
 	Float:MELEE_ATTACK_DISTANCE,
 	MELEE_ATTACK_DELAY,
 	bool:MELEE_ATTACK_USE_FIGHT_STYLE,
+	bool:ALLOW_NPC_TARGETS,
 	//Cannot be set by the user
 	NPCID,
 	Text:TEXTDRAW[WOW_MAX_BOSS_TEXTDRAWS]
@@ -931,6 +935,7 @@ static WOW_ResetBossStats(bossid) {
 		WOW_Bosses[bossid][MELEE_ATTACK_DISTANCE] = 0.0;
 		WOW_Bosses[bossid][MELEE_ATTACK_DELAY] = 0;
 		WOW_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE] = false;
+		WOW_Bosses[bossid][ALLOW_NPC_TARGETS] = false;
 		WOW_Bosses[bossid][NPCID] = INVALID_PLAYER_ID;
 	}
 }
@@ -994,7 +999,7 @@ static WOW_DestroyBossNoFCNPC_Destroy(bossid) {
 stock WOW_CreateBossFull(name[], fullName[] = WOW_INVALID_STRING, iconid = WOW_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL, Float:maxHealth = 100000.0,
 Float:rangeDisplay = 100.0, Float:rangeAggro = 20.0, bool:displayIfDead = true, Float:currentHealth = -1.0, targetid = INVALID_PLAYER_ID,
 moveType = MOVE_TYPE_SPRINT, Float:moveSpeed = MOVE_SPEED_AUTO, bool:moveUseMapAndreas = false, Float:moveRadius = 0.0, bool:moveSetAngle = true, Float:rangedAttackDistance = 20.0, rangedAttackDelay = -1, bool:rangedAttackSetAngle = true,
-Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = false) {
+Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = false, bool:allowNPCTargets = false) {
 	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
 		if(WOW_Bosses[bossid][NPCID] == INVALID_PLAYER_ID) {
 			WOW_Bosses[bossid][NPCID] = FCNPC_Create(name);
@@ -1010,6 +1015,7 @@ Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFight
 				WOW_SetBossMoveInfo(bossid, moveType, moveSpeed, moveUseMapAndreas, moveRadius, moveSetAngle);
 				WOW_SetBossRangedAttackInfo(bossid, rangedAttackDistance, rangedAttackDelay, rangedAttackSetAngle);
 				WOW_SetBossMeleeAttackInfo(bossid, meleeAttackDistance, meleeAttackDelay, meleeAttackUseFightStyle);
+				WOW_SetBossAllowNPCTargets(bossid, allowNPCTargets, false);
 		    	return bossid;
 		    } else {
 		        //FCNPC_Create failed
@@ -1367,6 +1373,25 @@ stock WOW_SetBossMeleeAttackInfo(bossid, Float:distance = 1.0, delay = -1, bool:
 	}
 	return 0;
 }
+stock WOW_GetBossAllowNPCTargets(bossid) {
+	if(WOW_IsValidBoss(bossid)) {
+		return WOW_Bosses[bossid][ALLOW_NPC_TARGETS];
+	}
+	return -1;
+}
+stock WOW_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarget = false) {
+	if(WOW_IsValidBoss(bossid)) {
+		WOW_Bosses[bossid][ALLOW_NPC_TARGETS] = allowNPCTargets;
+		if(checkForTarget) {
+		    if(!allowNPCTargets && WOW_Bosses[bossid][TARGET] != INVALID_PLAYER_ID && IsPlayerNPC(WOW_Bosses[bossid][TARGET])) {
+		        //Reset target
+				WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
+		    }
+		}
+		return 1;
+	}
+	return 0;
+}
 stock WOW_GetBossNPCId(bossid) {
 	if(WOW_IsValidBoss(bossid)) {
 		return WOW_Bosses[bossid][NPCID];
@@ -1443,7 +1468,7 @@ static WOW_GetClosestPlayerToTakeAggro(bossid) {
     	new Float:playerX, Float:playerY, Float:playerZ;
     	new Float:bossRange;
 		for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
-		    if(WOW_IsBossValidForPlayer(playerid, bossid)) {
+		    if(WOW_IsBossValidForPlayer(playerid, bossid) && (!IsPlayerNPC(playerid) || WOW_Bosses[bossid][ALLOW_NPC_TARGETS])) {
 		        if(!IsPlayerNPC(playerid)) {
 		        	GetPlayerPos(playerid, playerX, playerY, playerZ);
 		        } else {
