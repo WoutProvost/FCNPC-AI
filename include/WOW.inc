@@ -55,10 +55,11 @@ native bool:WOW_IsBossValidForPlayer(playerid, bossid);
 native bool:WOW_IsPlayerInDisplayRange(playerid, bossid);
 native bool:WOW_IsPlayerInAggroRange(playerid, bossid);
 native bool:WOW_BossHasMeleeWeapons(bossid);
-native WOW_GetBossNPCId(bossid);
+native WOW_GetBossNPCID(bossid);
+native WOW_GetBossPlayerID(bossid);
 native Text:WOW_GetBossTextDraw(bossid, textdraw);
 native WOW_GetBossCurrentHealthPercent(bossid);
-native WOW_GetBossIdFromPlayerid(playerid);
+native WOW_GetBossIDFromPlayerID(playerid);
 native WOW_DamageBoss(bossid, damagerid, Float:amount);
 native WOW_HealBoss(bossid, healerid, Float:amount);
 
@@ -495,7 +496,7 @@ static WOW_ExitScript() {
 }
 
 public OnPlayerDisconnect(playerid, reason) {
-    new bossid = WOW_GetBossIdFromPlayerid(playerid);
+    new bossid = WOW_GetBossIDFromPlayerID(playerid);
     if(WOW_IsValidBoss(bossid)) {
 		WOW_DestroyBossNoFCNPC_Destroy(bossid);
     }
@@ -596,7 +597,7 @@ public OnPlayerUpdate(playerid)
 */
 public FCNPC_OnRespawn(npcid)
 {
-	new bossid = WOW_GetBossIdFromPlayerid(npcid);
+	new bossid = WOW_GetBossIDFromPlayerID(npcid);
 	if(WOW_IsValidBoss(bossid)) {
 	    if(WOW_Bosses[bossid][CUR_HEALTH] != 0) {
 			//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). WOW_SetBossTargetWithReason doesn't take care of this for various reasons.
@@ -626,7 +627,7 @@ public FCNPC_OnRespawn(npcid)
 public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss)
 {
 	new ret = 1;
-	new bossid = WOW_GetBossIdFromPlayerid(npcid);
+	new bossid = WOW_GetBossIDFromPlayerID(npcid);
 	if(WOW_IsValidBoss(bossid)) {
 		ret = WOW_DamageBoss(bossid, damagerid, health_loss);
 	}
@@ -646,7 +647,7 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 #endif
 stock WOW_DamageBoss(bossid, damagerid, Float:amount) {
 	if(WOW_IsValidBoss(bossid) && (IsPlayerConnected(damagerid) || damagerid == INVALID_PLAYER_ID)) {
-	    new bossplayerid = WOW_GetBossNPCId(bossid);
+	    new bossplayerid = WOW_GetBossNPCID(bossid);
 		//2nd part of condition: if the npc is dead, this function can still be called before the OnDeath callback gets called (mainly when shot with fast guns: minigun, ...)
 		//3rd part of condition: damage not inflicted by players (falling, ...)
 		//4th part of condition: neccesary to reject invalid damage done: the NPC is visible and thus damagable in other interiors
@@ -670,7 +671,7 @@ stock WOW_DamageBoss(bossid, damagerid, Float:amount) {
 }
 stock WOW_HealBoss(bossid, healerid, Float:amount) {
 	if(WOW_IsValidBoss(bossid) && (IsPlayerConnected(healerid) || healerid == INVALID_PLAYER_ID)) {
-		new bossplayerid = WOW_GetBossNPCId(bossid);
+		new bossplayerid = WOW_GetBossNPCID(bossid);
 		if(FCNPC_IsSpawned(bossplayerid) && !FCNPC_IsDead(bossplayerid)) {
 			//Don't heal above MAX_HEALTH
 			if(WOW_Bosses[bossid][MAX_HEALTH] - WOW_Bosses[bossid][CUR_HEALTH] <= amount) {
@@ -685,7 +686,7 @@ stock WOW_HealBoss(bossid, healerid, Float:amount) {
 }
 public FCNPC_OnDeath(npcid, killerid, weaponid)
 {
-	new bossid = WOW_GetBossIdFromPlayerid(npcid);
+	new bossid = WOW_GetBossIDFromPlayerID(npcid);
 	if(WOW_IsValidBoss(bossid)) {
 		//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). WOW_SetBossTargetWithReason doesn't take care of this for various reasons.
 		if(WOW_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && WOW_IsBossCasting(bossid)) {
@@ -1392,11 +1393,14 @@ stock WOW_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarg
 	}
 	return 0;
 }
-stock WOW_GetBossNPCId(bossid) {
+stock WOW_GetBossNPCID(bossid) {
 	if(WOW_IsValidBoss(bossid)) {
 		return WOW_Bosses[bossid][NPCID];
 	}
 	return INVALID_PLAYER_ID;
+}
+stock WOW_GetBossPlayerID(bossid) {
+	return WOW_GetBossNPCID(bossid);
 }
 stock Text:WOW_GetBossTextDraw(bossid, textdraw) {
 	if(WOW_IsValidBoss(bossid) && textdraw >= 0 && textdraw < WOW_MAX_BOSS_TEXTDRAWS) {
@@ -1410,7 +1414,7 @@ stock WOW_GetBossCurrentHealthPercent(bossid) {
 	}
 	return -1;
 }
-stock WOW_GetBossIdFromPlayerid(playerid) {
+stock WOW_GetBossIDFromPlayerID(playerid) {
 	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
 	    if(playerid == WOW_Bosses[bossid][NPCID]) {
 	        return bossid;
@@ -1422,7 +1426,7 @@ forward bool:WOW_IsBossValidForPlayer(playerid, bossid); //Silence 'used before 
 stock bool:WOW_IsBossValidForPlayer(playerid, bossid) {
 	if(IsPlayerConnected(playerid) && WOW_IsValidBoss(bossid)) {
 	    new playerState = GetPlayerState(playerid);
-	    new bossplayerid = WOW_GetBossNPCId(bossid);
+	    new bossplayerid = WOW_GetBossNPCID(bossid);
 		if(bossplayerid != playerid && FCNPC_IsSpawned(bossplayerid) && (!FCNPC_IsDead(bossplayerid) || WOW_Bosses[bossid][DISPLAY_IF_DEAD])) {
 		    new bossInterior = FCNPC_GetInterior(bossplayerid);
 		    new bossWorld = FCNPC_GetVirtualWorld(bossplayerid);
@@ -1620,7 +1624,7 @@ static WOW_IncreaseBossCastProgress(bossid) {
 }
 stock bool:WOW_BossHasMeleeWeapons(bossid) {
 	if(WOW_IsValidBoss(bossid)) {
-		new weaponid = FCNPC_GetWeapon(WOW_GetBossNPCId(bossid));
+		new weaponid = FCNPC_GetWeapon(WOW_GetBossNPCID(bossid));
 		if(weaponid >= 0 && weaponid <= 15) {
 	 		return true;
 		}
@@ -1639,7 +1643,7 @@ stock bool:WOW_BossHasMeleeWeapons(bossid) {
 //Is casting & !canmove & !canattack & not in attack range	==> nothing
 static WOW_BossAttackTarget(bossid, targetid) {
 	if(WOW_IsValidBoss(bossid) && WOW_IsBossValidForPlayer(targetid, bossid)) {
-		new bossplayerid = WOW_GetBossNPCId(bossid);
+		new bossplayerid = WOW_GetBossNPCID(bossid);
 		new Float:bossX, Float:bossY, Float:bossZ;
 		FCNPC_GetPosition(bossplayerid, bossX, bossY, bossZ);
 		new Float:distance = GetPlayerDistanceFromPoint(targetid, bossX, bossY, bossZ);
@@ -1684,7 +1688,7 @@ static WOW_BossAttackTarget(bossid, targetid) {
 }
 static WOW_BossAttackAim(bossid, targetid) {
 	if(WOW_IsValidBoss(bossid) && WOW_IsBossValidForPlayer(targetid, bossid)) {
-	    new bossplayerid = WOW_GetBossNPCId(bossid);
+	    new bossplayerid = WOW_GetBossNPCID(bossid);
 		new bool:isMelee = WOW_BossHasMeleeWeapons(bossid);
 		if(FCNPC_IsMoving(bossplayerid)) {
  			FCNPC_Stop(bossplayerid);
@@ -1708,7 +1712,7 @@ static WOW_BossAttackAim(bossid, targetid) {
 }
 static WOW_BossAttackMove(bossid, targetid) {
 	if(WOW_IsValidBoss(bossid) && WOW_IsBossValidForPlayer(targetid, bossid)) {
-	    new bossplayerid = WOW_GetBossNPCId(bossid);
+	    new bossplayerid = WOW_GetBossNPCID(bossid);
 	    if(FCNPC_IsAiming(bossplayerid)) {
 		    FCNPC_StopAim(bossplayerid);
 	    }
@@ -1726,7 +1730,7 @@ static WOW_BossAttackMove(bossid, targetid) {
 }
 static WOW_BossStopAttack(bossid) {
 	if(WOW_IsValidBoss(bossid)) {
-		new bossplayerid = WOW_GetBossNPCId(bossid);
+		new bossplayerid = WOW_GetBossNPCID(bossid);
 	    if(FCNPC_IsMoving(bossplayerid)) {
 			FCNPC_Stop(bossplayerid);
 	    }
