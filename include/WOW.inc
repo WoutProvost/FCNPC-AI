@@ -62,6 +62,8 @@ native WOW_GetBossCurrentHealthPercent(bossid);
 native WOW_GetBossIDFromPlayerID(playerid);
 native WOW_DamageBoss(bossid, damagerid, Float:amount);
 native WOW_HealBoss(bossid, healerid, Float:amount);
+native bool:WOW_IsEncounterStarted(bossid);
+native WOW_StopEncounter(bossid);
 
 //Spell
 native WOW_CreateSpellFull(name[], type = WOW_SPELL_TYPE_CUSTOM, castTime = 2000, Float:amount = 0.0, percentType = WOW_PERCENT_TYPE_CUSTOM, castBarColorDark = 0x645005ff, castBarColorLight = 0xb4820aff, bool:castBarInverted = false, bool:castTimeInverted = false, bool:canMove = false, bool:canAttack = false, info[] = WOW_INVALID_STRING);
@@ -1741,6 +1743,22 @@ static WOW_BossStopAttack(bossid) {
     		FCNPC_StopAttack(bossplayerid);
     	}
     }
+}
+stock bool:WOW_IsEncounterStarted(bossid) {
+	if(WOW_IsValidBoss(bossid)) {
+		if(WOW_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
+	 		return true;
+		}
+	}
+	return false;
+}
+stock WOW_StopEncounter(bossid) {
+	if(WOW_IsValidBoss(bossid)) {
+		//Reset target
+		WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
+		return 1;
+	}
+	return 0;
 }
 
 //Spell
