@@ -64,6 +64,8 @@ native WOW_DamageBoss(bossid, damagerid, Float:amount);
 native WOW_HealBoss(bossid, healerid, Float:amount);
 native bool:WOW_IsEncounterStarted(bossid);
 native WOW_StopEncounter(bossid);
+native WOW_GetClosestBossToDisplay(playerid);
+native WOW_GetClosestPlayerToTakeAggro(bossid);
 
 //Spell
 native WOW_CreateSpellFull(name[], type = WOW_SPELL_TYPE_CUSTOM, castTime = 2000, Float:amount = 0.0, percentType = WOW_PERCENT_TYPE_CUSTOM, castBarColorDark = 0x645005ff, castBarColorLight = 0xb4820aff, bool:castBarInverted = false, bool:castTimeInverted = false, bool:canMove = false, bool:canAttack = false, info[] = WOW_INVALID_STRING);
@@ -1447,7 +1449,7 @@ stock bool:WOW_IsBossValidForPlayer(playerid, bossid) {
 	}
 	return false;
 }
-static WOW_GetClosestBossToDisplay(playerid) {
+stock WOW_GetClosestBossToDisplay(playerid) {
 	new closestBoss = WOW_INVALID_BOSS_ID;
 	new Float:closestBossRange = 0.0;
 	if(IsPlayerConnected(playerid)) {
@@ -1467,7 +1469,7 @@ static WOW_GetClosestBossToDisplay(playerid) {
 	}
 	return closestBoss;
 }
-static WOW_GetClosestPlayerToTakeAggro(bossid) {
+stock WOW_GetClosestPlayerToTakeAggro(bossid) {
 	new closestPlayer = INVALID_PLAYER_ID;
 	new Float:closestPlayerRange = 0.0;
 	if(WOW_IsValidBoss(bossid)) {
