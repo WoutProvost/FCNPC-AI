@@ -43,7 +43,7 @@ If you have any constructive criticism or suggestions, please [share](http://for
 * Switch aggro (Currently the boss will only switch to another player if his target becomes invalid. You can't for example overaggro right now. You can however manually switch the target with [WOW_SetBossTarget](../../wiki/Boss-functions#wow_setbosstarget)).
 * Spell cooldown.
 * Spell range.
-* Exclude players from aggro and display.
+* Exclude players from threat, aggrorange and displayrange.
 * Reduce cast progress a bit when the boss takes damage.
 * Boss adds.
 * [Party](http://wowwiki.wikia.com/wiki/Party)/[raid](http://wowwiki.wikia.com/wiki/Raid_group)-like system
