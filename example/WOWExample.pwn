@@ -656,7 +656,7 @@ public SetBossAtSpawn(bossid) {
 		FCNPC_SetWeaponState(bossplayerid, WEAPONSTATE_MORE_BULLETS);
 	    //FCNPC_SetWeapon(bossplayerid, WEAPON_COLT45);
 		//FCNPC_SetWeaponSkillLevel(bossplayerid, WEAPONSKILL_PISTOL, 0);
-		//FCNPC_SetWeaponInfo(bossplayerid, WEAPON_COLT45, -1, -1, -1);
+		//FCNPC_SetWeaponInfo(bossplayerid, WEAPON_COLT45, -1, -1, -1, 1.0);
 		FCNPC_SetWeapon(bossplayerid, WEAPON_BRASSKNUCKLE);
 		FCNPC_SetFightingStyle(bossplayerid, FIGHT_STYLE_NORMAL);
 		FCNPC_SetHealth(bossplayerid, 100.0);
