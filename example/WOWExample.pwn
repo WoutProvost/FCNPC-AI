@@ -140,7 +140,7 @@ public FCNPC_OnRespawn(npcid)
 
 public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss)
 {
-	new bossid = WOW_GetBossIdFromPlayerid(npcid);
+	new bossid = WOW_GetBossIDFromPlayerID(npcid);
 	if(bossid != WOW_INVALID_BOSS_ID) {
 		if(bossid == BossBigSmoke) {
       /*
@@ -233,7 +233,7 @@ public WOW_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
   			BossYell(bossid, "I wish I'd have stayed home and watched the fucking game", 15891);
 			//Reward for killing the boss
 			new Float:bossX, Float:bossY, Float:bossZ, Float:cashX, Float:cashY, Float:cashZ, Float:radius, Float:angle;
-			new bossplayerid = WOW_GetBossNPCId(bossid);
+			new bossplayerid = WOW_GetBossNPCID(bossid);
 			#if USE_STREAMER == true
 				new bossInterior = FCNPC_GetInterior(bossplayerid);
 			#endif
@@ -279,7 +279,7 @@ public WOW_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 public WOW_OnPlayerGetAggro(playerid, bossid)
 {
 	if(bossid == BossBigSmoke) {
-		new bossPlayerColor = GetPlayerColor(WOW_GetBossNPCId(bossid));
+		new bossPlayerColor = GetPlayerColor(WOW_GetBossNPCID(bossid));
 		new string[144 + 1], fullName[WOW_MAX_BOSS_FULL_NAME + 1];
 		WOW_GetBossFullName(bossid, fullName, sizeof(fullName));
 		format(string, sizeof(string), "{%06x}[Boss] %s whispers:{%06x} Come here, I will get you!", bossPlayerColor >>> 8, fullName, 0xffffffff >>> 8);
@@ -291,7 +291,7 @@ public WOW_OnPlayerGetAggro(playerid, bossid)
 public WOW_OnPlayerLoseAggro(playerid, bossid)
 {
 	if(bossid == BossBigSmoke) {
-		new bossPlayerColor = GetPlayerColor(WOW_GetBossNPCId(bossid));
+		new bossPlayerColor = GetPlayerColor(WOW_GetBossNPCID(bossid));
 		new string[144 + 1], fullName[WOW_MAX_BOSS_FULL_NAME + 1];
 		WOW_GetBossFullName(bossid, fullName, sizeof(fullName));
 		format(string, sizeof(string), "{%06x}[Boss] %s whispers:{%06x} Maybe next time when our paths cross...", bossPlayerColor >>> 8, fullName, 0xffffffff >>> 8);
@@ -303,7 +303,7 @@ public WOW_OnPlayerLoseAggro(playerid, bossid)
 public WOW_OnBossStartCasting(bossid, spellid, targetid)
 {
 	if(bossid == BossBigSmoke) {
-	    new bossplayerid = WOW_GetBossNPCId(bossid);
+	    new bossplayerid = WOW_GetBossNPCID(bossid);
 		FCNPC_ApplyAnimation(bossplayerid, "PARK", "Tai_Chi_Loop", 4.1, 1, 1, 1, 0, 0);
 		if(spellid == SpellCarpetOfFire) {
 		    new spellCastTime = WOW_GetSpellCastTime(spellid);
@@ -406,7 +406,7 @@ public WOW_OnBossStartCasting(bossid, spellid, targetid)
 public WOW_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete)
 {
 	if(bossid == BossBigSmoke) {
-	    new bossplayerid = WOW_GetBossNPCId(bossid);
+	    new bossplayerid = WOW_GetBossNPCID(bossid);
 		FCNPC_ClearAnimations(bossplayerid);
 		if(spellid == SpellCarpetOfFire) {
 			new Float:markX, Float:markY, Float:markZ;
@@ -536,7 +536,7 @@ public BossIdleMessage(bossid) {
 }
 
 stock SendTargetidStartCastMessage(targetid, bossid, spellid) {
-	new bossPlayerColor = GetPlayerColor(WOW_GetBossNPCId(bossid));
+	new bossPlayerColor = GetPlayerColor(WOW_GetBossNPCID(bossid));
 	new string[144 + 1], fullName[WOW_MAX_BOSS_FULL_NAME + 1], spellName[WOW_MAX_SPELL_NAME + 1];
 	WOW_GetBossFullName(bossid, fullName, sizeof(fullName));
 	WOW_GetSpellName(spellid, spellName, sizeof(spellName));
@@ -549,7 +549,7 @@ stock SendTargetidStartCastMessage(targetid, bossid, spellid) {
 }
 
 stock GetRandomPlayerInRange(bossid, bool:vehicleAllowed = true) {
-	new bossplayerid = WOW_GetBossNPCId(bossid);
+	new bossplayerid = WOW_GetBossNPCID(bossid);
 	new Float:bossX, Float:bossY, Float:bossZ, Float:playerDistanceToBoss;
 	new playersInRange[MAX_PLAYERS] = {INVALID_PLAYER_ID, ...};
 	new playersInRangeCount = 0;
@@ -572,7 +572,7 @@ stock GetRandomPlayerInRange(bossid, bool:vehicleAllowed = true) {
 //Display a message in the playercolor of the boss and play a sound, to all players (not npcs) who are in the same interior and world as the boss
 stock BossYell(bossid, message[], soundid = -1, Float:soundX = 0.0, Float:soundY = 0.0, Float:soundZ = 0.0) {
 	new string[144 + 1], fullName[WOW_MAX_BOSS_FULL_NAME + 1];
-	new bossplayerid = WOW_GetBossNPCId(bossid);
+	new bossplayerid = WOW_GetBossNPCID(bossid);
 	new bossInterior = FCNPC_GetInterior(bossplayerid);
 	new bossWorld = FCNPC_GetVirtualWorld(bossplayerid);
 	new bossPlayerColor = GetPlayerColor(bossplayerid);
@@ -590,7 +590,7 @@ stock BossYell(bossid, message[], soundid = -1, Float:soundX = 0.0, Float:soundY
 }
 
 stock BossYellSpawnMessage(npcid) {
-	new bossid = WOW_GetBossIdFromPlayerid(npcid);
+	new bossid = WOW_GetBossIDFromPlayerID(npcid);
 	if(bossid != WOW_INVALID_BOSS_ID) {
 		if(bossid == BossBigSmoke) {
 	        BossYell(bossid, "You've killed me once CJ, however once wasn't enough");
@@ -637,7 +637,7 @@ stock Float:RandomFloatGivenInteger(integer) {
 forward SetBossAtSpawn(bossid);
 public SetBossAtSpawn(bossid) {
 	if(bossid == BossBigSmoke) {
-		new bossplayerid = WOW_GetBossNPCId(bossid);
+		new bossplayerid = WOW_GetBossNPCID(bossid);
 		SetPlayerColor(bossplayerid, 0xff000000); //Alpha values = 00 because we don't want an additional playericon on the map
 		if(!FCNPC_IsSpawned(bossplayerid)) {
 		    FCNPC_Spawn(bossplayerid, 149, 1086.9752, 1074.7021, 10.8382);
@@ -713,7 +713,7 @@ public WallOfFireExplosion(bossid) {
 forward SpellNoPlaceIsSafeExplosion(bossid, spell);
 public SpellNoPlaceIsSafeExplosion(bossid, spell) {
 	new Float:bossX, Float:bossY, Float:bossZ, Float:markX, Float:markY, Float:markZ, Float:radius, Float:angle;
-	new bossplayerid = WOW_GetBossNPCId(bossid);
+	new bossplayerid = WOW_GetBossNPCID(bossid);
     FCNPC_GetPosition(bossplayerid, bossX, bossY, bossZ);
     radius = RandomFloatGivenInteger(50) + 1.0;
     angle = RandomFloatGivenInteger(360);

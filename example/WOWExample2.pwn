@@ -83,7 +83,7 @@ public OnFilterScriptExit()
 
 public FCNPC_OnReachDestination(npcid)
 {
-	if(WOW_GetBossIdFromPlayerid(npcid) == BossLeatherface) {
+	if(WOW_GetBossIDFromPlayerID(npcid) == BossLeatherface) {
 	    if(IdleCount != -1) {
 			new Float:x, Float:y, Float:z;
 			FCNPC_GetPosition(npcid, x, y, z);
@@ -291,7 +291,7 @@ stock DestroyBossObjects() {
 forward SetBossAtSpawn(bossid);
 public SetBossAtSpawn(bossid) {
 	if(bossid == BossLeatherface) {
-		new bossplayerid = WOW_GetBossNPCId(bossid);
+		new bossplayerid = WOW_GetBossNPCID(bossid);
 		SetPlayerColor(bossplayerid, 0xff000000); //Alpha values = 00 because we don't want an additional playericon on the map
 		if(!FCNPC_IsSpawned(bossplayerid)) {
 		    FCNPC_Spawn(bossplayerid, 168, -2820.2534, -1530.3491, 140.8438);
@@ -342,7 +342,7 @@ public SetBossAtSpawn(bossid) {
 
 forward CheckPlayerInRange();
 public CheckPlayerInRange() {
-	new bossplayerid = WOW_GetBossNPCId(BossLeatherface);
+	new bossplayerid = WOW_GetBossNPCID(BossLeatherface);
 	if(bossplayerid != INVALID_PLAYER_ID) {
 	    if(FCNPC_IsDead(bossplayerid)) {
 	        if(DeathCount != -1) {
