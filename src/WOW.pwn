@@ -1420,7 +1420,7 @@ stock WOW_GetBossCurrentHealthPercent(bossid) {
 
 stock WOW_GetBossIDFromNPCID(npcid) {
 	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-	    if(playerid == WOW_Bosses[bossid][NPCID]) {
+	    if(npcid == WOW_Bosses[bossid][NPCID]) {
 	        return bossid;
 		}
 	}
