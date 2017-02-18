@@ -59,6 +59,7 @@ native WOW_GetBossNPCID(bossid);
 native WOW_GetBossPlayerID(bossid);
 native Text:WOW_GetBossTextDraw(bossid, textdraw);
 native WOW_GetBossCurrentHealthPercent(bossid);
+native WOW_GetBossIDFromNPCID(npcid);
 native WOW_GetBossIDFromPlayerID(playerid);
 native WOW_DamageBoss(bossid, damagerid, Float:amount);
 native WOW_HealBoss(bossid, healerid, Float:amount);
@@ -498,7 +499,7 @@ static WOW_ExitScript() {
 }
 
 public OnPlayerDisconnect(playerid, reason) {
-    new bossid = WOW_GetBossIDFromPlayerID(playerid);
+    new bossid = WOW_GetBossIDFromNPCID(playerid);
     if(WOW_IsValidBoss(bossid)) {
 		WOW_DestroyBossNoFCNPC_Destroy(bossid);
     }
@@ -599,7 +600,7 @@ public OnPlayerUpdate(playerid)
 */
 public FCNPC_OnRespawn(npcid)
 {
-	new bossid = WOW_GetBossIDFromPlayerID(npcid);
+	new bossid = WOW_GetBossIDFromNPCID(npcid);
 	if(WOW_IsValidBoss(bossid)) {
 	    if(WOW_Bosses[bossid][CUR_HEALTH] != 0) {
 			//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). WOW_SetBossTargetWithReason doesn't take care of this for various reasons.
@@ -629,7 +630,7 @@ public FCNPC_OnRespawn(npcid)
 public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss)
 {
 	new ret = 1;
-	new bossid = WOW_GetBossIDFromPlayerID(npcid);
+	new bossid = WOW_GetBossIDFromNPCID(npcid);
 	if(WOW_IsValidBoss(bossid)) {
 		ret = WOW_DamageBoss(bossid, damagerid, health_loss);
 	}
@@ -688,7 +689,7 @@ stock WOW_HealBoss(bossid, healerid, Float:amount) {
 }
 public FCNPC_OnDeath(npcid, killerid, weaponid)
 {
-	new bossid = WOW_GetBossIDFromPlayerID(npcid);
+	new bossid = WOW_GetBossIDFromNPCID(npcid);
 	if(WOW_IsValidBoss(bossid)) {
 		//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). WOW_SetBossTargetWithReason doesn't take care of this for various reasons.
 		if(WOW_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && WOW_IsBossCasting(bossid)) {
@@ -1416,13 +1417,17 @@ stock WOW_GetBossCurrentHealthPercent(bossid) {
 	}
 	return -1;
 }
-stock WOW_GetBossIDFromPlayerID(playerid) {
+
+stock WOW_GetBossIDFromNPCID(npcid) {
 	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
 	    if(playerid == WOW_Bosses[bossid][NPCID]) {
 	        return bossid;
 		}
 	}
-	return WOW_INVALID_BOSS_ID;
+	return WOW_INVALID_BOSS_ID;	
+}
+stock WOW_GetBossIDFromPlayerID(playerid) {
+	return WOW_GetBossIDFromNPCID(playerid);
 }
 forward bool:WOW_IsBossValidForPlayer(playerid, bossid); //Silence 'used before declaration' warning
 stock bool:WOW_IsBossValidForPlayer(playerid, bossid) {
