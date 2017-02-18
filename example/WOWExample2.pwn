@@ -59,7 +59,7 @@ public OnFilterScriptInit()
 
 public OnFilterScriptExit()
 {
-	WOW_DestroyBoss(BossLeatherface);
+	//WOW_DestroyBoss(BossLeatherface); //The include does this automatically in this callback
 	BossLeatherface = WOW_INVALID_BOSS_ID;
 	KillTimer(PlayerInRangeTimer);
 	PlayerInRangeTimer = WOW_INVALID_TIMER_ID;

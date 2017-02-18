@@ -71,19 +71,19 @@ public OnFilterScriptInit()
 
 public OnFilterScriptExit()
 {
-	WOW_DestroyBoss(BossBigSmoke);
+	//WOW_DestroyBoss(BossBigSmoke); //The include does this automatically in this callback
 	BossBigSmoke = WOW_INVALID_BOSS_ID;
-	WOW_DestroySpell(SpellCarpetOfFire);
+	//WOW_DestroySpell(SpellCarpetOfFire); //The include does this automatically in this callback
 	SpellCarpetOfFire = WOW_INVALID_SPELL_ID;
-	WOW_DestroySpell(SpellNoPlaceIsSafe);
+	//WOW_DestroySpell(SpellNoPlaceIsSafe); //The include does this automatically in this callback
 	SpellNoPlaceIsSafe = WOW_INVALID_SPELL_ID;
-	WOW_DestroySpell(SpellWallOfFire);
+	//WOW_DestroySpell(SpellWallOfFire); //The include does this automatically in this callback
 	SpellWallOfFire = WOW_INVALID_SPELL_ID;
-	WOW_DestroySpell(SpellMarkOfDeath);
+	//WOW_DestroySpell(SpellMarkOfDeath); //The include does this automatically in this callback
 	SpellMarkOfDeath = WOW_INVALID_SPELL_ID;
-	WOW_DestroySpell(SpellFlightOfTheBumblebee);
+	//WOW_DestroySpell(SpellFlightOfTheBumblebee); //The include does this automatically in this callback
 	SpellFlightOfTheBumblebee = WOW_INVALID_SPELL_ID;
-	WOW_DestroySpell(SpellRockOfLife);
+	//WOW_DestroySpell(SpellRockOfLife); //The include does this automatically in this callback
 	SpellRockOfLife = WOW_INVALID_SPELL_ID;
 	for(new groundMark = 0, groundMarkCount = sizeof(GroundMarks); groundMark < groundMarkCount; groundMark++) {
 		#if USE_STREAMER == false
