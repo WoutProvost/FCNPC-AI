@@ -140,7 +140,7 @@ public FCNPC_OnRespawn(npcid)
 
 public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss)
 {
-	new bossid = WOW_GetBossIDFromPlayerID(npcid);
+	new bossid = WOW_GetBossIDFromNPCID(npcid);
 	if(bossid != WOW_INVALID_BOSS_ID) {
 		if(bossid == BossBigSmoke) {
       /*
@@ -590,7 +590,7 @@ stock BossYell(bossid, message[], soundid = -1, Float:soundX = 0.0, Float:soundY
 }
 
 stock BossYellSpawnMessage(npcid) {
-	new bossid = WOW_GetBossIDFromPlayerID(npcid);
+	new bossid = WOW_GetBossIDFromNPCID(npcid);
 	if(bossid != WOW_INVALID_BOSS_ID) {
 		if(bossid == BossBigSmoke) {
 	        BossYell(bossid, "You've killed me once CJ, however once wasn't enough");

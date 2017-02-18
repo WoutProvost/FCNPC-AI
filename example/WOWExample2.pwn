@@ -83,7 +83,7 @@ public OnFilterScriptExit()
 
 public FCNPC_OnReachDestination(npcid)
 {
-	if(WOW_GetBossIDFromPlayerID(npcid) == BossLeatherface) {
+	if(WOW_GetBossIDFromNPCID(npcid) == BossLeatherface) {
 	    if(IdleCount != -1) {
 			new Float:x, Float:y, Float:z;
 			FCNPC_GetPosition(npcid, x, y, z);
