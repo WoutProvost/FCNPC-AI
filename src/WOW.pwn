@@ -613,7 +613,7 @@ public FCNPC_OnRespawn(npcid)
 			if(WOW_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && WOW_IsBossCasting(bossid)) {
 		      	WOW_StopBossCasting(bossid);
 			}
-			//Reset target
+			//Reset target & threat for all players
 			WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
 	    } else {
 			WOW_SetBossCurrentHealth(bossid, WOW_Bosses[bossid][MAX_HEALTH]);
@@ -701,7 +701,7 @@ public FCNPC_OnDeath(npcid, killerid, weaponid)
 		if(WOW_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && WOW_IsBossCasting(bossid)) {
 	      	WOW_StopBossCasting(bossid);
 		}
-	    //Reset target
+	    //Reset target & threat for all players
 		WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 2);
 		//If the boss was killed with FCNPC_Kill or FCNPC_SetHealth with value <= 0.0, not by taking damage
 		WOW_SetBossCurrentHealth(bossid, 0);
@@ -946,6 +946,9 @@ static WOW_ResetBossStats(bossid) {
 		WOW_Bosses[bossid][MELEE_ATTACK_DELAY] = 0;
 		WOW_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE] = false;
 		WOW_Bosses[bossid][ALLOW_NPC_TARGETS] = false;
+		for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
+			WOW_Bosses[bossid][THREAT][playerid] = 0;
+		}
 		WOW_Bosses[bossid][NPCID] = INVALID_PLAYER_ID;
 	}
 }
@@ -985,7 +988,7 @@ static WOW_DestroyBossNoFCNPC_Destroy(bossid) {
 		if(WOW_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && WOW_IsBossCasting(bossid)) {
 	      	WOW_StopBossCasting(bossid);
 		}
-		//Reset target
+		//Reset target & threat for all players
 		WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0); //WOW_Casting gets reset in here, so we don't need to reset it manually again
 		TextDrawDestroy(WOW_Bosses[bossid][TEXTDRAW][0]);
 		TextDrawDestroy(WOW_Bosses[bossid][TEXTDRAW][1]);
@@ -1307,6 +1310,8 @@ static WOW_SetBossTargetWithReason(bossid, newtargetid, reason, bool:checkForAgg
 			            }
 	      				WOW_BossStopAttack(bossid);
 	      				WOW_StopBossCasting(bossid);
+	      				//Reset threat
+	      				WOW_ResetBossThreatForAll(bossid);
 						CallRemoteFunction("WOW_OnBossEncounterStop", "dbd", bossid, reasonDeath, oldtargetid);
 					}
 				}
@@ -1771,7 +1776,7 @@ stock bool:WOW_IsEncounterStarted(bossid) {
 }
 stock WOW_StopEncounter(bossid) {
 	if(WOW_IsValidBoss(bossid)) {
-		//Reset target
+		//Reset target & threat for all players
 		WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
 		return 1;
 	}

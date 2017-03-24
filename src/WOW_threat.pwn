@@ -1,41 +1,25 @@
-public FCNPC_OnRespawn(npcid)
-{
-			//Reset target & threat
-}
-
 stock WOW_DamageBoss(bossid, damagerid, Float:amount) {
 			WOW_SetBossTargetWithReason(bossid, damagerid, 1); //Called in WOW_SetBossThreatForPlayer
 			//WOW_SetBossThreatForPlayer(bossid, damagerid, WOW_Bosses[bossid][THREAT][damagerid] + floatround(amount, floatround_floor); //Floor, because the next threat value hasn't been reached yet
 			//TODO increase threat for damagerid and possibly switch target
 }
 
-public FCNPC_OnDeath(npcid, killerid, weaponid)
-{
-	    //Reset target & threat
-		WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 2);
-}
-
-forward WOW_Update();
 public WOW_Update() {
 				WOW_SetBossTargetWithReason(bossid, WOW_GetClosestPlayerToTakeAggro(bossid), 3);
 				//TODO if first target, increase threat of closestPlayerid to undefined amount and set target
 				//TODO if not first target, set target to player with highest threat, if available, else set closestPlayerid
 }
 
-static WOW_ResetBossStats(bossid) {
-		for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
-			WOW_Bosses[bossid][THREAT][playerid] = 0;
-		}
-}
-
-static WOW_DestroyBossNoFCNPC_Destroy(bossid) {
-		//Reset target & threat
-		WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0); //WOW_Casting gets reset in here, so we don't need to reset it manually again
-}
-
 stock WOW_SetBossAggroRange(bossid, Float:range, bool:checkForTarget = false) {
+				//Reset target
 				WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
 				//TODO again, swith to player with highest threat and in range
+}
+
+stock WOW_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarget = false) {
+				//Reset target
+				WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
+				//TODO again, switch to player (not NPC) with highest threat
 }
 
 stock WOW_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false) {
@@ -43,20 +27,15 @@ stock WOW_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false) {
 	//TODO what to do with threat?
 }
 
+/*
+Reason:
+- 0: reset (invalid new target)
+- 1: bossDamaged (valid new target, invalid new target)
+- 2: bossDeath (invalid new target)
+- 3: target aggro (valid new target, invalid new target)
+- 4: explicit set (valid new target, invalid new target, checkForAggroRange)
+*/
 static WOW_SetBossTargetWithReason(bossid, newtargetid, reason, bool:checkForAggroRange = false) {
-	      				//Reset threat
-	      				WOW_ResetBossThreatForAll(bossid);
-						CallRemoteFunction("WOW_OnBossEncounterStop", "dbd", bossid, reasonDeath, oldtargetid);
-}
-
-
-stock WOW_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarget = false) {
-				WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
-				//TODO again, switch to player (not NPC) with highest threat
-}
-
-stock WOW_StopEncounter(bossid) {
-		WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
 }
 
 //TODO SCENARIO'S:
@@ -214,3 +193,4 @@ stock WOW_ResetBossThreatForAll(bossid) {
 	return 0;
 }
 //TODO opnieuw problemen, wanneer wordt het encounter nu gestopt bijvoorbeeld
+//TODO ook threat callback oproepen? of enkel als de value verandert?
