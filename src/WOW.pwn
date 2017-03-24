@@ -48,6 +48,9 @@ native WOW_GetBossMeleeAttackInfo(bossid, &Float:distance, &delay, &bool:useFigh
 native WOW_SetBossMeleeAttackInfo(bossid, Float:distance = 1.0, delay = -1, bool:useFightStyle = false);
 native WOW_GetBossAllowNPCTargets(bossid);
 native WOW_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarget = false);
+native WOW_GetBossThreatForPlayer(bossid, playerid);
+native WOW_SetBossThreatForPlayer(bossid, playerid, threat, bool:checkForAggroRange = false);
+native WOW_ResetBossThreatForAll(bossid);
 native WOW_DestroyBoss(bossid);
 native WOW_DestroyAllBosses();
 native bool:WOW_IsValidBoss(bossid);
@@ -124,6 +127,8 @@ forward WOW_OnBossEncounterStart(bossid, bool:reasonShot, firstTarget);
 forward WOW_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget);
 forward WOW_OnPlayerGetAggro(playerid, bossid);
 forward WOW_OnPlayerLoseAggro(playerid, bossid);
+forward WOW_OnPlayerIncreaseThreat(playerid, bossid, amount);
+forward WOW_OnPlayerDecreaseThreat(playerid, bossid, amount);
 
 //Casting
 forward WOW_OnBossStartCasting(bossid, spellid, targetid);
@@ -199,6 +204,7 @@ enum WOW_ENUM_BOSS {
 	MELEE_ATTACK_DELAY,
 	bool:MELEE_ATTACK_USE_FIGHT_STYLE,
 	bool:ALLOW_NPC_TARGETS,
+	THREAT[MAX_PLAYERS],
 	//Cannot be set by the user
 	NPCID,
 	Text:TEXTDRAW[WOW_MAX_BOSS_TEXTDRAWS]
@@ -1395,6 +1401,12 @@ stock WOW_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarg
 		return 1;
 	}
 	return 0;
+}
+stock WOW_GetBossThreatForPlayer(bossid, playerid) {
+}
+stock WOW_SetBossThreatForPlayer(bossid, playerid, threat, bool:checkForAggroRange = false) {
+}
+stock WOW_ResetBossThreatForAll(bossid) {
 }
 stock WOW_GetBossNPCID(bossid) {
 	if(WOW_IsValidBoss(bossid)) {
