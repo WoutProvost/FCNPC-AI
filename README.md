@@ -2,7 +2,7 @@ FCNPC Boss
 ==========
 
 Introduction
--------------
+------------
 
 A SA-MP include that makes it possible to create boss fights like in [World of Warcraft](https://worldofwarcraft.com/en-us/start).
 
@@ -79,4 +79,4 @@ See [license](./LICENSE.md).
 Credits
 -------
 
-See [license](./CREDITS.md).
+See [credits](./CREDITS.md).
