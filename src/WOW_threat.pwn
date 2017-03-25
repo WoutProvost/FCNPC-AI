@@ -1,30 +1,43 @@
+/*
+WOW Summary:
+- aggro: who the mob is attacking
+- threat: a numeric value that each mob has towards each player on its hate list
+- the target who has aggro is not necessarily the player on its threat list with the most threat!
+- 1 point of damage results in 1 point of threat
+- When player0 has aggro, player1 must do more than just exceed the threat of player0.
+For player1 to gain aggro in melee range he must exceed 110% of player0's threat.
+For player1 to gain aggro out melee range he must exceed 130% of player0's threat.
+- There is no threat associated with body-pulling! The mob just targets the player without the player generating threat.
+- When using taunt, the player is given as much threat as the player who has aggro.
+When the taunting player has more threat, but not aggro (due to the 110% or 130% needed), his threat will not lower.
+There could be a player3 who has more threat than the aggro target (due to the 110% or 130% needed), but the taunting player will still only get the threat value of the aggro target. Player3 could then easily overaggro the taunting player.
+The mob will recalculate his aggro target, based upon which player was on the hate list first! Because now 2 players will have the same threat values, the player that was first on the hatelist will have precedence!
+*/
+
 stock WOW_DamageBoss(bossid, damagerid, Float:amount) {
-			WOW_SetBossTargetWithReason(bossid, damagerid, 1); //Called in WOW_SetBossThreatForPlayer
-			//WOW_SetBossThreatForPlayer(bossid, damagerid, WOW_Bosses[bossid][THREAT][damagerid] + floatround(amount, floatround_floor); //Floor, because the next threat value hasn't been reached yet
-			//TODO increase threat for damagerid and possibly switch target
+	WOW_SetBossTargetWithReason(bossid, damagerid, 1); //Called in WOW_SetBossThreatForPlayer
+	//WOW_SetBossThreatForPlayer(bossid, damagerid, WOW_Bosses[bossid][THREAT][damagerid] + floatround(amount, floatround_floor); //Floor, because the next threat value hasn't been reached yet
 }
 
 public WOW_Update() {
-				WOW_SetBossTargetWithReason(bossid, WOW_GetClosestPlayerToTakeAggro(bossid), 3);
-				//TODO if first target, increase threat of closestPlayerid to undefined amount and set target
-				//TODO if not first target, set target to player with highest threat, if available, else set closestPlayerid
+	WOW_SetBossTargetWithReason(bossid, WOW_GetClosestPlayerToTakeAggro(bossid), 3);
 }
 
 stock WOW_SetBossAggroRange(bossid, Float:range, bool:checkForTarget = false) {
-				//Reset target
-				WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
-				//TODO again, swith to player with highest threat and in range
+	//Reset target
+	WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
+	//TODO again, swith to player with highest threat and in range
 }
 
 stock WOW_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarget = false) {
-				//Reset target
-				WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
-				//TODO again, switch to player (not NPC) with highest threat
+	//Reset target
+	WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
+	//TODO again, switch to player (not NPC) with highest threat and in range
 }
 
 stock WOW_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false) {
 	return WOW_SetBossTargetWithReason(bossid, playerid, 4, checkForAggroRange);
-	//TODO what to do with threat?
+	//TODO what to do with threat, base this on taunt from WOW?
 }
 
 /*
@@ -194,3 +207,5 @@ stock WOW_ResetBossThreatForAll(bossid) {
 }
 //TODO opnieuw problemen, wanneer wordt het encounter nu gestopt bijvoorbeeld
 //TODO ook threat callback oproepen? of enkel als de value verandert?
+//TODO onplayerstreamout of fcnpc versie reset threat of niet, zodat het encounter blijft doorgaan?
+//TODO if no player with highest threat found, revert to closest player within aggro range
