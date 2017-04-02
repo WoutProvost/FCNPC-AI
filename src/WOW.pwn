@@ -1408,9 +1408,10 @@ stock WOW_GetBossNPCID(bossid) {
 	}
 	return INVALID_PLAYER_ID;
 }
-stock WOW_GetBossPlayerID(bossid) {
+#define WOW_GetBossPlayerID(%0) WOW_GetBossNPCID(%0); //Alias
+/*stock WOW_GetBossPlayerID(bossid) {
 	return WOW_GetBossNPCID(bossid);
-}
+}*/
 stock Text:WOW_GetBossTextDraw(bossid, textdraw) {
 	if(WOW_IsValidBoss(bossid) && textdraw >= 0 && textdraw < WOW_MAX_BOSS_TEXTDRAWS) {
 		return WOW_Bosses[bossid][TEXTDRAW][textdraw];
@@ -1432,9 +1433,10 @@ stock WOW_GetBossIDFromNPCID(npcid) {
 	}
 	return WOW_INVALID_BOSS_ID;	
 }
-stock WOW_GetBossIDFromPlayerID(playerid) {
+#define WOW_GetBossIDFromPlayerID(%0) WOW_GetBossIDFromNPCID(%0); //Alias
+/*stock WOW_GetBossIDFromPlayerID(playerid) {
 	return WOW_GetBossIDFromNPCID(playerid);
-}
+}*/
 forward bool:WOW_IsBossValidForPlayer(playerid, bossid); //Silence 'used before declaration' warning
 stock bool:WOW_IsBossValidForPlayer(playerid, bossid) {
 	if(IsPlayerConnected(playerid) && WOW_IsValidBoss(bossid)) {
