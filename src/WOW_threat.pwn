@@ -35,6 +35,12 @@ stock WOW_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarg
 	//TODO again, switch to player (not NPC) with highest threat and in range
 }
 
+stock WOW_SetBossBehaviour(bossid, behaviour, bool:checkForTarget = false) {
+    //Reset target
+	WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
+	//TODO swith to no one
+}
+
 stock WOW_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false) {
 	return WOW_SetBossTargetWithReason(bossid, playerid, 4, checkForAggroRange);
 	//TODO what to do with threat, base this on taunt from WOW?

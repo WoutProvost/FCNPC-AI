@@ -11,7 +11,7 @@
 //Boss
 native WOW_CreateBossFull(name[], fullName[] = WOW_INVALID_STRING, iconid = WOW_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL, Float:maxHealth = 100000.0, Float:rangeDisplay = 100.0, Float:rangeAggro = 20.0, bool:displayIfDead = true, Float:currentHealth = -1.0, targetid = INVALID_PLAYER_ID
 , moveType = MOVE_TYPE_SPRINT, Float:moveSpeed = MOVE_SPEED_AUTO, bool:moveUseMapAndreas = false, Float:moveRadius = 0.0, bool:moveSetAngle = true, Float:rangedAttackDistance = 20.0, rangedAttackDelay = -1, bool:rangedAttackSetAngle = true, Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = false
-, bool:allowNPCTargets = false);
+, bool:allowNPCTargets = false, behaviour = WOW_BOSS_BEHAVIOUR_NEUTRAL);
 native WOW_CreateBoss(name[]);
 native WOW_GetBossFullName(bossid, name[], len);
 native WOW_SetBossFullName(bossid, name[]);
@@ -37,6 +37,8 @@ native WOW_GetBossMeleeAttackInfo(bossid, &Float:distance, &delay, &bool:useFigh
 native WOW_SetBossMeleeAttackInfo(bossid, Float:distance = 1.0, delay = -1, bool:useFightStyle = false);
 native WOW_GetBossAllowNPCTargets(bossid);
 native WOW_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarget = false);
+native WOW_GetBossBehaviour(bossid);
+native WOW_SetBossBehaviour(bossid, behaviour, bool:checkForTarget = false);
 native WOW_GetBossThreatForPlayer(bossid, playerid);
 native WOW_SetBossThreatForPlayer(bossid, playerid, threat, bool:checkForAggroRange = false);
 native WOW_ResetBossThreatForAll(bossid);
@@ -168,6 +170,11 @@ static WOW_PauseTimer = WOW_INVALID_TIMER_ID;
 #define WOW_INVALID_BOSS_ID					-1
 #define WOW_INVALID_ICON_ID					-1
 #define WOW_MAX_BOSS_TEXTDRAWS              8
+enum {
+	WOW_BOSS_BEHAVIOUR_FRIENDLY,
+	WOW_BOSS_BEHAVIOUR_NEUTRAL,
+	WOW_BOSS_BEHAVIOUR_UNFRIENDLY
+}
 enum WOW_ENUM_BOSS {
 	//Can be set by the user
 	FULL_NAME[WOW_MAX_BOSS_FULL_NAME + 1],
@@ -193,6 +200,7 @@ enum WOW_ENUM_BOSS {
 	MELEE_ATTACK_DELAY,
 	bool:MELEE_ATTACK_USE_FIGHT_STYLE,
 	bool:ALLOW_NPC_TARGETS,
+	BEHAVIOUR,
 	THREAT[MAX_PLAYERS],
 	//Cannot be set by the user
 	NPCID,
@@ -650,8 +658,11 @@ stock WOW_DamageBoss(bossid, damagerid, Float:amount) {
 		//3rd part of condition: damage not inflicted by players (falling, ...)
 		//4th part of condition: neccesary to reject invalid damage done: the NPC is visible and thus damagable in other interiors
 	 	if(FCNPC_IsSpawned(bossplayerid) && !FCNPC_IsDead(bossplayerid) && (damagerid == INVALID_PLAYER_ID || WOW_IsBossValidForPlayer(damagerid, bossid))) {
-			//Set target to damagerid if no target yet (valid damagerid + no target yet check in setter)
-			WOW_SetBossTargetWithReason(bossid, damagerid, 1);
+			//Only set target if the encounter has not yet started AND the behaviour is neutral or unfriendly
+			if(WOW_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && WOW_Bosses[bossid][BEHAVIOUR] != WOW_BOSS_BEHAVIOUR_FRIENDLY) {
+				//Set target to damagerid if no target yet (valid damagerid + no target yet check in setter)
+				WOW_SetBossTargetWithReason(bossid, damagerid, 1);
+			}
 			//Dont damage below 0
 			if(WOW_Bosses[bossid][CUR_HEALTH] > amount) {
 				WOW_SetBossCurrentHealth(bossid, WOW_Bosses[bossid][CUR_HEALTH] - amount);
@@ -786,8 +797,11 @@ public WOW_Update() {
 			WOW_IncreaseBossCastProgress(bossid);
 			//Get new target if no target, or if old target invalid, or if the boss is not streamed in anymore for his old target
 			if(!WOW_IsBossValidForPlayer(WOW_Bosses[bossid][TARGET], bossid) || !IsPlayerStreamedIn(WOW_Bosses[bossid][NPCID], WOW_Bosses[bossid][TARGET])) {
-			    //Set target to closestPlayerid (valid closestPlayerid check in setter)
-				WOW_SetBossTargetWithReason(bossid, WOW_GetClosestPlayerToTakeAggro(bossid), 3);
+		 		//Only set target if the encounter has already started OR if the behaviour is unfriendly
+		 		if(WOW_Bosses[bossid][TARGET] != INVALID_PLAYER_ID || WOW_Bosses[bossid][BEHAVIOUR] == WOW_BOSS_BEHAVIOUR_UNFRIENDLY)  {
+				    //Set target to closestPlayerid (valid closestPlayerid check in setter)
+					WOW_SetBossTargetWithReason(bossid, WOW_GetClosestPlayerToTakeAggro(bossid), 3);
+				}
 			}
 	        //Attack target (which can be set above) if target known
 	        if(WOW_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
@@ -935,6 +949,7 @@ static WOW_ResetBossStats(bossid) {
 		WOW_Bosses[bossid][MELEE_ATTACK_DELAY] = 0;
 		WOW_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE] = false;
 		WOW_Bosses[bossid][ALLOW_NPC_TARGETS] = false;
+		WOW_Bosses[bossid][BEHAVIOUR] = WOW_BOSS_BEHAVIOUR_NEUTRAL;
 		for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
 			WOW_Bosses[bossid][THREAT][playerid] = 0;
 		}
@@ -1001,7 +1016,7 @@ static WOW_DestroyBossNoFCNPC_Destroy(bossid) {
 stock WOW_CreateBossFull(name[], fullName[] = WOW_INVALID_STRING, iconid = WOW_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL, Float:maxHealth = 100000.0,
 Float:rangeDisplay = 100.0, Float:rangeAggro = 20.0, bool:displayIfDead = true, Float:currentHealth = -1.0, targetid = INVALID_PLAYER_ID,
 moveType = MOVE_TYPE_SPRINT, Float:moveSpeed = MOVE_SPEED_AUTO, bool:moveUseMapAndreas = false, Float:moveRadius = 0.0, bool:moveSetAngle = true, Float:rangedAttackDistance = 20.0, rangedAttackDelay = -1, bool:rangedAttackSetAngle = true,
-Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = false, bool:allowNPCTargets = false) {
+Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = false, bool:allowNPCTargets = false, behaviour = WOW_BOSS_BEHAVIOUR_NEUTRAL) {
 	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
 		if(WOW_Bosses[bossid][NPCID] == INVALID_PLAYER_ID) {
 			WOW_Bosses[bossid][NPCID] = FCNPC_Create(name);
@@ -1018,6 +1033,7 @@ Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFight
 				WOW_SetBossRangedAttackInfo(bossid, rangedAttackDistance, rangedAttackDelay, rangedAttackSetAngle);
 				WOW_SetBossMeleeAttackInfo(bossid, meleeAttackDistance, meleeAttackDelay, meleeAttackUseFightStyle);
 				WOW_SetBossAllowNPCTargets(bossid, allowNPCTargets, false);
+				WOW_SetBossBehaviour(bossid, behaviour, false);
 		    	return bossid;
 		    } else {
 		        //FCNPC_Create failed
@@ -1262,7 +1278,7 @@ Reason:
 static WOW_SetBossTargetWithReason(bossid, newtargetid, reason, bool:checkForAggroRange = false) {
 	if(WOW_IsValidBoss(bossid)) {
 		new oldtargetid = WOW_Bosses[bossid][TARGET];
-		if(oldtargetid != newtargetid && (reason != 1 || oldtargetid == INVALID_PLAYER_ID)) {
+		if(oldtargetid != newtargetid) {
 		    new bool:newTargetValid = true;
 		    new bool:newTargetStreamedIn = true;
 		    if(newtargetid != INVALID_PLAYER_ID) {
@@ -1388,6 +1404,25 @@ stock WOW_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarg
 		WOW_Bosses[bossid][ALLOW_NPC_TARGETS] = allowNPCTargets;
 		if(checkForTarget) {
 		    if(!allowNPCTargets && WOW_Bosses[bossid][TARGET] != INVALID_PLAYER_ID && IsPlayerNPC(WOW_Bosses[bossid][TARGET])) {
+		        //Reset target
+				WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
+		    }
+		}
+		return 1;
+	}
+	return 0;
+}
+stock WOW_GetBossBehaviour(bossid) {
+	if(WOW_IsValidBoss(bossid)) {
+		return WOW_Bosses[bossid][BEHAVIOUR];
+	}
+	return -1;
+}
+stock WOW_SetBossBehaviour(bossid, behaviour, bool:checkForTarget = false) {
+	if(WOW_IsValidBoss(bossid)) {
+		WOW_Bosses[bossid][BEHAVIOUR] = behaviour;
+		if(checkForTarget) {
+		    if(behaviour == WOW_BOSS_BEHAVIOUR_FRIENDLY && WOW_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
 		        //Reset target
 				WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
 		    }
