@@ -215,3 +215,11 @@ stock WOW_ResetBossThreatForAll(bossid) {
 //TODO ook threat callback oproepen? of enkel als de value verandert?
 //TODO onplayerstreamout of fcnpc versie reset threat of niet, zodat het encounter blijft doorgaan?
 //TODO if no player with highest threat found, revert to closest player within aggro range
+
+//TODO kijk waar deze allemaal gebruikt worden en kijk of het kan toegevoegd worden
+//TODO WOW_DamageBoss wrm is isplayerstreamedin niet gebruikt???? + check ook voor valid + update wiki
+//TODO WOW_SetBossAggroRange idem
+//TODO WOW_SetBossAllowNPCTargets idem
+//TODO WOW_GetClosestPlayerToTakeAggro idem
+//TODO WOW_IsPlayerInAggroRange idem
+//TODO WOW_SetBossThreatForPlayer idem
