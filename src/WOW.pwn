@@ -396,10 +396,10 @@ static WOW_RemoveUnnecessaryDecimals(Float:amount, maxDecimals = 6, minDecimals 
 
     public OnFilterScriptExit()
 	{
-	    WOW_ExitScript();
 	    #if defined WOW_OnFilterScriptExit
 	        WOW_OnFilterScriptExit();
 	    #endif
+	    WOW_ExitScript(); //Call after
 	    return 1;
 	}
 	#if defined _ALS_OnFilterScriptExit
@@ -432,10 +432,10 @@ static WOW_RemoveUnnecessaryDecimals(Float:amount, maxDecimals = 6, minDecimals 
 
     public OnGameModeExit()
 	{
-	    WOW_ExitScript();
 	    #if defined WOW_OnGameModeExit
 	        WOW_OnGameModeExit();
 	    #endif
+	    WOW_ExitScript(); //Call after
 	    return 1;
 	}
 	#if defined _ALS_OnGameModeExit
@@ -502,13 +502,13 @@ static WOW_ExitScript() {
 }
 
 public OnPlayerDisconnect(playerid, reason) {
-    new bossid = WOW_GetBossIDFromNPCID(playerid);
-    if(WOW_IsValidBoss(bossid)) {
-		WOW_DestroyBossNoFCNPC_Destroy(bossid);
-    }
     #if defined WOW_OnPlayerDisconnect
         WOW_OnPlayerDisconnect(playerid, reason);
     #endif
+    new bossid = WOW_GetBossIDFromNPCID(playerid);
+    if(WOW_IsValidBoss(bossid)) {
+		WOW_DestroyBossNoFCNPC_Destroy(bossid); //Call after
+    }
 	return 1;
 }
 #if defined _ALS_OnPlayerDisconnect
