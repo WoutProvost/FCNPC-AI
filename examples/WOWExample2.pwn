@@ -48,27 +48,39 @@ public OnFilterScriptInit()
 
 public OnFilterScriptExit()
 {
-	//WOW_DestroyBoss(BossLeatherface); //The include does this automatically in this callback
-	BossLeatherface = WOW_INVALID_BOSS_ID;
-	KillTimer(PlayerInRangeTimer);
-	PlayerInRangeTimer = WOW_INVALID_TIMER_ID;
-	for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
-		if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid)) {
-	        if(AlreadyInOutRange[playerid]) {
-	        	AlreadyInOutRange[playerid] = false;
-		        SetPlayerWeather(playerid, DEFAULT_WEATHER);
-		        SetPlayerTime(playerid, DEFAULT_TIME_H, DEFAULT_TIME_M);
-		        if(AudioStreamCount[playerid] != -1) {
-		        	StopAudioStreamForPlayer(playerid);
-		        	AudioStreamCount[playerid] = -1;
-		        }
-	        }
-    	}
-    }
-	DestroyBossObjects();
+	//The include will automatically destroy the spells and bosses when the script exits
+	//When a boss gets destroyed, OnPlayerDisconnect will be called, so we can safely put everything that should be destroyed along with the boss there
 	return 1;
 }
 #endif
+
+public OnPlayerDisconnect(playerid, reason)
+{
+	new bossid = WOW_GetBossIDFromNPCID(playerid);
+	if(bossid != WOW_INVALID_BOSS_ID) {
+		if(bossid == BossLeatherface) {
+			//WOW_DestroyBoss(BossLeatherface); //We don't need to do this, since the boss is already disconnecting
+			BossLeatherface = WOW_INVALID_BOSS_ID;
+			KillTimer(PlayerInRangeTimer);
+			PlayerInRangeTimer = WOW_INVALID_TIMER_ID;
+			for(new otherplayerid = 0, highestPlayerid = GetPlayerPoolSize(); otherplayerid <= highestPlayerid; otherplayerid++) {
+				if(IsPlayerConnected(otherplayerid) && !IsPlayerNPC(otherplayerid)) {
+			        if(AlreadyInOutRange[otherplayerid]) {
+			        	AlreadyInOutRange[otherplayerid] = false;
+				        SetPlayerWeather(otherplayerid, DEFAULT_WEATHER);
+				        SetPlayerTime(otherplayerid, DEFAULT_TIME_H, DEFAULT_TIME_M);
+				        if(AudioStreamCount[otherplayerid] != -1) {
+				        	StopAudioStreamForPlayer(otherplayerid);
+				        	AudioStreamCount[otherplayerid] = -1;
+				        }
+			        }
+		    	}
+		    }
+			DestroyBossObjects();
+		}
+	}
+	return 1;
+}
 
 public FCNPC_OnReachDestination(npcid)
 {

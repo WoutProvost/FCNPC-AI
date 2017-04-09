@@ -60,60 +60,73 @@ public OnFilterScriptInit()
 
 public OnFilterScriptExit()
 {
-	//WOW_DestroyBoss(BossBigSmoke); //The include does this automatically in this callback
-	BossBigSmoke = WOW_INVALID_BOSS_ID;
-	//WOW_DestroySpell(SpellCarpetOfFire); //The include does this automatically in this callback
-	SpellCarpetOfFire = WOW_INVALID_SPELL_ID;
-	//WOW_DestroySpell(SpellNoPlaceIsSafe); //The include does this automatically in this callback
-	SpellNoPlaceIsSafe = WOW_INVALID_SPELL_ID;
-	//WOW_DestroySpell(SpellWallOfFire); //The include does this automatically in this callback
-	SpellWallOfFire = WOW_INVALID_SPELL_ID;
-	//WOW_DestroySpell(SpellMarkOfDeath); //The include does this automatically in this callback
-	SpellMarkOfDeath = WOW_INVALID_SPELL_ID;
-	//WOW_DestroySpell(SpellFlightOfTheBumblebee); //The include does this automatically in this callback
-	SpellFlightOfTheBumblebee = WOW_INVALID_SPELL_ID;
-	//WOW_DestroySpell(SpellRockOfLife); //The include does this automatically in this callback
-	SpellRockOfLife = WOW_INVALID_SPELL_ID;
-	for(new groundMark = 0, groundMarkCount = sizeof(GroundMarks); groundMark < groundMarkCount; groundMark++) {
-		#if USE_STREAMER == false
-		    DestroyObject(GroundMarks[groundMark]);
-		    DestroyObject(Bombs[groundMark]);
-	    #else
-			DestroyDynamicObject(GroundMarks[groundMark]);
-			DestroyDynamicObject(Bombs[groundMark]);
-		#endif
-		GroundMarks[groundMark] = INVALID_OBJECT_ID;
-		Bombs[groundMark] = INVALID_OBJECT_ID;
-	}
-	KillTimer(ExplosionTimer);
-	ExplosionTimer = WOW_INVALID_TIMER_ID;
-	ExplosionCount = 0;
-	KillTimer(BossIdleMessageTimer);
-	BossIdleMessageTimer = WOW_INVALID_TIMER_ID;
-	BossExecuteSpellCount = 0;
-	BossTargetNotMovingPos[0] = 0.0;
-	BossTargetNotMovingPos[1] = 0.0;
-	BossTargetNotMovingPos[2] = 0.0;
-	KillTimer(BossTargetNotMovingTimer);
-	BossTargetNotMovingTimer = WOW_INVALID_TIMER_ID;
-	#if USE_STREAMER == false
-		DestroyObject(BossTargetNotMovingObject);
-	#else
-		DestroyDynamicObject(BossTargetNotMovingObject);
-	#endif
-	BossTargetNotMovingObject = INVALID_OBJECT_ID;
-	BossBigSmokeHealthState = 0;
-	for(new rewardPickup = 0, rewardPickupCount = sizeof(RewardPickups); rewardPickup < rewardPickupCount; rewardPickup++) {
-	    #if USE_STREAMER == false
-	    	DestroyPickup(RewardPickups[rewardPickup]);
-	    #else
-	    	DestroyDynamicPickup(RewardPickups[rewardPickup]);
-	    #endif
-	    RewardPickups[rewardPickup] = -1;
-	}
+	//The include will automatically destroy the spells and bosses when the script exits
+	//When a boss gets destroyed, OnPlayerDisconnect will be called, so we can safely put everything that should be destroyed along with the boss there
 	return 1;
 }
 #endif
+
+public OnPlayerDisconnect(playerid, reason)
+{
+	new bossid = WOW_GetBossIDFromNPCID(playerid);
+	if(bossid != WOW_INVALID_BOSS_ID) {
+		if(bossid == BossBigSmoke) {
+			//WOW_DestroyBoss(BossBigSmoke); //We don't need to do this, since the boss is already disconnecting
+			BossBigSmoke = WOW_INVALID_BOSS_ID;
+		    //We still need to destroy the spells, since it is possible that the boss is just disconnecting and the script isn't exiting and we want that the spells destroy along with the boss
+			WOW_DestroySpell(SpellCarpetOfFire);
+			SpellCarpetOfFire = WOW_INVALID_SPELL_ID;
+			WOW_DestroySpell(SpellNoPlaceIsSafe);
+			SpellNoPlaceIsSafe = WOW_INVALID_SPELL_ID;
+			WOW_DestroySpell(SpellWallOfFire);
+			SpellWallOfFire = WOW_INVALID_SPELL_ID;
+			WOW_DestroySpell(SpellMarkOfDeath);
+			SpellMarkOfDeath = WOW_INVALID_SPELL_ID;
+			WOW_DestroySpell(SpellFlightOfTheBumblebee);
+			SpellFlightOfTheBumblebee = WOW_INVALID_SPELL_ID;
+			WOW_DestroySpell(SpellRockOfLife);
+			SpellRockOfLife = WOW_INVALID_SPELL_ID;
+			for(new groundMark = 0, groundMarkCount = sizeof(GroundMarks); groundMark < groundMarkCount; groundMark++) {
+				#if USE_STREAMER == false
+				    DestroyObject(GroundMarks[groundMark]);
+				    DestroyObject(Bombs[groundMark]);
+			    #else
+					DestroyDynamicObject(GroundMarks[groundMark]);
+					DestroyDynamicObject(Bombs[groundMark]);
+				#endif
+				GroundMarks[groundMark] = INVALID_OBJECT_ID;
+				Bombs[groundMark] = INVALID_OBJECT_ID;
+			}
+			KillTimer(ExplosionTimer);
+			ExplosionTimer = WOW_INVALID_TIMER_ID;
+			ExplosionCount = 0;
+			KillTimer(BossIdleMessageTimer);
+			BossIdleMessageTimer = WOW_INVALID_TIMER_ID;
+			BossExecuteSpellCount = 0;
+			BossTargetNotMovingPos[0] = 0.0;
+			BossTargetNotMovingPos[1] = 0.0;
+			BossTargetNotMovingPos[2] = 0.0;
+			KillTimer(BossTargetNotMovingTimer);
+			BossTargetNotMovingTimer = WOW_INVALID_TIMER_ID;
+			#if USE_STREAMER == false
+				DestroyObject(BossTargetNotMovingObject);
+			#else
+				DestroyDynamicObject(BossTargetNotMovingObject);
+			#endif
+			BossTargetNotMovingObject = INVALID_OBJECT_ID;
+			BossBigSmokeHealthState = 0;
+			for(new rewardPickup = 0, rewardPickupCount = sizeof(RewardPickups); rewardPickup < rewardPickupCount; rewardPickup++) {
+			    #if USE_STREAMER == false
+			    	DestroyPickup(RewardPickups[rewardPickup]);
+			    #else
+			    	DestroyDynamicPickup(RewardPickups[rewardPickup]);
+			    #endif
+			    RewardPickups[rewardPickup] = -1;
+			}
+		}
+	}
+	return 1;
+}
 
 public FCNPC_OnSpawn(npcid)
 {
