@@ -9,163 +9,163 @@
 //FAKE NATIVES
 /*
 //Boss
-native WOW_CreateBossFull(name[], fullName[] = WOW_INVALID_STRING, iconid = WOW_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL, Float:maxHealth = 100000.0, Float:rangeDisplay = 100.0, Float:rangeAggro = 20.0, bool:displayIfDead = true, Float:currentHealth = -1.0, targetid = INVALID_PLAYER_ID
+native FAI_CreateBossFull(name[], fullName[] = FAI_INVALID_STRING, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL, Float:maxHealth = 100000.0, Float:rangeDisplay = 100.0, Float:rangeAggro = 20.0, bool:displayIfDead = true, Float:currentHealth = -1.0, targetid = INVALID_PLAYER_ID
 , moveType = MOVE_TYPE_SPRINT, Float:moveSpeed = MOVE_SPEED_AUTO, bool:moveUseMapAndreas = false, Float:moveRadius = 0.0, bool:moveSetAngle = true, Float:rangedAttackDistance = 20.0, rangedAttackDelay = -1, bool:rangedAttackSetAngle = true, Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = false
 , bool:allowNPCTargets = false);
-native WOW_CreateBoss(name[]);
-native WOW_GetBossFullName(bossid, name[], len);
-native WOW_SetBossFullName(bossid, name[]);
-native WOW_GetBossMapiconInfo(bossid, &iconid, &iconMarker, &iconColor, &iconStyle);
-native WOW_SetBossMapiconInfo(bossid, iconid = WOW_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL);
-native WOW_GetBossMaxHealth(bossid, &Float:health);
-native WOW_SetBossMaxHealth(bossid, Float:health, bool:keepHealthPercent = false);
-native WOW_GetBossDisplayRange(bossid, &Float:range);
-native WOW_SetBossDisplayRange(bossid, Float:range);
-native WOW_GetBossAggroRange(bossid, &Float:range);
-native WOW_SetBossAggroRange(bossid, Float:range, bool:checkForTarget = false);
-native WOW_GetBossDisplayIfDead(bossid);
-native WOW_SetBossDisplayIfDead(bossid, bool:displayIfDead);
-native WOW_GetBossCurrentHealth(bossid, &Float:health);
-native WOW_SetBossCurrentHealth(bossid, Float:health, bool:keepHealthPercent = false);
-native WOW_GetBossTarget(bossid);
-native WOW_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false);
-native WOW_GetBossMoveInfo(bossid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle);
-native WOW_SetBossMoveInfo(bossid, type = MOVE_TYPE_SPRINT, Float:speed = MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true);
-native WOW_GetBossRangedAttackInfo(bossid, &Float:distance, &delay, &bool:setAngle);
-native WOW_SetBossRangedAttackInfo(bossid, Float:distance = 20.0, delay = -1, bool:setAngle = true);
-native WOW_GetBossMeleeAttackInfo(bossid, &Float:distance, &delay, &bool:useFightStyle);
-native WOW_SetBossMeleeAttackInfo(bossid, Float:distance = 1.0, delay = -1, bool:useFightStyle = false);
-native WOW_GetBossAllowNPCTargets(bossid);
-native WOW_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarget = false);
-native WOW_DestroyBoss(bossid);
-native WOW_DestroyAllBosses();
-native bool:WOW_IsValidBoss(bossid);
-native bool:WOW_IsBossValidForPlayer(playerid, bossid);
-native bool:WOW_IsPlayerInDisplayRange(playerid, bossid);
-native bool:WOW_IsPlayerInAggroRange(playerid, bossid);
-native bool:WOW_BossHasMeleeWeapons(bossid);
-native WOW_GetBossNPCID(bossid);
-native WOW_GetBossPlayerID(bossid);
-native Text:WOW_GetBossTextDraw(bossid, textdraw);
-native WOW_GetBossCurrentHealthPercent(bossid);
-native WOW_GetBossIDFromNPCID(npcid);
-native WOW_GetBossIDFromPlayerID(playerid);
-native WOW_DamageBoss(bossid, damagerid, Float:amount);
-native WOW_HealBoss(bossid, healerid, Float:amount);
-native bool:WOW_IsEncounterStarted(bossid);
-native WOW_StopEncounter(bossid);
+native FAI_CreateBoss(name[]);
+native FAI_GetBossFullName(bossid, name[], len);
+native FAI_SetBossFullName(bossid, name[]);
+native FAI_GetBossMapiconInfo(bossid, &iconid, &iconMarker, &iconColor, &iconStyle);
+native FAI_SetBossMapiconInfo(bossid, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL);
+native FAI_GetBossMaxHealth(bossid, &Float:health);
+native FAI_SetBossMaxHealth(bossid, Float:health, bool:keepHealthPercent = false);
+native FAI_GetBossDisplayRange(bossid, &Float:range);
+native FAI_SetBossDisplayRange(bossid, Float:range);
+native FAI_GetBossAggroRange(bossid, &Float:range);
+native FAI_SetBossAggroRange(bossid, Float:range, bool:checkForTarget = false);
+native FAI_GetBossDisplayIfDead(bossid);
+native FAI_SetBossDisplayIfDead(bossid, bool:displayIfDead);
+native FAI_GetBossCurrentHealth(bossid, &Float:health);
+native FAI_SetBossCurrentHealth(bossid, Float:health, bool:keepHealthPercent = false);
+native FAI_GetBossTarget(bossid);
+native FAI_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false);
+native FAI_GetBossMoveInfo(bossid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle);
+native FAI_SetBossMoveInfo(bossid, type = MOVE_TYPE_SPRINT, Float:speed = MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true);
+native FAI_GetBossRangedAttackInfo(bossid, &Float:distance, &delay, &bool:setAngle);
+native FAI_SetBossRangedAttackInfo(bossid, Float:distance = 20.0, delay = -1, bool:setAngle = true);
+native FAI_GetBossMeleeAttackInfo(bossid, &Float:distance, &delay, &bool:useFightStyle);
+native FAI_SetBossMeleeAttackInfo(bossid, Float:distance = 1.0, delay = -1, bool:useFightStyle = false);
+native FAI_GetBossAllowNPCTargets(bossid);
+native FAI_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarget = false);
+native FAI_DestroyBoss(bossid);
+native FAI_DestroyAllBosses();
+native bool:FAI_IsValidBoss(bossid);
+native bool:FAI_IsBossValidForPlayer(playerid, bossid);
+native bool:FAI_IsPlayerInDisplayRange(playerid, bossid);
+native bool:FAI_IsPlayerInAggroRange(playerid, bossid);
+native bool:FAI_BossHasMeleeWeapons(bossid);
+native FAI_GetBossNPCID(bossid);
+native FAI_GetBossPlayerID(bossid);
+native Text:FAI_GetBossTextDraw(bossid, textdraw);
+native FAI_GetBossCurrentHealthPercent(bossid);
+native FAI_GetBossIDFromNPCID(npcid);
+native FAI_GetBossIDFromPlayerID(playerid);
+native FAI_DamageBoss(bossid, damagerid, Float:amount);
+native FAI_HealBoss(bossid, healerid, Float:amount);
+native bool:FAI_IsEncounterStarted(bossid);
+native FAI_StopEncounter(bossid);
 
 //Spell
-native WOW_CreateSpellFull(name[], type = WOW_SPELL_TYPE_CUSTOM, castTime = 2000, Float:amount = 0.0, percentType = WOW_PERCENT_TYPE_CUSTOM, castBarColorDark = 0x645005ff, castBarColorLight = 0xb4820aff, bool:castBarInverted = false, bool:castTimeInverted = false, bool:canMove = false, bool:canAttack = false, info[] = WOW_INVALID_STRING);
-native WOW_CreateSpell(name[]);
-native WOW_GetSpellName(spellid, name[], len);
-native WOW_SetSpellName(spellid, name[]);
-native WOW_GetSpellType(spellid);
-native WOW_SetSpellType(spellid, type);
-native WOW_GetSpellCastTime(spellid);
-native WOW_SetSpellCastTime(spellid, castTime, bool:keepCastPercent = false);
-native WOW_GetSpellAmount(spellid, &Float:amount);
-native WOW_SetSpellAmount(spellid, Float:amount);
-native WOW_GetSpellPercentType(spellid);
-native WOW_SetSpellPercentType(spellid, type);
-native WOW_GetSpellCastBarColorDark(spellid);
-native WOW_SetSpellCastBarColorDark(spellid, color);
-native WOW_GetSpellCastBarColorLight(spellid);
-native WOW_SetSpellCastBarColorLight(spellid, color);
-native bool:WOW_GetSpellCastBarInverted(spellid);
-native WOW_SetSpellCastBarInverted(spellid, bool:inverted, bool:invertProgressMade = false);
-native bool:WOW_GetSpellCastTimeInverted(spellid);
-native WOW_SetSpellCastTimeInverted(spellid, bool:inverted, bool:invertProgressMade = false);
-native bool:WOW_GetSpellCanMove(spellid);
-native WOW_SetSpellCanMove(spellid, bool:canMove);
-native bool:WOW_GetSpellCanAttack(spellid);
-native WOW_SetSpellCanAttack(spellid, bool:canAttack);
-native WOW_GetSpellInfo(spellid, info[], len);
-native WOW_SetSpellInfo(spellid, info[]);
-native WOW_DestroySpell(spellid);
-native WOW_DestroyAllSpells();
-native bool:WOW_IsValidSpell(spellid);
-native WOW_SpellToString(spellid, string[], len, bool:allowDefaultColors = true);
+native FAI_CreateSpellFull(name[], type = FAI_SPELL_TYPE_CUSTOM, castTime = 2000, Float:amount = 0.0, percentType = FAI_PERCENT_TYPE_CUSTOM, castBarColorDark = 0x645005ff, castBarColorLight = 0xb4820aff, bool:castBarInverted = false, bool:castTimeInverted = false, bool:canMove = false, bool:canAttack = false, info[] = FAI_INVALID_STRING);
+native FAI_CreateSpell(name[]);
+native FAI_GetSpellName(spellid, name[], len);
+native FAI_SetSpellName(spellid, name[]);
+native FAI_GetSpellType(spellid);
+native FAI_SetSpellType(spellid, type);
+native FAI_GetSpellCastTime(spellid);
+native FAI_SetSpellCastTime(spellid, castTime, bool:keepCastPercent = false);
+native FAI_GetSpellAmount(spellid, &Float:amount);
+native FAI_SetSpellAmount(spellid, Float:amount);
+native FAI_GetSpellPercentType(spellid);
+native FAI_SetSpellPercentType(spellid, type);
+native FAI_GetSpellCastBarColorDark(spellid);
+native FAI_SetSpellCastBarColorDark(spellid, color);
+native FAI_GetSpellCastBarColorLight(spellid);
+native FAI_SetSpellCastBarColorLight(spellid, color);
+native bool:FAI_GetSpellCastBarInverted(spellid);
+native FAI_SetSpellCastBarInverted(spellid, bool:inverted, bool:invertProgressMade = false);
+native bool:FAI_GetSpellCastTimeInverted(spellid);
+native FAI_SetSpellCastTimeInverted(spellid, bool:inverted, bool:invertProgressMade = false);
+native bool:FAI_GetSpellCanMove(spellid);
+native FAI_SetSpellCanMove(spellid, bool:canMove);
+native bool:FAI_GetSpellCanAttack(spellid);
+native FAI_SetSpellCanAttack(spellid, bool:canAttack);
+native FAI_GetSpellInfo(spellid, info[], len);
+native FAI_SetSpellInfo(spellid, info[]);
+native FAI_DestroySpell(spellid);
+native FAI_DestroyAllSpells();
+native bool:FAI_IsValidSpell(spellid);
+native FAI_SpellToString(spellid, string[], len, bool:allowDefaultColors = true);
 
 //Casting
-native WOW_StartBossCastingSpell(bossid, spellid, targetid = INVALID_PLAYER_ID);
-native WOW_GetBossCastingSpell(bossid);
-native WOW_SetBossCastingSpell(bossid, spellid, bool:keepCastPercent = false);
-native WOW_GetBossCastingProgress(bossid);
-native WOW_SetBossCastingProgress(bossid, progress);
-native WOW_GetBossCastingTarget(bossid);
-native WOW_SetBossCastingTarget(bossid, targetid);
-native WOW_GetBossCastingExtraProgress(bossid);
-native WOW_SetBossCastingExtraProgress(bossid, progress);
-native WOW_StopBossCasting(bossid);
-native WOW_StopBossCastingSpell(bossid, spellid);
-native WOW_StopAllBossesCasting();
-native WOW_StopAllBossesCastingSpell(spellid);
-native bool:WOW_IsBossCasting(bossid);
-native bool:WOW_IsBossCastingSpell(bossid, spellid);
-native bool:WOW_IsBossCastBarExtra(bossid);
-native bool:WOW_IsBossCastBarExtraForSpell(bossid, spellid);
+native FAI_StartBossCastingSpell(bossid, spellid, targetid = INVALID_PLAYER_ID);
+native FAI_GetBossCastingSpell(bossid);
+native FAI_SetBossCastingSpell(bossid, spellid, bool:keepCastPercent = false);
+native FAI_GetBossCastingProgress(bossid);
+native FAI_SetBossCastingProgress(bossid, progress);
+native FAI_GetBossCastingTarget(bossid);
+native FAI_SetBossCastingTarget(bossid, targetid);
+native FAI_GetBossCastingExtraProgress(bossid);
+native FAI_SetBossCastingExtraProgress(bossid, progress);
+native FAI_StopBossCasting(bossid);
+native FAI_StopBossCastingSpell(bossid, spellid);
+native FAI_StopAllBossesCasting();
+native FAI_StopAllBossesCastingSpell(spellid);
+native bool:FAI_IsBossCasting(bossid);
+native bool:FAI_IsBossCastingSpell(bossid, spellid);
+native bool:FAI_IsBossCastBarExtra(bossid);
+native bool:FAI_IsBossCastBarExtraForSpell(bossid, spellid);
 */
 
 //CALLBACKS
 //Boss
-forward WOW_OnBossEncounterStart(bossid, bool:reasonShot, firstTarget);
-forward WOW_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget);
-forward WOW_OnPlayerGetAggro(playerid, bossid);
-forward WOW_OnPlayerLoseAggro(playerid, bossid);
+forward FAI_OnBossEncounterStart(bossid, bool:reasonShot, firstTarget);
+forward FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget);
+forward FAI_OnPlayerGetAggro(playerid, bossid);
+forward FAI_OnPlayerLoseAggro(playerid, bossid);
 
 //Casting
-forward WOW_OnBossStartCasting(bossid, spellid, targetid);
-forward WOW_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete);
+forward FAI_OnBossStartCasting(bossid, spellid, targetid);
+forward FAI_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete);
 
 //General
 //Include guards are already built into pawn, so no need to check
 #include <a_samp>
-#define WOW_VERSION                       	"1.0.3"
-#if !defined WOW_USE_MAP_ANDREAS
-	#define WOW_USE_MAP_ANDREAS           	false
+#define FAI_VERSION                       	"1.0.3"
+#if !defined FAI_USE_MAP_ANDREAS
+	#define FAI_USE_MAP_ANDREAS           	false
 #endif
-#if WOW_USE_MAP_ANDREAS == true
+#if FAI_USE_MAP_ANDREAS == true
 	#include <MapAndreas>
 #endif
-#if !defined WOW_MAP_ANDREAS_MODE
-	#define WOW_MAP_ANDREAS_MODE          	MAP_ANDREAS_MODE_FULL
+#if !defined FAI_MAP_ANDREAS_MODE
+	#define FAI_MAP_ANDREAS_MODE          	MAP_ANDREAS_MODE_FULL
 #endif
 #include <FCNPC>
-#define WOW_INVALID_STRING              	" "
-#define WOW_INVALID_COLOR	              	-1
-#define WOW_INVALID_TIMER_ID            	-1
-#if !defined WOW_UPDATE_TIME
-	#define WOW_UPDATE_TIME    				50
+#define FAI_INVALID_STRING              	" "
+#define FAI_INVALID_COLOR	              	-1
+#define FAI_INVALID_TIMER_ID            	-1
+#if !defined FAI_UPDATE_TIME
+	#define FAI_UPDATE_TIME    				50
 #endif
-#if !defined WOW_CAST_BAR_SHOW_EXTRA_TIME
-	#define WOW_CAST_BAR_SHOW_EXTRA_TIME    1000
+#if !defined FAI_CAST_BAR_SHOW_EXTRA_TIME
+	#define FAI_CAST_BAR_SHOW_EXTRA_TIME    1000
 #endif
-#if !defined WOW_DECIMAL_MARK
-	#define WOW_DECIMAL_MARK    			'.'
+#if !defined FAI_DECIMAL_MARK
+	#define FAI_DECIMAL_MARK    			'.'
 #endif
-#if !defined WOW_SHORTEN_HEALTH
-	#define WOW_SHORTEN_HEALTH            	false
+#if !defined FAI_SHORTEN_HEALTH
+	#define FAI_SHORTEN_HEALTH            	false
 #endif
-#define WOW_isnull(%1) ((!(%1[0])) || (((%1[0]) == '\1') && (!(%1[1]))))
-static WOW_UpdateTimer = WOW_INVALID_TIMER_ID;
-static WOW_PauseTickCount[MAX_PLAYERS] = {0,...};
-static bool:WOW_PlayerPaused[MAX_PLAYERS] = {false,...};
-static WOW_PauseTimer = WOW_INVALID_TIMER_ID;
+#define FAI_isnull(%1) ((!(%1[0])) || (((%1[0]) == '\1') && (!(%1[1]))))
+static FAI_UpdateTimer = FAI_INVALID_TIMER_ID;
+static FAI_PauseTickCount[MAX_PLAYERS] = {0,...};
+static bool:FAI_PlayerPaused[MAX_PLAYERS] = {false,...};
+static FAI_PauseTimer = FAI_INVALID_TIMER_ID;
 
 //Boss
-#if !defined WOW_MAX_BOSSES
-	#define WOW_MAX_BOSSES					20
+#if !defined FAI_MAX_BOSSES
+	#define FAI_MAX_BOSSES					20
 #endif
-#if !defined WOW_MAX_BOSS_FULL_NAME
-	#define WOW_MAX_BOSS_FULL_NAME      	50
+#if !defined FAI_MAX_BOSS_FULL_NAME
+	#define FAI_MAX_BOSS_FULL_NAME      	50
 #endif
-#define WOW_INVALID_BOSS_ID					-1
-#define WOW_INVALID_ICON_ID					-1
-#define WOW_MAX_BOSS_TEXTDRAWS              8
-enum WOW_ENUM_BOSS {
+#define FAI_INVALID_BOSS_ID					-1
+#define FAI_INVALID_ICON_ID					-1
+#define FAI_MAX_BOSS_TEXTDRAWS              8
+enum FAI_ENUM_BOSS {
 	//Can be set by the user
-	FULL_NAME[WOW_MAX_BOSS_FULL_NAME + 1],
+	FULL_NAME[FAI_MAX_BOSS_FULL_NAME + 1],
 	ICONID,
 	ICON_MARKER,
 	ICON_COLOR,
@@ -190,27 +190,27 @@ enum WOW_ENUM_BOSS {
 	bool:ALLOW_NPC_TARGETS,
 	//Cannot be set by the user
 	NPCID,
-	Text:TEXTDRAW[WOW_MAX_BOSS_TEXTDRAWS]
+	Text:TEXTDRAW[FAI_MAX_BOSS_TEXTDRAWS]
 }
-static WOW_Bosses[WOW_MAX_BOSSES][WOW_ENUM_BOSS];
-static Text:WOW_BossBlackHealth = Text:INVALID_TEXT_DRAW;
-static Text:WOW_BossDarkRed = Text:INVALID_TEXT_DRAW;
-static Text:WOW_BossBlackCast = Text:INVALID_TEXT_DRAW;
+static FAI_Bosses[FAI_MAX_BOSSES][FAI_ENUM_BOSS];
+static Text:FAI_BossBlackHealth = Text:INVALID_TEXT_DRAW;
+static Text:FAI_BossDarkRed = Text:INVALID_TEXT_DRAW;
+static Text:FAI_BossBlackCast = Text:INVALID_TEXT_DRAW;
 
 //Spell
-#if !defined WOW_MAX_SPELLS
-	#define WOW_MAX_SPELLS					20
+#if !defined FAI_MAX_SPELLS
+	#define FAI_MAX_SPELLS					20
 #endif
-#if !defined WOW_MAX_SPELL_NAME
-	#define WOW_MAX_SPELL_NAME				30
+#if !defined FAI_MAX_SPELL_NAME
+	#define FAI_MAX_SPELL_NAME				30
 #endif
-#if !defined WOW_MAX_SPELL_INFO
-	#define WOW_MAX_SPELL_INFO				144
+#if !defined FAI_MAX_SPELL_INFO
+	#define FAI_MAX_SPELL_INFO				144
 #endif
-#define WOW_INVALID_SPELL_ID				-1
-enum WOW_ENUM_SPELL {
+#define FAI_INVALID_SPELL_ID				-1
+enum FAI_ENUM_SPELL {
 	//Can be set by the user
-	NAME[WOW_MAX_SPELL_NAME + 1],
+	NAME[FAI_MAX_SPELL_NAME + 1],
 	TYPE,
 	CAST_TIME,
 	Float:AMOUNT,
@@ -221,59 +221,59 @@ enum WOW_ENUM_SPELL {
 	bool:CAST_TIME_INVERTED,
 	bool:CAN_MOVE,
 	bool:CAN_ATTACK,
-	INFO[WOW_MAX_SPELL_INFO + 1]
+	INFO[FAI_MAX_SPELL_INFO + 1]
 }
 enum {
-	WOW_SPELL_TYPE_INVALID = -1,
-	WOW_SPELL_TYPE_DAM,
-	WOW_SPELL_TYPE_HEAL,
-	WOW_SPELL_TYPE_CROWD_CONTROL,
-	WOW_SPELL_TYPE_INTERRUPT,
-	WOW_SPELL_TYPE_DISPELL,
-	WOW_SPELL_TYPE_SPAWN_ADD,
-	WOW_SPELL_TYPE_CUSTOM
+	FAI_SPELL_TYPE_INVALID = -1,
+	FAI_SPELL_TYPE_DAM,
+	FAI_SPELL_TYPE_HEAL,
+	FAI_SPELL_TYPE_CROWD_CONTROL,
+	FAI_SPELL_TYPE_INTERRUPT,
+	FAI_SPELL_TYPE_DISPELL,
+	FAI_SPELL_TYPE_SPAWN_ADD,
+	FAI_SPELL_TYPE_CUSTOM
 }
 enum {
-	WOW_PERCENT_TYPE_INVALID = -1,
-	WOW_PERCENT_TYPE_NOT,
-	WOW_PERCENT_TYPE_TARG_MAX_HP_AP,
-	WOW_PERCENT_TYPE_CAST_MAX_HP_AP,
-	WOW_PERCENT_TYPE_TARG_CUR_HP_AP,
-	WOW_PERCENT_TYPE_CAST_CUR_HP_AP,
-	WOW_PERCENT_TYPE_TARG_LOS_HP_AP,
-	WOW_PERCENT_TYPE_CAST_LOS_HP_AP,
-	WOW_PERCENT_TYPE_TARG_MAX_HP,
-	WOW_PERCENT_TYPE_CAST_MAX_HP,
-	WOW_PERCENT_TYPE_TARG_CUR_HP,
-	WOW_PERCENT_TYPE_CAST_CUR_HP,
-	WOW_PERCENT_TYPE_TARG_LOS_HP,
-	WOW_PERCENT_TYPE_CAST_LOS_HP,
-	WOW_PERCENT_TYPE_TARG_MAX_AP,
-	WOW_PERCENT_TYPE_CAST_MAX_AP,
-	WOW_PERCENT_TYPE_TARG_CUR_AP,
-	WOW_PERCENT_TYPE_CAST_CUR_AP,
-	WOW_PERCENT_TYPE_TARG_LOS_AP,
-	WOW_PERCENT_TYPE_CAST_LOS_AP,
-	WOW_PERCENT_TYPE_CUSTOM
+	FAI_PERCENT_TYPE_INVALID = -1,
+	FAI_PERCENT_TYPE_NOT,
+	FAI_PERCENT_TYPE_TARG_MAX_HP_AP,
+	FAI_PERCENT_TYPE_CAST_MAX_HP_AP,
+	FAI_PERCENT_TYPE_TARG_CUR_HP_AP,
+	FAI_PERCENT_TYPE_CAST_CUR_HP_AP,
+	FAI_PERCENT_TYPE_TARG_LOS_HP_AP,
+	FAI_PERCENT_TYPE_CAST_LOS_HP_AP,
+	FAI_PERCENT_TYPE_TARG_MAX_HP,
+	FAI_PERCENT_TYPE_CAST_MAX_HP,
+	FAI_PERCENT_TYPE_TARG_CUR_HP,
+	FAI_PERCENT_TYPE_CAST_CUR_HP,
+	FAI_PERCENT_TYPE_TARG_LOS_HP,
+	FAI_PERCENT_TYPE_CAST_LOS_HP,
+	FAI_PERCENT_TYPE_TARG_MAX_AP,
+	FAI_PERCENT_TYPE_CAST_MAX_AP,
+	FAI_PERCENT_TYPE_TARG_CUR_AP,
+	FAI_PERCENT_TYPE_CAST_CUR_AP,
+	FAI_PERCENT_TYPE_TARG_LOS_AP,
+	FAI_PERCENT_TYPE_CAST_LOS_AP,
+	FAI_PERCENT_TYPE_CUSTOM
 }
-static WOW_Spells[WOW_MAX_SPELLS][WOW_ENUM_SPELL];
+static FAI_Spells[FAI_MAX_SPELLS][FAI_ENUM_SPELL];
 
 //Casting
-#define WOW_INVALID_CAST_PROGRESS       	-1
-enum WOW_ENUM_CASTING {
+#define FAI_INVALID_CAST_PROGRESS       	-1
+enum FAI_ENUM_CASTING {
 	//Can be set by the user
 	SPELLID,
 	CAST_PROGRESS,
 	TARGETID
 }
-static WOW_Casting[WOW_MAX_BOSSES][WOW_ENUM_CASTING];
+static FAI_Casting[FAI_MAX_BOSSES][FAI_ENUM_CASTING];
 
 //General
-static WOW_strcpy(dest[], const source[], maxlength = sizeof dest) {
+static FAI_strcpy(dest[], const source[], maxlength = sizeof dest) {
 	dest[0] = '\0';
 	return strcat(dest, source, maxlength);
 }
-static WOW_strtokdelim(const string[], delimiter, &index) {
+static FAI_strtokdelim(const string[], delimiter, &index) {
 	new length = strlen(string);
 	while ((index < length) && (string[index] <= delimiter)) {
 		index++;
@@ -287,7 +287,7 @@ static WOW_strtokdelim(const string[], delimiter, &index) {
 	result[index - offset] = EOS;
 	return result;
 }
-static WOW_DisplayReadableInteger(amount) {
+static FAI_DisplayReadableInteger(amount) {
 	//Integer min: -2.147.483.648
 	//Integer max: 2.147.483.647
 	new amountAsString[14 + 1]; //10(2147483647) + 3(.) + 1(-)
@@ -296,7 +296,7 @@ static WOW_DisplayReadableInteger(amount) {
 	new modulo = length%3;
 	for(new pos = modulo; pos < length; pos+= 3) {
 	    if(pos != 0) { //Door modulo = 0
-	        #if WOW_DECIMAL_MARK == '.'
+	        #if FAI_DECIMAL_MARK == '.'
 				strins(amountAsString, ",", pos);
 	        #else
 				strins(amountAsString, ".", pos);
@@ -310,19 +310,19 @@ static WOW_DisplayReadableInteger(amount) {
 	}
 	return amountAsString;
 }
-static WOW_DisplayReadableFloat(Float:amount, maxDecimals = 6, minDecimals = 0) {
+static FAI_DisplayReadableFloat(Float:amount, maxDecimals = 6, minDecimals = 0) {
     new amountAsString[21 + 1], front[21 + 1], end[21 + 1], idx, frontval;
-    WOW_strcpy(amountAsString, WOW_RemoveUnnecessaryDecimals(amount, maxDecimals, minDecimals));
-	front = WOW_strtokdelim(amountAsString, '.', idx); //Bij een negatief getal wordt de - eraf gedaan? Oplossing zie hieronder.
-	end = WOW_strtokdelim(amountAsString, '.', idx);
+    FAI_strcpy(amountAsString, FAI_RemoveUnnecessaryDecimals(amount, maxDecimals, minDecimals));
+	front = FAI_strtokdelim(amountAsString, '.', idx); //Bij een negatief getal wordt de - eraf gedaan? Oplossing zie hieronder.
+	end = FAI_strtokdelim(amountAsString, '.', idx);
 	frontval = strval(front);
 	if(strlen(end) > 0) {
-	    format(end, sizeof(end), "%c%s", WOW_DECIMAL_MARK, end);
+	    format(end, sizeof(end), "%c%s", FAI_DECIMAL_MARK, end);
 	}
-	format(amountAsString, sizeof(amountAsString), "%s%s", WOW_DisplayReadableInteger(amount < 0 ? frontval*-1 : frontval), end);
+	format(amountAsString, sizeof(amountAsString), "%s%s", FAI_DisplayReadableInteger(amount < 0 ? frontval*-1 : frontval), end);
 	return amountAsString;
 }
-static WOW_RemoveUnnecessaryDecimals(Float:amount, maxDecimals = 6, minDecimals = 0) {
+static FAI_RemoveUnnecessaryDecimals(Float:amount, maxDecimals = 6, minDecimals = 0) {
 	new amountAsString[21 + 1];
 	format(amountAsString, sizeof(amountAsString), "%f", amount);
 	if(maxDecimals > 6) {
@@ -364,9 +364,9 @@ static WOW_RemoveUnnecessaryDecimals(Float:amount, maxDecimals = 6, minDecimals 
 #if defined FILTERSCRIPT
     public OnFilterScriptInit()
 	{
-	    WOW_InitScript();
-	    #if defined WOW_OnFilterScriptInit
-	        WOW_OnFilterScriptInit();
+	    FAI_InitScript();
+	    #if defined FAI_OnFilterScriptInit
+	        FAI_OnFilterScriptInit();
 	    #endif
 	    return 1;
 	}
@@ -375,16 +375,16 @@ static WOW_RemoveUnnecessaryDecimals(Float:amount, maxDecimals = 6, minDecimals 
 	#else
 	    #define _ALS_OnFilterScriptInit
 	#endif
-	#define OnFilterScriptInit WOW_OnFilterScriptInit
-	#if defined WOW_OnFilterScriptInit
-	    forward WOW_OnFilterScriptInit();
+	#define OnFilterScriptInit FAI_OnFilterScriptInit
+	#if defined FAI_OnFilterScriptInit
+	    forward FAI_OnFilterScriptInit();
 	#endif
 
     public OnFilterScriptExit()
 	{
-	    WOW_ExitScript();
-	    #if defined WOW_OnFilterScriptExit
-	        WOW_OnFilterScriptExit();
+	    FAI_ExitScript();
+	    #if defined FAI_OnFilterScriptExit
+	        FAI_OnFilterScriptExit();
 	    #endif
 	    return 1;
 	}
@@ -393,16 +393,16 @@ static WOW_RemoveUnnecessaryDecimals(Float:amount, maxDecimals = 6, minDecimals 
 	#else
 	    #define _ALS_OnFilterScriptExit
 	#endif
-	#define OnFilterScriptExit WOW_OnFilterScriptExit
-	#if defined WOW_OnFilterScriptExit
-	    forward WOW_OnFilterScriptExit();
+	#define OnFilterScriptExit FAI_OnFilterScriptExit
+	#if defined FAI_OnFilterScriptExit
+	    forward FAI_OnFilterScriptExit();
 	#endif
 #else
     public OnGameModeInit()
 	{
-	    WOW_InitScript();
-	    #if defined WOW_OnGameModeInit
-	        WOW_OnGameModeInit();
+	    FAI_InitScript();
+	    #if defined FAI_OnGameModeInit
+	        FAI_OnGameModeInit();
 	    #endif
 	    return 1;
 	}
@@ -411,16 +411,16 @@ static WOW_RemoveUnnecessaryDecimals(Float:amount, maxDecimals = 6, minDecimals 
 	#else
 	    #define _ALS_OnGameModeInit
 	#endif
-	#define OnGameModeInit WOW_OnGameModeInit
-	#if defined WOW_OnGameModeInit
-	    forward WOW_OnGameModeInit();
+	#define OnGameModeInit FAI_OnGameModeInit
+	#if defined FAI_OnGameModeInit
+	    forward FAI_OnGameModeInit();
 	#endif
 
     public OnGameModeExit()
 	{
-	    WOW_ExitScript();
-	    #if defined WOW_OnGameModeExit
-	        WOW_OnGameModeExit();
+	    FAI_ExitScript();
+	    #if defined FAI_OnGameModeExit
+	        FAI_OnGameModeExit();
 	    #endif
 	    return 1;
 	}
@@ -429,71 +429,71 @@ static WOW_RemoveUnnecessaryDecimals(Float:amount, maxDecimals = 6, minDecimals 
 	#else
 	    #define _ALS_OnGameModeExit
 	#endif
-	#define OnGameModeExit WOW_OnGameModeExit
-	#if defined WOW_OnGameModeExit
-	    forward WOW_OnGameModeExit();
+	#define OnGameModeExit FAI_OnGameModeExit
+	#if defined FAI_OnGameModeExit
+	    forward FAI_OnGameModeExit();
 	#endif
 #endif
-static WOW_InitScript() {
+static FAI_InitScript() {
 	//General
-	#if WOW_USE_MAP_ANDREAS == true
+	#if FAI_USE_MAP_ANDREAS == true
 		new MapAndreasAddress = MapAndreas_GetAddress(); //Don't init MapAndreas when it was already initialized
 		if(MapAndreasAddress == 0) {
-	    	MapAndreas_Init(WOW_MAP_ANDREAS_MODE); //MapAndreas
+	    	MapAndreas_Init(FAI_MAP_ANDREAS_MODE); //MapAndreas
 	    }
 		FCNPC_InitMapAndreas(MapAndreas_GetAddress()); //MapAndreas
 	#endif
 	FCNPC_SetUpdateRate(50);
- 	WOW_UpdateTimer = SetTimer("WOW_Update", WOW_UPDATE_TIME, true);
+ 	FAI_UpdateTimer = SetTimer("FAI_Update", FAI_UPDATE_TIME, true);
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
-		WOW_PauseTickCount[playerid] = GetTickCount();
-		WOW_PlayerPaused[playerid] = false;
+		FAI_PauseTickCount[playerid] = GetTickCount();
+		FAI_PlayerPaused[playerid] = false;
 	}
-	WOW_PauseTimer = SetTimer("WOW_CheckPausedPlayers", 1000, 1);
+	FAI_PauseTimer = SetTimer("FAI_CheckPausedPlayers", 1000, 1);
 
 	//Boss
- 	WOW_InitAllBosses();
+ 	FAI_InitAllBosses();
 
 	//Spell
- 	WOW_InitAllSpells();
+ 	FAI_InitAllSpells();
  	
  	//Casting
-	WOW_InitAllBossesCasting();
+	FAI_InitAllBossesCasting();
 	
 	printf("---------------------");
-	printf("  FCNPC Boss loaded  ");
-	printf("- Version: %s     ", WOW_VERSION);
+	printf("  FCNPC A.I. loaded  ");
+	printf("- Version: %s     ", FAI_VERSION);
 	printf("- Author: Freaksken  ");
 	printf("---------------------");
 }
-static WOW_ExitScript() {
+static FAI_ExitScript() {
 	//General
-	KillTimer(WOW_UpdateTimer);
- 	WOW_UpdateTimer = WOW_INVALID_TIMER_ID;
+	KillTimer(FAI_UpdateTimer);
+ 	FAI_UpdateTimer = FAI_INVALID_TIMER_ID;
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
-		WOW_PauseTickCount[playerid] = GetTickCount();
-		WOW_PlayerPaused[playerid] = false;
+		FAI_PauseTickCount[playerid] = GetTickCount();
+		FAI_PlayerPaused[playerid] = false;
 	}
-	KillTimer(WOW_PauseTimer);
-	WOW_PauseTimer = WOW_INVALID_TIMER_ID;
+	KillTimer(FAI_PauseTimer);
+	FAI_PauseTimer = FAI_INVALID_TIMER_ID;
 
  	//Boss
-    WOW_DestroyAllBosses();
+    FAI_DestroyAllBosses();
 
     //Spell
- 	WOW_DestroyAllSpells();
+ 	FAI_DestroyAllSpells();
  	
  	//Casting
- 	WOW_InitAllBossesCasting();
+ 	FAI_InitAllBossesCasting();
 }
 
 public OnPlayerDisconnect(playerid, reason) {
-    new bossid = WOW_GetBossIDFromNPCID(playerid);
-    if(WOW_IsValidBoss(bossid)) {
-		WOW_DestroyBossNoFCNPC_Destroy(bossid);
+    new bossid = FAI_GetBossIDFromNPCID(playerid);
+    if(FAI_IsValidBoss(bossid)) {
+		FAI_DestroyBossNoFCNPC_Destroy(bossid);
     }
-    #if defined WOW_OnPlayerDisconnect
-        WOW_OnPlayerDisconnect(playerid, reason);
+    #if defined FAI_OnPlayerDisconnect
+        FAI_OnPlayerDisconnect(playerid, reason);
     #endif
 	return 1;
 }
@@ -502,16 +502,16 @@ public OnPlayerDisconnect(playerid, reason) {
 #else
     #define _ALS_OnPlayerDisconnect
 #endif
-#define OnPlayerDisconnect WOW_OnPlayerDisconnect
-#if defined WOW_OnPlayerDisconnect
-    forward WOW_OnPlayerDisconnect(playerid, reason);
+#define OnPlayerDisconnect FAI_OnPlayerDisconnect
+#if defined FAI_OnPlayerDisconnect
+    forward FAI_OnPlayerDisconnect(playerid, reason);
 #endif
 
 public OnPlayerConnect(playerid) {
-	WOW_PauseTickCount[playerid] = GetTickCount();
-	WOW_PlayerPaused[playerid] = false;
-    #if defined WOW_OnPlayerConnect
-        WOW_OnPlayerConnect(playerid);
+	FAI_PauseTickCount[playerid] = GetTickCount();
+	FAI_PlayerPaused[playerid] = false;
+    #if defined FAI_OnPlayerConnect
+        FAI_OnPlayerConnect(playerid);
     #endif
 	return 1;
 }
@@ -520,26 +520,26 @@ public OnPlayerConnect(playerid) {
 #else
     #define _ALS_OnPlayerConnect
 #endif
-#define OnPlayerConnect WOW_OnPlayerConnect
-#if defined WOW_OnPlayerConnect
-    forward WOW_OnPlayerConnect(playerid);
+#define OnPlayerConnect FAI_OnPlayerConnect
+#if defined FAI_OnPlayerConnect
+    forward FAI_OnPlayerConnect(playerid);
 #endif
 
 public OnPlayerRequestClass(playerid, classid)
 {
 	//ForceClassSelection doesn't call a state change and thus PLAYER_STATE_WASTED isn't set
-	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-		TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][0]);
-		TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][1]);
-		TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][2]);
-		TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][3]);
-		TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][4]);
-		TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][5]);
-		TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][6]);
-		TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][7]);
+	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][0]);
+		TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][1]);
+		TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][2]);
+		TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][3]);
+		TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][4]);
+		TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][5]);
+		TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][6]);
+		TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][7]);
 	}
-    #if defined WOW_OnPlayerRequestClass
-        WOW_OnPlayerRequestClass(playerid, classid);
+    #if defined FAI_OnPlayerRequestClass
+        FAI_OnPlayerRequestClass(playerid, classid);
     #endif
 	return 1;
 }
@@ -548,16 +548,16 @@ public OnPlayerRequestClass(playerid, classid)
 #else
     #define _ALS_OnPlayerRequestClass
 #endif
-#define OnPlayerRequestClass WOW_OnPlayerRequestClass
-#if defined WOW_OnPlayerRequestClass
-    forward WOW_OnPlayerRequestClass(playerid, classid);
+#define OnPlayerRequestClass FAI_OnPlayerRequestClass
+#if defined FAI_OnPlayerRequestClass
+    forward FAI_OnPlayerRequestClass(playerid, classid);
 #endif
 
 public OnPlayerUpdate(playerid)
 {
-	WOW_PauseTickCount[playerid] = GetTickCount();
-    #if defined WOW_OnPlayerUpdate
-        WOW_OnPlayerUpdate(playerid);
+	FAI_PauseTickCount[playerid] = GetTickCount();
+    #if defined FAI_OnPlayerUpdate
+        FAI_OnPlayerUpdate(playerid);
     #endif
 	return 1;
 }
@@ -567,9 +567,9 @@ public OnPlayerUpdate(playerid)
 #else
     #define _ALS_OnPlayerUpdate
 #endif
-#define OnPlayerUpdate WOW_OnPlayerUpdate
-#if defined WOW_OnPlayerUpdate
-    forward WOW_OnPlayerUpdate(playerid);
+#define OnPlayerUpdate FAI_OnPlayerUpdate
+#if defined FAI_OnPlayerUpdate
+    forward FAI_OnPlayerUpdate(playerid);
 #endif
 
 /*
@@ -589,21 +589,21 @@ public OnPlayerUpdate(playerid)
 */
 public FCNPC_OnRespawn(npcid)
 {
-	new bossid = WOW_GetBossIDFromNPCID(npcid);
-	if(WOW_IsValidBoss(bossid)) {
-	    if(WOW_Bosses[bossid][CUR_HEALTH] != 0) {
-			//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). WOW_SetBossTargetWithReason doesn't take care of this for various reasons.
-			if(WOW_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && WOW_IsBossCasting(bossid)) {
-		      	WOW_StopBossCasting(bossid);
+	new bossid = FAI_GetBossIDFromNPCID(npcid);
+	if(FAI_IsValidBoss(bossid)) {
+	    if(FAI_Bosses[bossid][CUR_HEALTH] != 0) {
+			//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). FAI_SetBossTargetWithReason doesn't take care of this for various reasons.
+			if(FAI_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(bossid)) {
+		      	FAI_StopBossCasting(bossid);
 			}
 			//Reset target
-			WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
+			FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
 	    } else {
-			WOW_SetBossCurrentHealth(bossid, WOW_Bosses[bossid][MAX_HEALTH]);
+			FAI_SetBossCurrentHealth(bossid, FAI_Bosses[bossid][MAX_HEALTH]);
 	    }
 	}
-    #if defined WOW_FCNPC_OnRespawn
-        WOW_FCNPC_OnRespawn(npcid);
+    #if defined FAI_FCNPC_OnRespawn
+        FAI_FCNPC_OnRespawn(npcid);
     #endif
     return 1;
 }
@@ -612,19 +612,19 @@ public FCNPC_OnRespawn(npcid)
 #else
     #define _ALS_FCNPC_OnRespawn
 #endif
-#define FCNPC_OnRespawn WOW_FCNPC_OnRespawn
-#if defined WOW_FCNPC_OnRespawn
-    forward WOW_FCNPC_OnRespawn(npcid);
+#define FCNPC_OnRespawn FAI_FCNPC_OnRespawn
+#if defined FAI_FCNPC_OnRespawn
+    forward FAI_FCNPC_OnRespawn(npcid);
 #endif
 public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss)
 {
 	new ret = 1;
-	new bossid = WOW_GetBossIDFromNPCID(npcid);
-	if(WOW_IsValidBoss(bossid)) {
-		ret = WOW_DamageBoss(bossid, damagerid, health_loss);
+	new bossid = FAI_GetBossIDFromNPCID(npcid);
+	if(FAI_IsValidBoss(bossid)) {
+		ret = FAI_DamageBoss(bossid, damagerid, health_loss);
 	}
-    #if defined WOW_FCNPC_OnTakeDamage
-        WOW_FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss);
+    #if defined FAI_FCNPC_OnTakeDamage
+        FAI_FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss);
     #endif
     return ret;
 }
@@ -633,26 +633,26 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 #else
     #define _ALS_FCNPC_OnTakeDamage
 #endif
-#define FCNPC_OnTakeDamage WOW_FCNPC_OnTakeDamage
-#if defined WOW_FCNPC_OnTakeDamage
-    forward WOW_FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss);
+#define FCNPC_OnTakeDamage FAI_FCNPC_OnTakeDamage
+#if defined FAI_FCNPC_OnTakeDamage
+    forward FAI_FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss);
 #endif
-stock WOW_DamageBoss(bossid, damagerid, Float:amount) {
-	if(WOW_IsValidBoss(bossid) && (IsPlayerConnected(damagerid) || damagerid == INVALID_PLAYER_ID)) {
-	    new bossplayerid = WOW_GetBossNPCID(bossid);
+stock FAI_DamageBoss(bossid, damagerid, Float:amount) {
+	if(FAI_IsValidBoss(bossid) && (IsPlayerConnected(damagerid) || damagerid == INVALID_PLAYER_ID)) {
+	    new bossplayerid = FAI_GetBossNPCID(bossid);
 		//2nd part of condition: if the npc is dead, this function can still be called before the OnDeath callback gets called (mainly when shot with fast guns: minigun, ...)
 		//3rd part of condition: damage not inflicted by players (falling, ...)
 		//4th part of condition: neccesary to reject invalid damage done: the NPC is visible and thus damagable in other interiors
-	 	if(FCNPC_IsSpawned(bossplayerid) && !FCNPC_IsDead(bossplayerid) && (damagerid == INVALID_PLAYER_ID || WOW_IsBossValidForPlayer(damagerid, bossid))) {
+	 	if(FCNPC_IsSpawned(bossplayerid) && !FCNPC_IsDead(bossplayerid) && (damagerid == INVALID_PLAYER_ID || FAI_IsBossValidForPlayer(damagerid, bossid))) {
 			//Set target to damagerid if no target yet (valid damagerid + no target yet check in setter)
-			WOW_SetBossTargetWithReason(bossid, damagerid, 1);
+			FAI_SetBossTargetWithReason(bossid, damagerid, 1);
 			//Dont damage below 0
-			if(WOW_Bosses[bossid][CUR_HEALTH] > amount) {
-				WOW_SetBossCurrentHealth(bossid, WOW_Bosses[bossid][CUR_HEALTH] - amount);
+			if(FAI_Bosses[bossid][CUR_HEALTH] > amount) {
+				FAI_SetBossCurrentHealth(bossid, FAI_Bosses[bossid][CUR_HEALTH] - amount);
 			} else {
 				//Make the damager that makes the last shot, kill the boss
-				FCNPC_SetHealth(bossplayerid, WOW_Bosses[bossid][CUR_HEALTH]);
-				//WOW_SetBossCurrentHealth(bossid, 0); //Happens in FCNPC_OnDeath
+				FCNPC_SetHealth(bossplayerid, FAI_Bosses[bossid][CUR_HEALTH]);
+				//FAI_SetBossCurrentHealth(bossid, 0); //Happens in FCNPC_OnDeath
 				//Return 1 to allow the dammage to be afflicted to npc, which will kill him in this case
 				return 1;
 			}
@@ -661,16 +661,16 @@ stock WOW_DamageBoss(bossid, damagerid, Float:amount) {
 	//Return 0 to prevent damage to be afflicted to npc, update CUR_HEALTH instead
 	return 0;
 }
-stock WOW_HealBoss(bossid, healerid, Float:amount) {
-	if(WOW_IsValidBoss(bossid) && (IsPlayerConnected(healerid) || healerid == INVALID_PLAYER_ID)) {
-		new bossplayerid = WOW_GetBossNPCID(bossid);
+stock FAI_HealBoss(bossid, healerid, Float:amount) {
+	if(FAI_IsValidBoss(bossid) && (IsPlayerConnected(healerid) || healerid == INVALID_PLAYER_ID)) {
+		new bossplayerid = FAI_GetBossNPCID(bossid);
 		if(FCNPC_IsSpawned(bossplayerid) && !FCNPC_IsDead(bossplayerid)) {
 			//Don't heal above MAX_HEALTH
-			if(WOW_Bosses[bossid][MAX_HEALTH] - WOW_Bosses[bossid][CUR_HEALTH] <= amount) {
-				WOW_SetBossCurrentHealth(bossid, WOW_Bosses[bossid][MAX_HEALTH]);
+			if(FAI_Bosses[bossid][MAX_HEALTH] - FAI_Bosses[bossid][CUR_HEALTH] <= amount) {
+				FAI_SetBossCurrentHealth(bossid, FAI_Bosses[bossid][MAX_HEALTH]);
 				return 1;
 			} else {
-				WOW_SetBossCurrentHealth(bossid, WOW_Bosses[bossid][CUR_HEALTH] + amount);
+				FAI_SetBossCurrentHealth(bossid, FAI_Bosses[bossid][CUR_HEALTH] + amount);
 			}
 		}
 	}
@@ -678,19 +678,19 @@ stock WOW_HealBoss(bossid, healerid, Float:amount) {
 }
 public FCNPC_OnDeath(npcid, killerid, weaponid)
 {
-	new bossid = WOW_GetBossIDFromNPCID(npcid);
-	if(WOW_IsValidBoss(bossid)) {
-		//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). WOW_SetBossTargetWithReason doesn't take care of this for various reasons.
-		if(WOW_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && WOW_IsBossCasting(bossid)) {
-	      	WOW_StopBossCasting(bossid);
+	new bossid = FAI_GetBossIDFromNPCID(npcid);
+	if(FAI_IsValidBoss(bossid)) {
+		//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). FAI_SetBossTargetWithReason doesn't take care of this for various reasons.
+		if(FAI_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(bossid)) {
+	      	FAI_StopBossCasting(bossid);
 		}
 	    //Reset target
-		WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 2);
+		FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 2);
 		//If the boss was killed with FCNPC_Kill or FCNPC_SetHealth with value <= 0.0, not by taking damage
-		WOW_SetBossCurrentHealth(bossid, 0);
+		FAI_SetBossCurrentHealth(bossid, 0);
 	}
-	#if defined WOW_FCNPC_OnDeath
-        WOW_FCNPC_OnDeath(npcid, killerid, weaponid);
+	#if defined FAI_FCNPC_OnDeath
+        FAI_FCNPC_OnDeath(npcid, killerid, weaponid);
     #endif
 	return 1;
 }
@@ -699,119 +699,119 @@ public FCNPC_OnDeath(npcid, killerid, weaponid)
 #else
     #define _ALS_FCNPC_OnDeath
 #endif
-#define FCNPC_OnDeath WOW_FCNPC_OnDeath
-#if defined WOW_FCNPC_OnDeath
-    forward WOW_FCNPC_OnDeath(npcid, killerid, weaponid);
+#define FCNPC_OnDeath FAI_FCNPC_OnDeath
+#if defined FAI_FCNPC_OnDeath
+    forward FAI_FCNPC_OnDeath(npcid, killerid, weaponid);
 #endif
 
-forward WOW_Update();
-public WOW_Update() {
+forward FAI_Update();
+public FAI_Update() {
 	//Boss
 	//Show/hide boss textdraws & mapicon to player
 	for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
 		//Last part of condition:  we don't need to display things to an npc
 	   if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid)) {
-			new closestBoss = WOW_GetClosestBossToDisplay(playerid);
+			new closestBoss = FAI_GetClosestBossToDisplay(playerid);
 			//Hide the textdraws all bosses share if no boss is in range for a player
-			if(!WOW_IsValidBoss(closestBoss)) {
-				TextDrawHideForPlayer(playerid, WOW_BossBlackHealth);
-				TextDrawHideForPlayer(playerid, WOW_BossDarkRed);
-				TextDrawHideForPlayer(playerid, WOW_BossBlackCast);
+			if(!FAI_IsValidBoss(closestBoss)) {
+				TextDrawHideForPlayer(playerid, FAI_BossBlackHealth);
+				TextDrawHideForPlayer(playerid, FAI_BossDarkRed);
+				TextDrawHideForPlayer(playerid, FAI_BossBlackCast);
 			}
 			//Show the textdraws all bosses share if a boss is in range for a player
 			else {
-				TextDrawShowForPlayer(playerid, WOW_BossBlackHealth);
-				TextDrawShowForPlayer(playerid, WOW_BossDarkRed);
-				if(WOW_IsBossCasting(closestBoss) || WOW_IsBossCastBarExtra(closestBoss)) {
-					TextDrawShowForPlayer(playerid, WOW_BossBlackCast);
+				TextDrawShowForPlayer(playerid, FAI_BossBlackHealth);
+				TextDrawShowForPlayer(playerid, FAI_BossDarkRed);
+				if(FAI_IsBossCasting(closestBoss) || FAI_IsBossCastBarExtra(closestBoss)) {
+					TextDrawShowForPlayer(playerid, FAI_BossBlackCast);
 				} else {
-					TextDrawHideForPlayer(playerid, WOW_BossBlackCast);
+					TextDrawHideForPlayer(playerid, FAI_BossBlackCast);
 				}
 			}
-			for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
+			for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
 			    //Show the mapicon if the boss is valid for a player
-			    if(WOW_IsBossValidForPlayer(playerid, bossid) && WOW_Bosses[bossid][ICONID] != WOW_INVALID_ICON_ID) {
+			    if(FAI_IsBossValidForPlayer(playerid, bossid) && FAI_Bosses[bossid][ICONID] != FAI_INVALID_ICON_ID) {
     				new Float:bossX, Float:bossY, Float:bossZ;
-	        		FCNPC_GetPosition(WOW_Bosses[bossid][NPCID], bossX, bossY, bossZ);
-					SetPlayerMapIcon(playerid, WOW_Bosses[bossid][ICONID], bossX, bossY, bossZ, WOW_Bosses[bossid][ICON_MARKER], WOW_Bosses[bossid][ICON_COLOR], WOW_Bosses[bossid][ICON_STYLE]);
+	        		FCNPC_GetPosition(FAI_Bosses[bossid][NPCID], bossX, bossY, bossZ);
+					SetPlayerMapIcon(playerid, FAI_Bosses[bossid][ICONID], bossX, bossY, bossZ, FAI_Bosses[bossid][ICON_MARKER], FAI_Bosses[bossid][ICON_COLOR], FAI_Bosses[bossid][ICON_STYLE]);
 			    }
 			    //Hide the mapicon if the boss is invalid for a player
 				else {
-					RemovePlayerMapIcon(playerid, WOW_Bosses[bossid][ICONID]);
+					RemovePlayerMapIcon(playerid, FAI_Bosses[bossid][ICONID]);
 			    }
 				//Show the textdraws specific to a boss if he is the closest boss for a player
 			    if(bossid == closestBoss) {
-					TextDrawShowForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][0]);
-					TextDrawShowForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][1]);
-					TextDrawShowForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][2]);
-					TextDrawShowForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][3]);
-					if(WOW_IsBossCasting(bossid) || WOW_IsBossCastBarExtra(bossid)) {
-						TextDrawShowForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][4]);
-						TextDrawShowForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][5]);
-						TextDrawShowForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][6]);
-						TextDrawShowForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][7]);
+					TextDrawShowForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][0]);
+					TextDrawShowForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][1]);
+					TextDrawShowForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][2]);
+					TextDrawShowForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][3]);
+					if(FAI_IsBossCasting(bossid) || FAI_IsBossCastBarExtra(bossid)) {
+						TextDrawShowForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][4]);
+						TextDrawShowForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][5]);
+						TextDrawShowForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][6]);
+						TextDrawShowForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][7]);
 					} else {
-						TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][4]);
-						TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][5]);
-						TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][6]);
-						TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][7]);
+						TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][4]);
+						TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][5]);
+						TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][6]);
+						TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][7]);
 					}
 			    }
 				//Hide the textdraws specific to a boss if he is not the closest boss for a player
 				//Otherwise if multiple bosses are in range, their textdraws will be put on top of eachother, which is ugly and we don't want of course
 				else {
-					TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][0]);
-					TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][1]);
-					TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][2]);
-					TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][3]);
-					TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][4]);
-					TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][5]);
-					TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][6]);
-					TextDrawHideForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][7]);
+					TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][0]);
+					TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][1]);
+					TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][2]);
+					TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][3]);
+					TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][4]);
+					TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][5]);
+					TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][6]);
+					TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][7]);
 			    }
 			}
 		}
 	}
 	
 	//Update boss
-	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-	    if(WOW_IsValidBoss(bossid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID]) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID])) {
+	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+	    if(FAI_IsValidBoss(bossid) && FCNPC_IsSpawned(FAI_Bosses[bossid][NPCID]) && !FCNPC_IsDead(FAI_Bosses[bossid][NPCID])) {
 	        //Update casting bar
-			WOW_IncreaseBossCastProgress(bossid);
+			FAI_IncreaseBossCastProgress(bossid);
 			//Get new target if no target, or if old target invalid, or if the boss is not streamed in anymore for his old target
-			if(!WOW_IsBossValidForPlayer(WOW_Bosses[bossid][TARGET], bossid) || !IsPlayerStreamedIn(WOW_Bosses[bossid][NPCID], WOW_Bosses[bossid][TARGET])) {
+			if(!FAI_IsBossValidForPlayer(FAI_Bosses[bossid][TARGET], bossid) || !IsPlayerStreamedIn(FAI_Bosses[bossid][NPCID], FAI_Bosses[bossid][TARGET])) {
 			    //Set target to closestPlayerid (valid closestPlayerid check in setter)
-				WOW_SetBossTargetWithReason(bossid, WOW_GetClosestPlayerToTakeAggro(bossid), 3);
+				FAI_SetBossTargetWithReason(bossid, FAI_GetClosestPlayerToTakeAggro(bossid), 3);
 			}
 	        //Attack target (which can be set above) if target known
-	        if(WOW_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
-          		WOW_BossAttackTarget(bossid, WOW_Bosses[bossid][TARGET]);
+	        if(FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
+          		FAI_BossAttackTarget(bossid, FAI_Bosses[bossid][TARGET]);
           	}
 	    }
 	}
 }
 
-forward WOW_CheckPausedPlayers();
-public WOW_CheckPausedPlayers() {
+forward FAI_CheckPausedPlayers();
+public FAI_CheckPausedPlayers() {
 	for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
 	    new PlayerState = GetPlayerState(playerid);
 	    //On initialization and when the player is dead or when the player is in class selection, OnPlayerUpdate will not be called
 	    if(IsPlayerConnected(playerid) && PlayerState != PLAYER_STATE_WASTED && PlayerState != PLAYER_STATE_NONE) {
 	        new bool:PlayerInGame = true;
-	        if(WOW_GetTickCountDiff(WOW_PauseTickCount[playerid], GetTickCount()) > 2000) {
+	        if(FAI_GetTickCountDiff(FAI_PauseTickCount[playerid], GetTickCount()) > 2000) {
 				PlayerInGame = false;
 			}
-	        if(!PlayerInGame && !WOW_PlayerPaused[playerid]) {
-				WOW_PlayerPaused[playerid] = true;
-	        } else if(PlayerInGame && WOW_PlayerPaused[playerid]){
-				WOW_PlayerPaused[playerid] = false;
+	        if(!PlayerInGame && !FAI_PlayerPaused[playerid]) {
+				FAI_PlayerPaused[playerid] = true;
+	        } else if(PlayerInGame && FAI_PlayerPaused[playerid]){
+				FAI_PlayerPaused[playerid] = false;
 	        }
 		}
 	}
 	return 1;
 }
 //This fixes the problem with GetTickCount integer overflow when the server is run for 24+ days
-static WOW_GetTickCountDiff(oldInteger, newInteger) {
+static FAI_GetTickCountDiff(oldInteger, newInteger) {
 	//Integer max: 2147483647
 	if(oldInteger < 0 && newInteger >= 0) {
 		return newInteger - oldInteger;
@@ -822,260 +822,260 @@ static WOW_GetTickCountDiff(oldInteger, newInteger) {
 }
 
 //Boss
-static WOW_InitAllBosses() {
-	WOW_BossBlackHealth = TextDrawCreate(169.0, 429, "_");
-	TextDrawUseBox(WOW_BossBlackHealth, 1);
-	TextDrawBoxColor(WOW_BossBlackHealth, 0x000000ff);
-	TextDrawLetterSize(WOW_BossBlackHealth, 0.0, 0.7);
-	TextDrawTextSize(WOW_BossBlackHealth, 471.0, 0.0);
-	WOW_BossDarkRed = TextDrawCreate(170.0, 430.0, "_");
-	TextDrawUseBox(WOW_BossDarkRed, 1);
-	TextDrawBoxColor(WOW_BossDarkRed, 0x5A0C0EFF);
-	TextDrawLetterSize(WOW_BossDarkRed, 0.0, 0.5);
-	TextDrawTextSize(WOW_BossDarkRed, 470.0, 0.0);
-	WOW_BossBlackCast = TextDrawCreate(169.0, 439, "_");
-	TextDrawUseBox(WOW_BossBlackCast, 1);
-	TextDrawBoxColor(WOW_BossBlackCast, 0x000000ff);
-	TextDrawLetterSize(WOW_BossBlackCast, 0.0, 0.7);
-	TextDrawTextSize(WOW_BossBlackCast, 471.0, 0.0);
-	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-	    WOW_InitBoss(bossid);
+static FAI_InitAllBosses() {
+	FAI_BossBlackHealth = TextDrawCreate(169.0, 429, "_");
+	TextDrawUseBox(FAI_BossBlackHealth, 1);
+	TextDrawBoxColor(FAI_BossBlackHealth, 0x000000ff);
+	TextDrawLetterSize(FAI_BossBlackHealth, 0.0, 0.7);
+	TextDrawTextSize(FAI_BossBlackHealth, 471.0, 0.0);
+	FAI_BossDarkRed = TextDrawCreate(170.0, 430.0, "_");
+	TextDrawUseBox(FAI_BossDarkRed, 1);
+	TextDrawBoxColor(FAI_BossDarkRed, 0x5A0C0EFF);
+	TextDrawLetterSize(FAI_BossDarkRed, 0.0, 0.5);
+	TextDrawTextSize(FAI_BossDarkRed, 470.0, 0.0);
+	FAI_BossBlackCast = TextDrawCreate(169.0, 439, "_");
+	TextDrawUseBox(FAI_BossBlackCast, 1);
+	TextDrawBoxColor(FAI_BossBlackCast, 0x000000ff);
+	TextDrawLetterSize(FAI_BossBlackCast, 0.0, 0.7);
+	TextDrawTextSize(FAI_BossBlackCast, 471.0, 0.0);
+	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+	    FAI_InitBoss(bossid);
 	}
 }
-static WOW_InitBoss(bossid) {
-	//Don't use WOW_IsValidBoss(bossid)
-	if(bossid >= 0 && bossid < WOW_MAX_BOSSES) {
-		WOW_Bosses[bossid][TEXTDRAW][0] = TextDrawCreate(170.0, 430.0, "_");
-		TextDrawUseBox(WOW_Bosses[bossid][TEXTDRAW][0], 1);
-		TextDrawBoxColor(WOW_Bosses[bossid][TEXTDRAW][0], 0xB4191DFF);
-		TextDrawTextSize(WOW_Bosses[bossid][TEXTDRAW][0], 470.0, 0.0);
-		TextDrawLetterSize(WOW_Bosses[bossid][TEXTDRAW][0], 0.0, 0.5);
-		WOW_Bosses[bossid][TEXTDRAW][1] = TextDrawCreate(170.0, 429.0, "_");
-		TextDrawFont(WOW_Bosses[bossid][TEXTDRAW][1], 1);
-		TextDrawAlignment(WOW_Bosses[bossid][TEXTDRAW][1], 1);
-		TextDrawSetProportional(WOW_Bosses[bossid][TEXTDRAW][1], 1);
-		TextDrawColor(WOW_Bosses[bossid][TEXTDRAW][1], 0xffffffff);
-		TextDrawSetShadow(WOW_Bosses[bossid][TEXTDRAW][1], 0);
-		TextDrawSetOutline(WOW_Bosses[bossid][TEXTDRAW][1], 1);
-		TextDrawLetterSize(WOW_Bosses[bossid][TEXTDRAW][1], 0.2, 0.7);
-		WOW_Bosses[bossid][TEXTDRAW][2] = TextDrawCreate(470.0, 429.0, "_");
-		TextDrawFont(WOW_Bosses[bossid][TEXTDRAW][2], 1);
-		TextDrawAlignment(WOW_Bosses[bossid][TEXTDRAW][2], 3);
-		TextDrawSetProportional(WOW_Bosses[bossid][TEXTDRAW][2], 1);
-		TextDrawColor(WOW_Bosses[bossid][TEXTDRAW][2], 0xffffffff);
-		TextDrawSetShadow(WOW_Bosses[bossid][TEXTDRAW][2], 0);
-		TextDrawSetOutline(WOW_Bosses[bossid][TEXTDRAW][2], 1);
-		TextDrawLetterSize(WOW_Bosses[bossid][TEXTDRAW][2], 0.2, 0.7);
-		WOW_Bosses[bossid][TEXTDRAW][3] = TextDrawCreate(169.0, 415, "_");
-		TextDrawFont(WOW_Bosses[bossid][TEXTDRAW][3], 0);
-		TextDrawAlignment(WOW_Bosses[bossid][TEXTDRAW][3], 1);
-		TextDrawSetProportional(WOW_Bosses[bossid][TEXTDRAW][3], 1);
-		TextDrawColor(WOW_Bosses[bossid][TEXTDRAW][3], 0xffffffff);
-		TextDrawSetShadow(WOW_Bosses[bossid][TEXTDRAW][3], 0);
-		TextDrawSetOutline(WOW_Bosses[bossid][TEXTDRAW][3], 1);
-		TextDrawLetterSize(WOW_Bosses[bossid][TEXTDRAW][3], 0.3, 1.0);
-		WOW_Bosses[bossid][TEXTDRAW][4] = TextDrawCreate(170.0, 440.0, "_");
-		TextDrawUseBox(WOW_Bosses[bossid][TEXTDRAW][4], 1);
-		TextDrawBoxColor(WOW_Bosses[bossid][TEXTDRAW][4], 0x645005ff);
-		TextDrawTextSize(WOW_Bosses[bossid][TEXTDRAW][4], 470.0, 0.0);
-		TextDrawLetterSize(WOW_Bosses[bossid][TEXTDRAW][4], 0.0, 0.5);
-		WOW_Bosses[bossid][TEXTDRAW][5] = TextDrawCreate(170.0, 440.0, "_");
-		TextDrawUseBox(WOW_Bosses[bossid][TEXTDRAW][5], 1);
-		TextDrawBoxColor(WOW_Bosses[bossid][TEXTDRAW][5], 0xB4820AFF);
-		TextDrawTextSize(WOW_Bosses[bossid][TEXTDRAW][5], 470.0, 0.0);
-		TextDrawLetterSize(WOW_Bosses[bossid][TEXTDRAW][5], 0.0, 0.5);
-		WOW_Bosses[bossid][TEXTDRAW][6] = TextDrawCreate(170.0, 439.0, "_");
-		TextDrawFont(WOW_Bosses[bossid][TEXTDRAW][6], 1);
-		TextDrawAlignment(WOW_Bosses[bossid][TEXTDRAW][6], 1);
-		TextDrawSetProportional(WOW_Bosses[bossid][TEXTDRAW][6], 1);
-		TextDrawColor(WOW_Bosses[bossid][TEXTDRAW][6], 0xffffffff);
-		TextDrawSetShadow(WOW_Bosses[bossid][TEXTDRAW][6], 0);
-		TextDrawSetOutline(WOW_Bosses[bossid][TEXTDRAW][6], 1);
-		TextDrawLetterSize(WOW_Bosses[bossid][TEXTDRAW][6], 0.2, 0.7);
-		WOW_Bosses[bossid][TEXTDRAW][7] = TextDrawCreate(470.0, 439.0, "_");
-		TextDrawFont(WOW_Bosses[bossid][TEXTDRAW][7], 1);
-		TextDrawAlignment(WOW_Bosses[bossid][TEXTDRAW][7], 3);
-		TextDrawSetProportional(WOW_Bosses[bossid][TEXTDRAW][7], 1);
-		TextDrawColor(WOW_Bosses[bossid][TEXTDRAW][7], 0xffffffff);
-		TextDrawSetShadow(WOW_Bosses[bossid][TEXTDRAW][7], 0);
-		TextDrawSetOutline(WOW_Bosses[bossid][TEXTDRAW][7], 1);
-		TextDrawLetterSize(WOW_Bosses[bossid][TEXTDRAW][7], 0.2, 0.7);
-		WOW_ResetBossStats(bossid);
+static FAI_InitBoss(bossid) {
+	//Don't use FAI_IsValidBoss(bossid)
+	if(bossid >= 0 && bossid < FAI_MAX_BOSSES) {
+		FAI_Bosses[bossid][TEXTDRAW][0] = TextDrawCreate(170.0, 430.0, "_");
+		TextDrawUseBox(FAI_Bosses[bossid][TEXTDRAW][0], 1);
+		TextDrawBoxColor(FAI_Bosses[bossid][TEXTDRAW][0], 0xB4191DFF);
+		TextDrawTextSize(FAI_Bosses[bossid][TEXTDRAW][0], 470.0, 0.0);
+		TextDrawLetterSize(FAI_Bosses[bossid][TEXTDRAW][0], 0.0, 0.5);
+		FAI_Bosses[bossid][TEXTDRAW][1] = TextDrawCreate(170.0, 429.0, "_");
+		TextDrawFont(FAI_Bosses[bossid][TEXTDRAW][1], 1);
+		TextDrawAlignment(FAI_Bosses[bossid][TEXTDRAW][1], 1);
+		TextDrawSetProportional(FAI_Bosses[bossid][TEXTDRAW][1], 1);
+		TextDrawColor(FAI_Bosses[bossid][TEXTDRAW][1], 0xffffffff);
+		TextDrawSetShadow(FAI_Bosses[bossid][TEXTDRAW][1], 0);
+		TextDrawSetOutline(FAI_Bosses[bossid][TEXTDRAW][1], 1);
+		TextDrawLetterSize(FAI_Bosses[bossid][TEXTDRAW][1], 0.2, 0.7);
+		FAI_Bosses[bossid][TEXTDRAW][2] = TextDrawCreate(470.0, 429.0, "_");
+		TextDrawFont(FAI_Bosses[bossid][TEXTDRAW][2], 1);
+		TextDrawAlignment(FAI_Bosses[bossid][TEXTDRAW][2], 3);
+		TextDrawSetProportional(FAI_Bosses[bossid][TEXTDRAW][2], 1);
+		TextDrawColor(FAI_Bosses[bossid][TEXTDRAW][2], 0xffffffff);
+		TextDrawSetShadow(FAI_Bosses[bossid][TEXTDRAW][2], 0);
+		TextDrawSetOutline(FAI_Bosses[bossid][TEXTDRAW][2], 1);
+		TextDrawLetterSize(FAI_Bosses[bossid][TEXTDRAW][2], 0.2, 0.7);
+		FAI_Bosses[bossid][TEXTDRAW][3] = TextDrawCreate(169.0, 415, "_");
+		TextDrawFont(FAI_Bosses[bossid][TEXTDRAW][3], 0);
+		TextDrawAlignment(FAI_Bosses[bossid][TEXTDRAW][3], 1);
+		TextDrawSetProportional(FAI_Bosses[bossid][TEXTDRAW][3], 1);
+		TextDrawColor(FAI_Bosses[bossid][TEXTDRAW][3], 0xffffffff);
+		TextDrawSetShadow(FAI_Bosses[bossid][TEXTDRAW][3], 0);
+		TextDrawSetOutline(FAI_Bosses[bossid][TEXTDRAW][3], 1);
+		TextDrawLetterSize(FAI_Bosses[bossid][TEXTDRAW][3], 0.3, 1.0);
+		FAI_Bosses[bossid][TEXTDRAW][4] = TextDrawCreate(170.0, 440.0, "_");
+		TextDrawUseBox(FAI_Bosses[bossid][TEXTDRAW][4], 1);
+		TextDrawBoxColor(FAI_Bosses[bossid][TEXTDRAW][4], 0x645005ff);
+		TextDrawTextSize(FAI_Bosses[bossid][TEXTDRAW][4], 470.0, 0.0);
+		TextDrawLetterSize(FAI_Bosses[bossid][TEXTDRAW][4], 0.0, 0.5);
+		FAI_Bosses[bossid][TEXTDRAW][5] = TextDrawCreate(170.0, 440.0, "_");
+		TextDrawUseBox(FAI_Bosses[bossid][TEXTDRAW][5], 1);
+		TextDrawBoxColor(FAI_Bosses[bossid][TEXTDRAW][5], 0xB4820AFF);
+		TextDrawTextSize(FAI_Bosses[bossid][TEXTDRAW][5], 470.0, 0.0);
+		TextDrawLetterSize(FAI_Bosses[bossid][TEXTDRAW][5], 0.0, 0.5);
+		FAI_Bosses[bossid][TEXTDRAW][6] = TextDrawCreate(170.0, 439.0, "_");
+		TextDrawFont(FAI_Bosses[bossid][TEXTDRAW][6], 1);
+		TextDrawAlignment(FAI_Bosses[bossid][TEXTDRAW][6], 1);
+		TextDrawSetProportional(FAI_Bosses[bossid][TEXTDRAW][6], 1);
+		TextDrawColor(FAI_Bosses[bossid][TEXTDRAW][6], 0xffffffff);
+		TextDrawSetShadow(FAI_Bosses[bossid][TEXTDRAW][6], 0);
+		TextDrawSetOutline(FAI_Bosses[bossid][TEXTDRAW][6], 1);
+		TextDrawLetterSize(FAI_Bosses[bossid][TEXTDRAW][6], 0.2, 0.7);
+		FAI_Bosses[bossid][TEXTDRAW][7] = TextDrawCreate(470.0, 439.0, "_");
+		TextDrawFont(FAI_Bosses[bossid][TEXTDRAW][7], 1);
+		TextDrawAlignment(FAI_Bosses[bossid][TEXTDRAW][7], 3);
+		TextDrawSetProportional(FAI_Bosses[bossid][TEXTDRAW][7], 1);
+		TextDrawColor(FAI_Bosses[bossid][TEXTDRAW][7], 0xffffffff);
+		TextDrawSetShadow(FAI_Bosses[bossid][TEXTDRAW][7], 0);
+		TextDrawSetOutline(FAI_Bosses[bossid][TEXTDRAW][7], 1);
+		TextDrawLetterSize(FAI_Bosses[bossid][TEXTDRAW][7], 0.2, 0.7);
+		FAI_ResetBossStats(bossid);
 	}
 }
-static WOW_ResetBossStats(bossid) {
-	//Don't use WOW_IsValidBoss(bossid)
-	if(bossid >= 0 && bossid < WOW_MAX_BOSSES) {
-		WOW_strcpy(WOW_Bosses[bossid][FULL_NAME], WOW_INVALID_STRING, WOW_MAX_BOSS_FULL_NAME + 1);
-		WOW_Bosses[bossid][ICONID] = WOW_INVALID_ICON_ID;
-		WOW_Bosses[bossid][ICON_MARKER] = 0;
-		WOW_Bosses[bossid][ICON_COLOR] = WOW_INVALID_COLOR;
-		WOW_Bosses[bossid][ICON_STYLE] = MAPICON_LOCAL;
-		WOW_Bosses[bossid][MAX_HEALTH] = 0.0;
-		WOW_Bosses[bossid][RANGE_DISPLAY] = 0.0;
-		WOW_Bosses[bossid][RANGE_AGGRO] = 0.0;
-		WOW_Bosses[bossid][DISPLAY_IF_DEAD] = false;
-		WOW_Bosses[bossid][CUR_HEALTH] = 0.0;
-		WOW_Bosses[bossid][TARGET] = INVALID_PLAYER_ID;
-		WOW_Bosses[bossid][MOVE_TYPE] = MOVE_TYPE_AUTO;
-		WOW_Bosses[bossid][MOVE_SPEED] = 0.0;
-		WOW_Bosses[bossid][MOVE_USE_MAP_ANDREAS] = false;
-		WOW_Bosses[bossid][MOVE_RADIUS] = 0.0;
-		WOW_Bosses[bossid][MOVE_SET_ANGLE] = false;
-		WOW_Bosses[bossid][RANGED_ATTACK_DISTANCE] = 0.0;
-		WOW_Bosses[bossid][RANGED_ATTACK_DELAY] = 0;
-		WOW_Bosses[bossid][RANGED_ATTACK_SET_ANGLE] = false;
-		WOW_Bosses[bossid][MELEE_ATTACK_DISTANCE] = 0.0;
-		WOW_Bosses[bossid][MELEE_ATTACK_DELAY] = 0;
-		WOW_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE] = false;
-		WOW_Bosses[bossid][ALLOW_NPC_TARGETS] = false;
-		WOW_Bosses[bossid][NPCID] = INVALID_PLAYER_ID;
+static FAI_ResetBossStats(bossid) {
+	//Don't use FAI_IsValidBoss(bossid)
+	if(bossid >= 0 && bossid < FAI_MAX_BOSSES) {
+		FAI_strcpy(FAI_Bosses[bossid][FULL_NAME], FAI_INVALID_STRING, FAI_MAX_BOSS_FULL_NAME + 1);
+		FAI_Bosses[bossid][ICONID] = FAI_INVALID_ICON_ID;
+		FAI_Bosses[bossid][ICON_MARKER] = 0;
+		FAI_Bosses[bossid][ICON_COLOR] = FAI_INVALID_COLOR;
+		FAI_Bosses[bossid][ICON_STYLE] = MAPICON_LOCAL;
+		FAI_Bosses[bossid][MAX_HEALTH] = 0.0;
+		FAI_Bosses[bossid][RANGE_DISPLAY] = 0.0;
+		FAI_Bosses[bossid][RANGE_AGGRO] = 0.0;
+		FAI_Bosses[bossid][DISPLAY_IF_DEAD] = false;
+		FAI_Bosses[bossid][CUR_HEALTH] = 0.0;
+		FAI_Bosses[bossid][TARGET] = INVALID_PLAYER_ID;
+		FAI_Bosses[bossid][MOVE_TYPE] = MOVE_TYPE_AUTO;
+		FAI_Bosses[bossid][MOVE_SPEED] = 0.0;
+		FAI_Bosses[bossid][MOVE_USE_MAP_ANDREAS] = false;
+		FAI_Bosses[bossid][MOVE_RADIUS] = 0.0;
+		FAI_Bosses[bossid][MOVE_SET_ANGLE] = false;
+		FAI_Bosses[bossid][RANGED_ATTACK_DISTANCE] = 0.0;
+		FAI_Bosses[bossid][RANGED_ATTACK_DELAY] = 0;
+		FAI_Bosses[bossid][RANGED_ATTACK_SET_ANGLE] = false;
+		FAI_Bosses[bossid][MELEE_ATTACK_DISTANCE] = 0.0;
+		FAI_Bosses[bossid][MELEE_ATTACK_DELAY] = 0;
+		FAI_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE] = false;
+		FAI_Bosses[bossid][ALLOW_NPC_TARGETS] = false;
+		FAI_Bosses[bossid][NPCID] = INVALID_PLAYER_ID;
 	}
 }
-forward bool:WOW_IsValidBoss(bossid); //Silence 'used before declaration' warning
-stock bool:WOW_IsValidBoss(bossid) {
-	if(bossid >= 0 && bossid < WOW_MAX_BOSSES && WOW_Bosses[bossid][NPCID] != INVALID_PLAYER_ID) {
+forward bool:FAI_IsValidBoss(bossid); //Silence 'used before declaration' warning
+stock bool:FAI_IsValidBoss(bossid) {
+	if(bossid >= 0 && bossid < FAI_MAX_BOSSES && FAI_Bosses[bossid][NPCID] != INVALID_PLAYER_ID) {
 	    return true;
 	}
 	return false;
 }
-stock WOW_DestroyAllBosses() {
-	TextDrawDestroy(WOW_BossBlackHealth);
-	TextDrawDestroy(WOW_BossDarkRed);
-	TextDrawDestroy(WOW_BossBlackCast);
-	WOW_BossBlackHealth = Text:INVALID_TEXT_DRAW;
-	WOW_BossDarkRed = Text:INVALID_TEXT_DRAW;
-	WOW_BossBlackCast = Text:INVALID_TEXT_DRAW;
-	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-	    WOW_DestroyBoss(bossid);
+stock FAI_DestroyAllBosses() {
+	TextDrawDestroy(FAI_BossBlackHealth);
+	TextDrawDestroy(FAI_BossDarkRed);
+	TextDrawDestroy(FAI_BossBlackCast);
+	FAI_BossBlackHealth = Text:INVALID_TEXT_DRAW;
+	FAI_BossDarkRed = Text:INVALID_TEXT_DRAW;
+	FAI_BossBlackCast = Text:INVALID_TEXT_DRAW;
+	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+	    FAI_DestroyBoss(bossid);
 	}
 	return 1;
 }
-stock WOW_DestroyBoss(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
-	    FCNPC_Destroy(WOW_Bosses[bossid][NPCID]);
-	    //WOW_DestroyBossNoFCNPC_Destroy will be called by OnPlayerDisconnect
+stock FAI_DestroyBoss(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
+	    FCNPC_Destroy(FAI_Bosses[bossid][NPCID]);
+	    //FAI_DestroyBossNoFCNPC_Destroy will be called by OnPlayerDisconnect
     	return 1;
     }
     return 0;
 }
-static WOW_DestroyBossNoFCNPC_Destroy(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
+static FAI_DestroyBossNoFCNPC_Destroy(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
 		for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
- 			RemovePlayerMapIcon(playerid, WOW_Bosses[bossid][ICONID]);
+ 			RemovePlayerMapIcon(playerid, FAI_Bosses[bossid][ICONID]);
 		}
-		//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). WOW_SetBossTargetWithReason doesn't take care of this for various reasons.
-		if(WOW_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && WOW_IsBossCasting(bossid)) {
-	      	WOW_StopBossCasting(bossid);
+		//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). FAI_SetBossTargetWithReason doesn't take care of this for various reasons.
+		if(FAI_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(bossid)) {
+	      	FAI_StopBossCasting(bossid);
 		}
 		//Reset target
-		WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0); //WOW_Casting gets reset in here, so we don't need to reset it manually again
-		TextDrawDestroy(WOW_Bosses[bossid][TEXTDRAW][0]);
-		TextDrawDestroy(WOW_Bosses[bossid][TEXTDRAW][1]);
-		TextDrawDestroy(WOW_Bosses[bossid][TEXTDRAW][2]);
-		TextDrawDestroy(WOW_Bosses[bossid][TEXTDRAW][3]);
-		TextDrawDestroy(WOW_Bosses[bossid][TEXTDRAW][4]);
-		TextDrawDestroy(WOW_Bosses[bossid][TEXTDRAW][5]);
-		TextDrawDestroy(WOW_Bosses[bossid][TEXTDRAW][6]);
-		TextDrawDestroy(WOW_Bosses[bossid][TEXTDRAW][7]);
-		WOW_Bosses[bossid][TEXTDRAW][0] = Text:INVALID_TEXT_DRAW;
-		WOW_Bosses[bossid][TEXTDRAW][1] = Text:INVALID_TEXT_DRAW;
-		WOW_Bosses[bossid][TEXTDRAW][2] = Text:INVALID_TEXT_DRAW;
-		WOW_Bosses[bossid][TEXTDRAW][3] = Text:INVALID_TEXT_DRAW;
-		WOW_Bosses[bossid][TEXTDRAW][4] = Text:INVALID_TEXT_DRAW;
-		WOW_Bosses[bossid][TEXTDRAW][5] = Text:INVALID_TEXT_DRAW;
-		WOW_Bosses[bossid][TEXTDRAW][6] = Text:INVALID_TEXT_DRAW;
-		WOW_Bosses[bossid][TEXTDRAW][7] = Text:INVALID_TEXT_DRAW;
-	    WOW_ResetBossStats(bossid);
+		FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0); //FAI_Casting gets reset in here, so we don't need to reset it manually again
+		TextDrawDestroy(FAI_Bosses[bossid][TEXTDRAW][0]);
+		TextDrawDestroy(FAI_Bosses[bossid][TEXTDRAW][1]);
+		TextDrawDestroy(FAI_Bosses[bossid][TEXTDRAW][2]);
+		TextDrawDestroy(FAI_Bosses[bossid][TEXTDRAW][3]);
+		TextDrawDestroy(FAI_Bosses[bossid][TEXTDRAW][4]);
+		TextDrawDestroy(FAI_Bosses[bossid][TEXTDRAW][5]);
+		TextDrawDestroy(FAI_Bosses[bossid][TEXTDRAW][6]);
+		TextDrawDestroy(FAI_Bosses[bossid][TEXTDRAW][7]);
+		FAI_Bosses[bossid][TEXTDRAW][0] = Text:INVALID_TEXT_DRAW;
+		FAI_Bosses[bossid][TEXTDRAW][1] = Text:INVALID_TEXT_DRAW;
+		FAI_Bosses[bossid][TEXTDRAW][2] = Text:INVALID_TEXT_DRAW;
+		FAI_Bosses[bossid][TEXTDRAW][3] = Text:INVALID_TEXT_DRAW;
+		FAI_Bosses[bossid][TEXTDRAW][4] = Text:INVALID_TEXT_DRAW;
+		FAI_Bosses[bossid][TEXTDRAW][5] = Text:INVALID_TEXT_DRAW;
+		FAI_Bosses[bossid][TEXTDRAW][6] = Text:INVALID_TEXT_DRAW;
+		FAI_Bosses[bossid][TEXTDRAW][7] = Text:INVALID_TEXT_DRAW;
+	    FAI_ResetBossStats(bossid);
 	}
 }
-stock WOW_CreateBossFull(name[], fullName[] = WOW_INVALID_STRING, iconid = WOW_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL, Float:maxHealth = 100000.0,
+stock FAI_CreateBossFull(name[], fullName[] = FAI_INVALID_STRING, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL, Float:maxHealth = 100000.0,
 Float:rangeDisplay = 100.0, Float:rangeAggro = 20.0, bool:displayIfDead = true, Float:currentHealth = -1.0, targetid = INVALID_PLAYER_ID,
 moveType = MOVE_TYPE_SPRINT, Float:moveSpeed = MOVE_SPEED_AUTO, bool:moveUseMapAndreas = false, Float:moveRadius = 0.0, bool:moveSetAngle = true, Float:rangedAttackDistance = 20.0, rangedAttackDelay = -1, bool:rangedAttackSetAngle = true,
 Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = false, bool:allowNPCTargets = false) {
-	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-		if(WOW_Bosses[bossid][NPCID] == INVALID_PLAYER_ID) {
-			WOW_Bosses[bossid][NPCID] = FCNPC_Create(name);
-			if(WOW_Bosses[bossid][NPCID] != INVALID_PLAYER_ID) {
-		 		WOW_SetBossFullName(bossid, fullName);
-				WOW_SetBossMapiconInfo(bossid, iconid, iconMarker, iconColor, iconStyle);
-				WOW_SetBossMaxHealth(bossid, maxHealth, false);
-				WOW_SetBossDisplayRange(bossid, rangeDisplay);
-				WOW_SetBossAggroRange(bossid, rangeAggro, false);
-				WOW_SetBossDisplayIfDead(bossid, displayIfDead);
-				WOW_SetBossCurrentHealth(bossid, currentHealth, false);
-				WOW_SetBossTarget(bossid, targetid, false);
-				WOW_SetBossMoveInfo(bossid, moveType, moveSpeed, moveUseMapAndreas, moveRadius, moveSetAngle);
-				WOW_SetBossRangedAttackInfo(bossid, rangedAttackDistance, rangedAttackDelay, rangedAttackSetAngle);
-				WOW_SetBossMeleeAttackInfo(bossid, meleeAttackDistance, meleeAttackDelay, meleeAttackUseFightStyle);
-				WOW_SetBossAllowNPCTargets(bossid, allowNPCTargets, false);
+	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		if(FAI_Bosses[bossid][NPCID] == INVALID_PLAYER_ID) {
+			FAI_Bosses[bossid][NPCID] = FCNPC_Create(name);
+			if(FAI_Bosses[bossid][NPCID] != INVALID_PLAYER_ID) {
+		 		FAI_SetBossFullName(bossid, fullName);
+				FAI_SetBossMapiconInfo(bossid, iconid, iconMarker, iconColor, iconStyle);
+				FAI_SetBossMaxHealth(bossid, maxHealth, false);
+				FAI_SetBossDisplayRange(bossid, rangeDisplay);
+				FAI_SetBossAggroRange(bossid, rangeAggro, false);
+				FAI_SetBossDisplayIfDead(bossid, displayIfDead);
+				FAI_SetBossCurrentHealth(bossid, currentHealth, false);
+				FAI_SetBossTarget(bossid, targetid, false);
+				FAI_SetBossMoveInfo(bossid, moveType, moveSpeed, moveUseMapAndreas, moveRadius, moveSetAngle);
+				FAI_SetBossRangedAttackInfo(bossid, rangedAttackDistance, rangedAttackDelay, rangedAttackSetAngle);
+				FAI_SetBossMeleeAttackInfo(bossid, meleeAttackDistance, meleeAttackDelay, meleeAttackUseFightStyle);
+				FAI_SetBossAllowNPCTargets(bossid, allowNPCTargets, false);
 		    	return bossid;
 		    } else {
 		        //FCNPC_Create failed
-		    	return WOW_INVALID_BOSS_ID;
+		    	return FAI_INVALID_BOSS_ID;
 		    }
 		}
 	}
 	//Max amount of bosses reached
-	return WOW_INVALID_BOSS_ID;
+	return FAI_INVALID_BOSS_ID;
 }
-stock WOW_CreateBoss(name[]) {
-	return WOW_CreateBossFull(name);
+stock FAI_CreateBoss(name[]) {
+	return FAI_CreateBossFull(name);
 }
-stock WOW_GetBossFullName(bossid, name[], len) {
-	if(WOW_IsValidBoss(bossid)) {
-	    WOW_strcpy(name, WOW_Bosses[bossid][FULL_NAME], len);
+stock FAI_GetBossFullName(bossid, name[], len) {
+	if(FAI_IsValidBoss(bossid)) {
+	    FAI_strcpy(name, FAI_Bosses[bossid][FULL_NAME], len);
 		return strlen(name);
 	}
 	return -1;
 }
-stock WOW_SetBossFullName(bossid, name[]) {
-	if(WOW_IsValidBoss(bossid)) {
+stock FAI_SetBossFullName(bossid, name[]) {
+	if(FAI_IsValidBoss(bossid)) {
 	    //If the user didn't provide a valid fullName, use the playerName
-	    if(!WOW_isnull(name) && !strcmp(name, WOW_INVALID_STRING, true)) {
+	    if(!FAI_isnull(name) && !strcmp(name, FAI_INVALID_STRING, true)) {
 	        new playerName[MAX_PLAYER_NAME + 1];
-	        GetPlayerName(WOW_Bosses[bossid][NPCID], playerName, sizeof(playerName));
-			WOW_strcpy(WOW_Bosses[bossid][FULL_NAME], playerName, WOW_MAX_BOSS_FULL_NAME + 1);
+	        GetPlayerName(FAI_Bosses[bossid][NPCID], playerName, sizeof(playerName));
+			FAI_strcpy(FAI_Bosses[bossid][FULL_NAME], playerName, FAI_MAX_BOSS_FULL_NAME + 1);
 		}
 	    //If the user did provide a valid fullName, use that one
  		else {
-			WOW_strcpy(WOW_Bosses[bossid][FULL_NAME], name, WOW_MAX_BOSS_FULL_NAME + 1);
+			FAI_strcpy(FAI_Bosses[bossid][FULL_NAME], name, FAI_MAX_BOSS_FULL_NAME + 1);
 		}
-		TextDrawSetString(WOW_Bosses[bossid][TEXTDRAW][3], WOW_Bosses[bossid][FULL_NAME]);
+		TextDrawSetString(FAI_Bosses[bossid][TEXTDRAW][3], FAI_Bosses[bossid][FULL_NAME]);
 		//FullName textdraw updates automatically
 		return 1;
 	}
 	return 0;
 }
-stock WOW_GetBossMapiconInfo(bossid, &iconid, &iconMarker, &iconColor, &iconStyle) {
-	if(WOW_IsValidBoss(bossid)) {
-		iconid = WOW_Bosses[bossid][ICONID];
-		iconMarker = WOW_Bosses[bossid][ICON_MARKER];
-		iconColor = WOW_Bosses[bossid][ICON_COLOR];
-		iconStyle = WOW_Bosses[bossid][ICON_STYLE];
+stock FAI_GetBossMapiconInfo(bossid, &iconid, &iconMarker, &iconColor, &iconStyle) {
+	if(FAI_IsValidBoss(bossid)) {
+		iconid = FAI_Bosses[bossid][ICONID];
+		iconMarker = FAI_Bosses[bossid][ICON_MARKER];
+		iconColor = FAI_Bosses[bossid][ICON_COLOR];
+		iconStyle = FAI_Bosses[bossid][ICON_STYLE];
 		return 1;
 	}
 	return 0;
 }
-stock WOW_SetBossMapiconInfo(bossid, iconid = WOW_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL) {
-	if(WOW_IsValidBoss(bossid)) {
-		if(iconid == WOW_INVALID_ICON_ID) {
+stock FAI_SetBossMapiconInfo(bossid, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL) {
+	if(FAI_IsValidBoss(bossid)) {
+		if(iconid == FAI_INVALID_ICON_ID) {
 			for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
-	 			RemovePlayerMapIcon(playerid, WOW_Bosses[bossid][ICONID]);
+	 			RemovePlayerMapIcon(playerid, FAI_Bosses[bossid][ICONID]);
 			}
 		}
-	    WOW_Bosses[bossid][ICONID] = iconid;
-		//Icon settings below, update automatically (see WOW_Update)
-		WOW_Bosses[bossid][ICON_MARKER] = iconMarker;
-		WOW_Bosses[bossid][ICON_COLOR] = iconColor;
-		WOW_Bosses[bossid][ICON_STYLE] = iconStyle;
+	    FAI_Bosses[bossid][ICONID] = iconid;
+		//Icon settings below, update automatically (see FAI_Update)
+		FAI_Bosses[bossid][ICON_MARKER] = iconMarker;
+		FAI_Bosses[bossid][ICON_COLOR] = iconColor;
+		FAI_Bosses[bossid][ICON_STYLE] = iconStyle;
 		return 1;
 	}
 	return 0;
 }
-stock WOW_GetBossMaxHealth(bossid, &Float:health) {
-	if(WOW_IsValidBoss(bossid)) {
-		health = WOW_Bosses[bossid][MAX_HEALTH];
+stock FAI_GetBossMaxHealth(bossid, &Float:health) {
+	if(FAI_IsValidBoss(bossid)) {
+		health = FAI_Bosses[bossid][MAX_HEALTH];
 		return 1;
 	}
 	return 0;
@@ -1088,48 +1088,48 @@ Dont keeppercent:
 - max 500, cur 450 => max 400, cur becomes 400 which is max
 - max 500, cur 450 => max 600, cur stays 450
 */
-stock WOW_SetBossMaxHealth(bossid, Float:health, bool:keepHealthPercent = false) {
-	if(WOW_IsValidBoss(bossid)) {
+stock FAI_SetBossMaxHealth(bossid, Float:health, bool:keepHealthPercent = false) {
+	if(FAI_IsValidBoss(bossid)) {
 		if(health <= 0.0) {
-		    if(!FCNPC_IsDead(WOW_Bosses[bossid][NPCID])) {
-		    	FCNPC_Kill(WOW_Bosses[bossid][NPCID]);
+		    if(!FCNPC_IsDead(FAI_Bosses[bossid][NPCID])) {
+		    	FCNPC_Kill(FAI_Bosses[bossid][NPCID]);
 		    }
 		    health = 0.0;
 		}
 	    if(!keepHealthPercent) {
-	        if(WOW_Bosses[bossid][CUR_HEALTH] > health) {
-	    		WOW_Bosses[bossid][CUR_HEALTH] = health;
+	        if(FAI_Bosses[bossid][CUR_HEALTH] > health) {
+	    		FAI_Bosses[bossid][CUR_HEALTH] = health;
 	    	}
 	    } else {
-	    	WOW_Bosses[bossid][CUR_HEALTH] = float(WOW_GetBossCurrentHealthPercent(bossid)) / 100 * health;
+	    	FAI_Bosses[bossid][CUR_HEALTH] = float(FAI_GetBossCurrentHealthPercent(bossid)) / 100 * health;
 	    }
-		WOW_Bosses[bossid][MAX_HEALTH] = health;
-		WOW_UpdateBossHealthDisplay(bossid);
+		FAI_Bosses[bossid][MAX_HEALTH] = health;
+		FAI_UpdateBossHealthDisplay(bossid);
 		return 1;
 	}
 	return 0;
 }
-stock WOW_GetBossDisplayRange(bossid, &Float:range) {
-	if(WOW_IsValidBoss(bossid)) {
-		range = WOW_Bosses[bossid][RANGE_DISPLAY];
+stock FAI_GetBossDisplayRange(bossid, &Float:range) {
+	if(FAI_IsValidBoss(bossid)) {
+		range = FAI_Bosses[bossid][RANGE_DISPLAY];
 		return 1;
 	}
 	return 0;
 }
-stock WOW_SetBossDisplayRange(bossid, Float:range) {
-	if(WOW_IsValidBoss(bossid)) {
+stock FAI_SetBossDisplayRange(bossid, Float:range) {
+	if(FAI_IsValidBoss(bossid)) {
 	    if(range < 0.0) {
 	        range = 0.0;
 	    }
-		WOW_Bosses[bossid][RANGE_DISPLAY] = range;
-		//Textdraws update automatically (see WOW_Update)
+		FAI_Bosses[bossid][RANGE_DISPLAY] = range;
+		//Textdraws update automatically (see FAI_Update)
 		return 1;
 	}
 	return 0;
 }
-stock WOW_GetBossAggroRange(bossid, &Float:range) {
-	if(WOW_IsValidBoss(bossid)) {
-		range = WOW_Bosses[bossid][RANGE_AGGRO];
+stock FAI_GetBossAggroRange(bossid, &Float:range) {
+	if(FAI_IsValidBoss(bossid)) {
+		range = FAI_Bosses[bossid][RANGE_AGGRO];
 		return 1;
 	}
 	return 0;
@@ -1143,39 +1143,39 @@ Dont checkfortarget:
 - range 25.0, has target => range 10.0, target keeps aggro
 - range 25.0, no target  => range 10.0, nothing
 */
-stock WOW_SetBossAggroRange(bossid, Float:range, bool:checkForTarget = false) {
-	if(WOW_IsValidBoss(bossid)) {
+stock FAI_SetBossAggroRange(bossid, Float:range, bool:checkForTarget = false) {
+	if(FAI_IsValidBoss(bossid)) {
 		if(range < 0.0) {
 		    range = 0.0;
 		}
-		WOW_Bosses[bossid][RANGE_AGGRO] = range;
+		FAI_Bosses[bossid][RANGE_AGGRO] = range;
 		if(checkForTarget) {
-		    if(!WOW_IsPlayerInAggroRange(WOW_Bosses[bossid][TARGET], bossid)) {
+		    if(!FAI_IsPlayerInAggroRange(FAI_Bosses[bossid][TARGET], bossid)) {
 		        //Reset target
-				WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
+				FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
 		    }
 		}
 		return 1;
 	}
 	return 0;
 }
-stock WOW_GetBossDisplayIfDead(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
-		return WOW_Bosses[bossid][DISPLAY_IF_DEAD];
+stock FAI_GetBossDisplayIfDead(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
+		return FAI_Bosses[bossid][DISPLAY_IF_DEAD];
 	}
 	return -1;
 }
-stock WOW_SetBossDisplayIfDead(bossid, bool:displayIfDead) {
-	if(WOW_IsValidBoss(bossid)) {
-		WOW_Bosses[bossid][DISPLAY_IF_DEAD] = displayIfDead;
-		//Textdraws update automatically (see WOW_Update)
+stock FAI_SetBossDisplayIfDead(bossid, bool:displayIfDead) {
+	if(FAI_IsValidBoss(bossid)) {
+		FAI_Bosses[bossid][DISPLAY_IF_DEAD] = displayIfDead;
+		//Textdraws update automatically (see FAI_Update)
 		return 1;
 	}
 	return 0;
 }
-stock WOW_GetBossCurrentHealth(bossid, &Float:health) {
-	if(WOW_IsValidBoss(bossid)) {
-		health = WOW_Bosses[bossid][CUR_HEALTH];
+stock FAI_GetBossCurrentHealth(bossid, &Float:health) {
+	if(FAI_IsValidBoss(bossid)) {
+		health = FAI_Bosses[bossid][CUR_HEALTH];
 		return 1;
 	}
 	return 0;
@@ -1188,31 +1188,31 @@ Dont keeppercent:
 - max 500, cur 450 => cur 400, max stays 500
 - max 500, cur 450 => cur 600, max becomes 600 which is cur
 */
-stock WOW_SetBossCurrentHealth(bossid, Float:health, bool:keepHealthPercent = false) {
-	if(WOW_IsValidBoss(bossid)) {
+stock FAI_SetBossCurrentHealth(bossid, Float:health, bool:keepHealthPercent = false) {
+	if(FAI_IsValidBoss(bossid)) {
 		if(health < 0.0) {
-		    health = WOW_Bosses[bossid][MAX_HEALTH];
+		    health = FAI_Bosses[bossid][MAX_HEALTH];
 		} else if(health == 0.0) {
-		    if(!FCNPC_IsDead(WOW_Bosses[bossid][NPCID])) {
-		    	FCNPC_Kill(WOW_Bosses[bossid][NPCID]);
+		    if(!FCNPC_IsDead(FAI_Bosses[bossid][NPCID])) {
+		    	FCNPC_Kill(FAI_Bosses[bossid][NPCID]);
 		    }
 		}
 		if(!keepHealthPercent) {
-	        if(WOW_Bosses[bossid][MAX_HEALTH] < health) {
-	    		WOW_Bosses[bossid][MAX_HEALTH] = health;
+	        if(FAI_Bosses[bossid][MAX_HEALTH] < health) {
+	    		FAI_Bosses[bossid][MAX_HEALTH] = health;
 	    	}
 	    } else {
-	    	WOW_Bosses[bossid][MAX_HEALTH] *= health / WOW_Bosses[bossid][CUR_HEALTH];
+	    	FAI_Bosses[bossid][MAX_HEALTH] *= health / FAI_Bosses[bossid][CUR_HEALTH];
 	    }
-		WOW_Bosses[bossid][CUR_HEALTH] = health;
-		WOW_UpdateBossHealthDisplay(bossid);
+		FAI_Bosses[bossid][CUR_HEALTH] = health;
+		FAI_UpdateBossHealthDisplay(bossid);
 		return 1;
 	}
 	return 0;
 }
-stock WOW_GetBossTarget(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
-		return WOW_Bosses[bossid][TARGET];
+stock FAI_GetBossTarget(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
+		return FAI_Bosses[bossid][TARGET];
 	}
 	return -1;
 }
@@ -1226,10 +1226,10 @@ Dont checkforaggrorange:
 - range 25.0, has target => new target, switch target
 - range 25.0, no target  => new target, make target
 */
-stock WOW_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false) {
+stock FAI_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false) {
 	//Set target to playerid (valid playerid check in setter)
-	//WOW_IsValidBoss in WOW_SetBossTargetWithReason
-	return WOW_SetBossTargetWithReason(bossid, playerid, 4, checkForAggroRange);
+	//FAI_IsValidBoss in FAI_SetBossTargetWithReason
+	return FAI_SetBossTargetWithReason(bossid, playerid, 4, checkForAggroRange);
 }
 /*
 Reason:
@@ -1250,37 +1250,37 @@ Reason:
 //New valid target, with old target 	=> old target lose aggro, set target, new target get aggro
 //New invalid target, no old target     => set target
 //New invalid target, with old target   => old target lose aggro, set target, stop encounter
-static WOW_SetBossTargetWithReason(bossid, newtargetid, reason, bool:checkForAggroRange = false) {
-	if(WOW_IsValidBoss(bossid)) {
-		new oldtargetid = WOW_Bosses[bossid][TARGET];
+static FAI_SetBossTargetWithReason(bossid, newtargetid, reason, bool:checkForAggroRange = false) {
+	if(FAI_IsValidBoss(bossid)) {
+		new oldtargetid = FAI_Bosses[bossid][TARGET];
 		if(oldtargetid != newtargetid && (reason != 1 || oldtargetid == INVALID_PLAYER_ID)) {
 		    new bool:newTargetValid = true;
 		    new bool:newTargetStreamedIn = true;
 		    if(newtargetid != INVALID_PLAYER_ID) {
-		        if(!WOW_IsBossValidForPlayer(newtargetid, bossid)) {
+		        if(!FAI_IsBossValidForPlayer(newtargetid, bossid)) {
 		        	newTargetValid = false;
 		        }
-		        if(!IsPlayerStreamedIn(WOW_Bosses[bossid][NPCID], newtargetid)) {
+		        if(!IsPlayerStreamedIn(FAI_Bosses[bossid][NPCID], newtargetid)) {
 		            newTargetStreamedIn = false;
 		        }
 		    }
 		    new bool:newTargetInRange = true;
-		    if(checkForAggroRange && !WOW_IsPlayerInAggroRange(newtargetid, bossid)) {
+		    if(checkForAggroRange && !FAI_IsPlayerInAggroRange(newtargetid, bossid)) {
 		        newTargetInRange = false;
 		    }
 		    if(newTargetValid && newTargetStreamedIn && newTargetInRange) {
 		        if(oldtargetid != INVALID_PLAYER_ID) {
-					CallRemoteFunction("WOW_OnPlayerLoseAggro", "dd", oldtargetid, bossid);
+					CallRemoteFunction("FAI_OnPlayerLoseAggro", "dd", oldtargetid, bossid);
 		        }
-				WOW_Bosses[bossid][TARGET] = newtargetid;
+				FAI_Bosses[bossid][TARGET] = newtargetid;
 				if(newtargetid != INVALID_PLAYER_ID) {
-					CallRemoteFunction("WOW_OnPlayerGetAggro", "dd", newtargetid, bossid);
+					CallRemoteFunction("FAI_OnPlayerGetAggro", "dd", newtargetid, bossid);
 			        if(oldtargetid == INVALID_PLAYER_ID) {
 			            new bool:reasonShot = false;
 			            if(reason == 1) {
 			                reasonShot = true;
 			            }
-						CallRemoteFunction("WOW_OnBossEncounterStart", "dbd", bossid, reasonShot, newtargetid);
+						CallRemoteFunction("FAI_OnBossEncounterStart", "dbd", bossid, reasonShot, newtargetid);
 					}
 				} else {
 			        if(oldtargetid != INVALID_PLAYER_ID) {
@@ -1288,9 +1288,9 @@ static WOW_SetBossTargetWithReason(bossid, newtargetid, reason, bool:checkForAgg
 			            if(reason == 2) {
 							reasonDeath = true;
 			            }
-	      				WOW_BossStopAttack(bossid);
-	      				WOW_StopBossCasting(bossid);
-						CallRemoteFunction("WOW_OnBossEncounterStop", "dbd", bossid, reasonDeath, oldtargetid);
+	      				FAI_BossStopAttack(bossid);
+	      				FAI_StopBossCasting(bossid);
+						CallRemoteFunction("FAI_OnBossEncounterStop", "dbd", bossid, reasonDeath, oldtargetid);
 					}
 				}
 				return 1;
@@ -1299,136 +1299,136 @@ static WOW_SetBossTargetWithReason(bossid, newtargetid, reason, bool:checkForAgg
 	}
 	return 0;
 }
-stock WOW_GetBossMoveInfo(bossid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle) {
-	if(WOW_IsValidBoss(bossid)) {
-	    type = WOW_Bosses[bossid][MOVE_TYPE];
-	    speed = WOW_Bosses[bossid][MOVE_SPEED];
-	    useMapAndreas = WOW_Bosses[bossid][MOVE_USE_MAP_ANDREAS];
-	    radius = WOW_Bosses[bossid][MOVE_RADIUS];
-	    setAngle = WOW_Bosses[bossid][MOVE_SET_ANGLE];
+stock FAI_GetBossMoveInfo(bossid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle) {
+	if(FAI_IsValidBoss(bossid)) {
+	    type = FAI_Bosses[bossid][MOVE_TYPE];
+	    speed = FAI_Bosses[bossid][MOVE_SPEED];
+	    useMapAndreas = FAI_Bosses[bossid][MOVE_USE_MAP_ANDREAS];
+	    radius = FAI_Bosses[bossid][MOVE_RADIUS];
+	    setAngle = FAI_Bosses[bossid][MOVE_SET_ANGLE];
 	    return 1;
 	}
 	return 0;
 }
-stock WOW_SetBossMoveInfo(bossid, type = MOVE_TYPE_SPRINT, Float:speed = MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true) {
-	if(WOW_IsValidBoss(bossid)) {
-	    WOW_Bosses[bossid][MOVE_TYPE] = type;
-	    WOW_Bosses[bossid][MOVE_SPEED] = speed;
-	    WOW_Bosses[bossid][MOVE_USE_MAP_ANDREAS] = useMapAndreas;
-	    WOW_Bosses[bossid][MOVE_RADIUS] = radius;
-	    WOW_Bosses[bossid][MOVE_SET_ANGLE] = setAngle;
-        if(WOW_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
-      		WOW_BossAttackTarget(bossid, WOW_Bosses[bossid][TARGET]);
+stock FAI_SetBossMoveInfo(bossid, type = MOVE_TYPE_SPRINT, Float:speed = MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true) {
+	if(FAI_IsValidBoss(bossid)) {
+	    FAI_Bosses[bossid][MOVE_TYPE] = type;
+	    FAI_Bosses[bossid][MOVE_SPEED] = speed;
+	    FAI_Bosses[bossid][MOVE_USE_MAP_ANDREAS] = useMapAndreas;
+	    FAI_Bosses[bossid][MOVE_RADIUS] = radius;
+	    FAI_Bosses[bossid][MOVE_SET_ANGLE] = setAngle;
+        if(FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
+      		FAI_BossAttackTarget(bossid, FAI_Bosses[bossid][TARGET]);
       	}
 	    return 1;
 	}
 	return 0;
 }
-stock WOW_GetBossRangedAttackInfo(bossid, &Float:distance, &delay, &bool:setAngle) {
-	if(WOW_IsValidBoss(bossid)) {
-	    distance = WOW_Bosses[bossid][RANGED_ATTACK_DISTANCE];
-	    delay = WOW_Bosses[bossid][RANGED_ATTACK_DELAY];
-	    setAngle = WOW_Bosses[bossid][RANGED_ATTACK_SET_ANGLE];
+stock FAI_GetBossRangedAttackInfo(bossid, &Float:distance, &delay, &bool:setAngle) {
+	if(FAI_IsValidBoss(bossid)) {
+	    distance = FAI_Bosses[bossid][RANGED_ATTACK_DISTANCE];
+	    delay = FAI_Bosses[bossid][RANGED_ATTACK_DELAY];
+	    setAngle = FAI_Bosses[bossid][RANGED_ATTACK_SET_ANGLE];
 	    return 1;
 	}
 	return 0;
 }
-stock WOW_SetBossRangedAttackInfo(bossid, Float:distance = 20.0, delay = -1, bool:setAngle = true) {
-	if(WOW_IsValidBoss(bossid)) {
-	    WOW_Bosses[bossid][RANGED_ATTACK_DISTANCE] = distance;
-	    WOW_Bosses[bossid][RANGED_ATTACK_DELAY] = delay;
-	    WOW_Bosses[bossid][RANGED_ATTACK_SET_ANGLE] = setAngle;
-        if(WOW_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
-      		WOW_BossAttackTarget(bossid, WOW_Bosses[bossid][TARGET]);
+stock FAI_SetBossRangedAttackInfo(bossid, Float:distance = 20.0, delay = -1, bool:setAngle = true) {
+	if(FAI_IsValidBoss(bossid)) {
+	    FAI_Bosses[bossid][RANGED_ATTACK_DISTANCE] = distance;
+	    FAI_Bosses[bossid][RANGED_ATTACK_DELAY] = delay;
+	    FAI_Bosses[bossid][RANGED_ATTACK_SET_ANGLE] = setAngle;
+        if(FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
+      		FAI_BossAttackTarget(bossid, FAI_Bosses[bossid][TARGET]);
       	}
 	    return 1;
 	}
 	return 0;
 }
-stock WOW_GetBossMeleeAttackInfo(bossid, &Float:distance, &delay, &bool:useFightStyle) {
-	if(WOW_IsValidBoss(bossid)) {
-	    distance = WOW_Bosses[bossid][MELEE_ATTACK_DISTANCE];
-	    delay = WOW_Bosses[bossid][MELEE_ATTACK_DELAY];
-	    useFightStyle = WOW_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE];
+stock FAI_GetBossMeleeAttackInfo(bossid, &Float:distance, &delay, &bool:useFightStyle) {
+	if(FAI_IsValidBoss(bossid)) {
+	    distance = FAI_Bosses[bossid][MELEE_ATTACK_DISTANCE];
+	    delay = FAI_Bosses[bossid][MELEE_ATTACK_DELAY];
+	    useFightStyle = FAI_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE];
 	    return 1;
 	}
 	return 0;
 }
-stock WOW_SetBossMeleeAttackInfo(bossid, Float:distance = 1.0, delay = -1, bool:useFightStyle = false) {
-	if(WOW_IsValidBoss(bossid)) {
-	    WOW_Bosses[bossid][MELEE_ATTACK_DISTANCE] = distance;
-	    WOW_Bosses[bossid][MELEE_ATTACK_DELAY] = delay;
-	    WOW_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE] = useFightStyle;
-        if(WOW_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
-      		WOW_BossAttackTarget(bossid, WOW_Bosses[bossid][TARGET]);
+stock FAI_SetBossMeleeAttackInfo(bossid, Float:distance = 1.0, delay = -1, bool:useFightStyle = false) {
+	if(FAI_IsValidBoss(bossid)) {
+	    FAI_Bosses[bossid][MELEE_ATTACK_DISTANCE] = distance;
+	    FAI_Bosses[bossid][MELEE_ATTACK_DELAY] = delay;
+	    FAI_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE] = useFightStyle;
+        if(FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
+      		FAI_BossAttackTarget(bossid, FAI_Bosses[bossid][TARGET]);
       	}
 	    return 1;
 	}
 	return 0;
 }
-stock WOW_GetBossAllowNPCTargets(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
-		return WOW_Bosses[bossid][ALLOW_NPC_TARGETS];
+stock FAI_GetBossAllowNPCTargets(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
+		return FAI_Bosses[bossid][ALLOW_NPC_TARGETS];
 	}
 	return -1;
 }
-stock WOW_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarget = false) {
-	if(WOW_IsValidBoss(bossid)) {
-		WOW_Bosses[bossid][ALLOW_NPC_TARGETS] = allowNPCTargets;
+stock FAI_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarget = false) {
+	if(FAI_IsValidBoss(bossid)) {
+		FAI_Bosses[bossid][ALLOW_NPC_TARGETS] = allowNPCTargets;
 		if(checkForTarget) {
-		    if(!allowNPCTargets && WOW_Bosses[bossid][TARGET] != INVALID_PLAYER_ID && IsPlayerNPC(WOW_Bosses[bossid][TARGET])) {
+		    if(!allowNPCTargets && FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID && IsPlayerNPC(FAI_Bosses[bossid][TARGET])) {
 		        //Reset target
-				WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
+				FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
 		    }
 		}
 		return 1;
 	}
 	return 0;
 }
-stock WOW_GetBossNPCID(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
-		return WOW_Bosses[bossid][NPCID];
+stock FAI_GetBossNPCID(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
+		return FAI_Bosses[bossid][NPCID];
 	}
 	return INVALID_PLAYER_ID;
 }
-stock WOW_GetBossPlayerID(bossid) {
-	return WOW_GetBossNPCID(bossid);
+stock FAI_GetBossPlayerID(bossid) {
+	return FAI_GetBossNPCID(bossid);
 }
-stock Text:WOW_GetBossTextDraw(bossid, textdraw) {
-	if(WOW_IsValidBoss(bossid) && textdraw >= 0 && textdraw < WOW_MAX_BOSS_TEXTDRAWS) {
-		return WOW_Bosses[bossid][TEXTDRAW][textdraw];
+stock Text:FAI_GetBossTextDraw(bossid, textdraw) {
+	if(FAI_IsValidBoss(bossid) && textdraw >= 0 && textdraw < FAI_MAX_BOSS_TEXTDRAWS) {
+		return FAI_Bosses[bossid][TEXTDRAW][textdraw];
 	}
 	return Text:INVALID_TEXT_DRAW;
 }
-stock WOW_GetBossCurrentHealthPercent(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
-		return floatround(WOW_Bosses[bossid][CUR_HEALTH] / WOW_Bosses[bossid][MAX_HEALTH] * 100, floatround_ceil);
+stock FAI_GetBossCurrentHealthPercent(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
+		return floatround(FAI_Bosses[bossid][CUR_HEALTH] / FAI_Bosses[bossid][MAX_HEALTH] * 100, floatround_ceil);
 	}
 	return -1;
 }
 
-stock WOW_GetBossIDFromNPCID(npcid) {
-	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-	    if(npcid == WOW_Bosses[bossid][NPCID]) {
+stock FAI_GetBossIDFromNPCID(npcid) {
+	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+	    if(npcid == FAI_Bosses[bossid][NPCID]) {
 	        return bossid;
 		}
 	}
-	return WOW_INVALID_BOSS_ID;	
+	return FAI_INVALID_BOSS_ID;
 }
-stock WOW_GetBossIDFromPlayerID(playerid) {
-	return WOW_GetBossIDFromNPCID(playerid);
+stock FAI_GetBossIDFromPlayerID(playerid) {
+	return FAI_GetBossIDFromNPCID(playerid);
 }
-forward bool:WOW_IsBossValidForPlayer(playerid, bossid); //Silence 'used before declaration' warning
-stock bool:WOW_IsBossValidForPlayer(playerid, bossid) {
-	if(IsPlayerConnected(playerid) && WOW_IsValidBoss(bossid)) {
+forward bool:FAI_IsBossValidForPlayer(playerid, bossid); //Silence 'used before declaration' warning
+stock bool:FAI_IsBossValidForPlayer(playerid, bossid) {
+	if(IsPlayerConnected(playerid) && FAI_IsValidBoss(bossid)) {
 	    new playerState = GetPlayerState(playerid);
-	    new bossplayerid = WOW_GetBossNPCID(bossid);
-		if(bossplayerid != playerid && FCNPC_IsSpawned(bossplayerid) && (!FCNPC_IsDead(bossplayerid) || WOW_Bosses[bossid][DISPLAY_IF_DEAD])) {
+	    new bossplayerid = FAI_GetBossNPCID(bossid);
+		if(bossplayerid != playerid && FCNPC_IsSpawned(bossplayerid) && (!FCNPC_IsDead(bossplayerid) || FAI_Bosses[bossid][DISPLAY_IF_DEAD])) {
 		    new bossInterior = FCNPC_GetInterior(bossplayerid);
 		    new bossWorld = FCNPC_GetVirtualWorld(bossplayerid);
 		    if(!IsPlayerNPC(playerid)) {
 				if(GetPlayerInterior(playerid) == bossInterior && GetPlayerVirtualWorld(playerid) == bossWorld && playerState != PLAYER_STATE_NONE && playerState != PLAYER_STATE_WASTED
-				&& playerState != PLAYER_STATE_SPAWNED && playerState != PLAYER_STATE_SPECTATING && !WOW_PlayerPaused[playerid]) {
+				&& playerState != PLAYER_STATE_SPAWNED && playerState != PLAYER_STATE_SPECTATING && !FAI_PlayerPaused[playerid]) {
 	    			return true;
 				}
 			} else {
@@ -1441,18 +1441,18 @@ stock bool:WOW_IsBossValidForPlayer(playerid, bossid) {
 	}
 	return false;
 }
-static WOW_GetClosestBossToDisplay(playerid) {
-	new closestBoss = WOW_INVALID_BOSS_ID;
+static FAI_GetClosestBossToDisplay(playerid) {
+	new closestBoss = FAI_INVALID_BOSS_ID;
 	new Float:closestBossRange = 0.0;
 	if(IsPlayerConnected(playerid)) {
     	new Float:bossX, Float:bossY, Float:bossZ;
     	new Float:playerRange;
-		for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-		    if(WOW_IsBossValidForPlayer(playerid, bossid)) {
-	        	FCNPC_GetPosition(WOW_Bosses[bossid][NPCID], bossX, bossY, bossZ);
+		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		    if(FAI_IsBossValidForPlayer(playerid, bossid)) {
+	        	FCNPC_GetPosition(FAI_Bosses[bossid][NPCID], bossX, bossY, bossZ);
 	            playerRange = GetPlayerDistanceFromPoint(playerid, bossX, bossY, bossZ);
 	            //Don't display if display range is <= 0
-		  		if(WOW_IsPlayerInDisplayRange(playerid, bossid) && (!WOW_IsValidBoss(closestBoss) || playerRange < closestBossRange)) {
+		  		if(FAI_IsPlayerInDisplayRange(playerid, bossid) && (!FAI_IsValidBoss(closestBoss) || playerRange < closestBossRange)) {
 			        closestBossRange = playerRange;
 			        closestBoss = bossid;
 				}
@@ -1461,21 +1461,21 @@ static WOW_GetClosestBossToDisplay(playerid) {
 	}
 	return closestBoss;
 }
-static WOW_GetClosestPlayerToTakeAggro(bossid) {
+static FAI_GetClosestPlayerToTakeAggro(bossid) {
 	new closestPlayer = INVALID_PLAYER_ID;
 	new Float:closestPlayerRange = 0.0;
-	if(WOW_IsValidBoss(bossid)) {
+	if(FAI_IsValidBoss(bossid)) {
     	new Float:playerX, Float:playerY, Float:playerZ;
     	new Float:bossRange;
 		for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
-		    if(WOW_IsBossValidForPlayer(playerid, bossid) && (!IsPlayerNPC(playerid) || WOW_Bosses[bossid][ALLOW_NPC_TARGETS])) {
+		    if(FAI_IsBossValidForPlayer(playerid, bossid) && (!IsPlayerNPC(playerid) || FAI_Bosses[bossid][ALLOW_NPC_TARGETS])) {
 		        if(!IsPlayerNPC(playerid)) {
 		        	GetPlayerPos(playerid, playerX, playerY, playerZ);
 		        } else {
 		        	FCNPC_GetPosition(playerid, playerX, playerY, playerZ);
 		        }
-	            bossRange = GetPlayerDistanceFromPoint(WOW_Bosses[bossid][NPCID], playerX, playerY, playerZ);
-		  		if(WOW_IsPlayerInAggroRange(playerid, bossid) && (closestPlayer == INVALID_PLAYER_ID || bossRange < closestPlayerRange)) {
+	            bossRange = GetPlayerDistanceFromPoint(FAI_Bosses[bossid][NPCID], playerX, playerY, playerZ);
+		  		if(FAI_IsPlayerInAggroRange(playerid, bossid) && (closestPlayer == INVALID_PLAYER_ID || bossRange < closestPlayerRange)) {
 			        closestPlayerRange = bossRange;
 			        closestPlayer = playerid;
 				}
@@ -1484,143 +1484,143 @@ static WOW_GetClosestPlayerToTakeAggro(bossid) {
 	}
 	return closestPlayer;
 }
-forward bool:WOW_IsPlayerInDisplayRange(playerid, bossid); //Silence 'used before declaration' warning
-stock bool:WOW_IsPlayerInDisplayRange(playerid, bossid) {
-	if(IsPlayerConnected(playerid) && WOW_IsValidBoss(bossid)) {
+forward bool:FAI_IsPlayerInDisplayRange(playerid, bossid); //Silence 'used before declaration' warning
+stock bool:FAI_IsPlayerInDisplayRange(playerid, bossid) {
+	if(IsPlayerConnected(playerid) && FAI_IsValidBoss(bossid)) {
 		new Float:bossX, Float:bossY, Float:bossZ;
-		FCNPC_GetPosition(WOW_Bosses[bossid][NPCID], bossX, bossY, bossZ);
+		FCNPC_GetPosition(FAI_Bosses[bossid][NPCID], bossX, bossY, bossZ);
 	    new Float:playerRange = GetPlayerDistanceFromPoint(playerid, bossX, bossY, bossZ);
 		//Don't display if display range is <= 0
-		if(WOW_Bosses[bossid][RANGE_DISPLAY] > 0.0 && playerRange <= WOW_Bosses[bossid][RANGE_DISPLAY]) {
+		if(FAI_Bosses[bossid][RANGE_DISPLAY] > 0.0 && playerRange <= FAI_Bosses[bossid][RANGE_DISPLAY]) {
 		    return true;
 		}
 	}
 	return false;
 }
-forward bool:WOW_IsPlayerInAggroRange(playerid, bossid); //Silence 'used before declaration' warning
-stock bool:WOW_IsPlayerInAggroRange(playerid, bossid) {
-	if(IsPlayerConnected(playerid) && WOW_IsValidBoss(bossid)) {
+forward bool:FAI_IsPlayerInAggroRange(playerid, bossid); //Silence 'used before declaration' warning
+stock bool:FAI_IsPlayerInAggroRange(playerid, bossid) {
+	if(IsPlayerConnected(playerid) && FAI_IsValidBoss(bossid)) {
 		new Float:playerX, Float:playerY, Float:playerZ;
         if(!IsPlayerNPC(playerid)) {
         	GetPlayerPos(playerid, playerX, playerY, playerZ);
         } else {
         	FCNPC_GetPosition(playerid, playerX, playerY, playerZ);
         }
-		new Float:bossRange = GetPlayerDistanceFromPoint(WOW_Bosses[bossid][NPCID], playerX, playerY, playerZ);
+		new Float:bossRange = GetPlayerDistanceFromPoint(FAI_Bosses[bossid][NPCID], playerX, playerY, playerZ);
 		//Don't aggro if aggro range is <= 0.0
-		if(WOW_Bosses[bossid][RANGE_AGGRO] > 0.0 && bossRange <= WOW_Bosses[bossid][RANGE_AGGRO]) {
+		if(FAI_Bosses[bossid][RANGE_AGGRO] > 0.0 && bossRange <= FAI_Bosses[bossid][RANGE_AGGRO]) {
 		    return true;
 		}
 	}
 	return false;
 }
-static WOW_UpdateBossHealthDisplay(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
-		TextDrawTextSize(WOW_Bosses[bossid][TEXTDRAW][0], (470.0 - 167.3) * WOW_Bosses[bossid][CUR_HEALTH] / WOW_Bosses[bossid][MAX_HEALTH] + 167.3, 0.0);
+static FAI_UpdateBossHealthDisplay(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
+		TextDrawTextSize(FAI_Bosses[bossid][TEXTDRAW][0], (470.0 - 167.3) * FAI_Bosses[bossid][CUR_HEALTH] / FAI_Bosses[bossid][MAX_HEALTH] + 167.3, 0.0);
 		for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
 			//Only update the textdraw for a player if he is seeing the textdraw of the boss
 			//Last part of condition:  we don't need to display things to an npc
 			if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid)) {
-				new closestBoss = WOW_GetClosestBossToDisplay(playerid);
-				if(WOW_IsValidBoss(closestBoss) && bossid == closestBoss) {
-					TextDrawShowForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][0]);
+				new closestBoss = FAI_GetClosestBossToDisplay(playerid);
+				if(FAI_IsValidBoss(closestBoss) && bossid == closestBoss) {
+					TextDrawShowForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][0]);
 				}
 			}
 		}
 		new string[14 + 1];
-		format(string, sizeof(string), "%d%", WOW_GetBossCurrentHealthPercent(bossid));
-		TextDrawSetString(WOW_Bosses[bossid][TEXTDRAW][1], string);
-		new healthInteger = floatround(WOW_Bosses[bossid][CUR_HEALTH], floatround_ceil); //Ceil so 0.3 still displays as 1 instead of 0
-		#if WOW_SHORTEN_HEALTH == false
-			TextDrawSetString(WOW_Bosses[bossid][TEXTDRAW][2], WOW_DisplayReadableInteger(healthInteger));
+		format(string, sizeof(string), "%d%", FAI_GetBossCurrentHealthPercent(bossid));
+		TextDrawSetString(FAI_Bosses[bossid][TEXTDRAW][1], string);
+		new healthInteger = floatround(FAI_Bosses[bossid][CUR_HEALTH], floatround_ceil); //Ceil so 0.3 still displays as 1 instead of 0
+		#if FAI_SHORTEN_HEALTH == false
+			TextDrawSetString(FAI_Bosses[bossid][TEXTDRAW][2], FAI_DisplayReadableInteger(healthInteger));
 		#else
 		    if(float(healthInteger) / 1000 / 1000 >= 1) {
-				format(string, sizeof(string), "%s M", WOW_DisplayReadableFloat(float(healthInteger) / 1000 / 1000, 2, 2));
+				format(string, sizeof(string), "%s M", FAI_DisplayReadableFloat(float(healthInteger) / 1000 / 1000, 2, 2));
 			} else if(float(healthInteger) / 1000 >= 1) {
-				format(string, sizeof(string), "%s K", WOW_DisplayReadableFloat(float(healthInteger) / 1000, 2, 2));
+				format(string, sizeof(string), "%s K", FAI_DisplayReadableFloat(float(healthInteger) / 1000, 2, 2));
 			} else {
-				WOW_strcpy(string, WOW_DisplayReadableInteger(healthInteger));
+				FAI_strcpy(string, FAI_DisplayReadableInteger(healthInteger));
 			}
-			TextDrawSetString(WOW_Bosses[bossid][TEXTDRAW][2], string);
+			TextDrawSetString(FAI_Bosses[bossid][TEXTDRAW][2], string);
 		#endif
 	}
 }
-static WOW_UpdateBossCastDisplay(bossid) {
-	if(WOW_IsValidBoss(bossid) && (WOW_IsBossCasting(bossid) || WOW_IsBossCastBarExtra(bossid))) {
-	    new spellid = WOW_Casting[bossid][SPELLID];
-	    TextDrawBoxColor(WOW_Bosses[bossid][TEXTDRAW][4], WOW_Spells[spellid][CAST_BAR_COLOR_DARK]);
-	    TextDrawBoxColor(WOW_Bosses[bossid][TEXTDRAW][5], WOW_Spells[spellid][CAST_BAR_COLOR_LIGHT]);
+static FAI_UpdateBossCastDisplay(bossid) {
+	if(FAI_IsValidBoss(bossid) && (FAI_IsBossCasting(bossid) || FAI_IsBossCastBarExtra(bossid))) {
+	    new spellid = FAI_Casting[bossid][SPELLID];
+	    TextDrawBoxColor(FAI_Bosses[bossid][TEXTDRAW][4], FAI_Spells[spellid][CAST_BAR_COLOR_DARK]);
+	    TextDrawBoxColor(FAI_Bosses[bossid][TEXTDRAW][5], FAI_Spells[spellid][CAST_BAR_COLOR_LIGHT]);
 	    //Don't show the extraProgress on the bar and the number representation
-		new showExtraProgress = WOW_Casting[bossid][CAST_PROGRESS] - WOW_Spells[spellid][CAST_TIME];
+		new showExtraProgress = FAI_Casting[bossid][CAST_PROGRESS] - FAI_Spells[spellid][CAST_TIME];
 		if(showExtraProgress < 0) {
 		    showExtraProgress = 0;
 		}
-		new progressWithoutShowExtra = WOW_Casting[bossid][CAST_PROGRESS] - showExtraProgress;
+		new progressWithoutShowExtra = FAI_Casting[bossid][CAST_PROGRESS] - showExtraProgress;
 		//Show an inverted castbar if needed
-	    if(!WOW_Spells[spellid][CAST_BAR_INVERTED]) {
-			TextDrawTextSize(WOW_Bosses[bossid][TEXTDRAW][5], (470.0 - 167.3) * progressWithoutShowExtra / WOW_Spells[spellid][CAST_TIME] + 167.3, 0.0);
+	    if(!FAI_Spells[spellid][CAST_BAR_INVERTED]) {
+			TextDrawTextSize(FAI_Bosses[bossid][TEXTDRAW][5], (470.0 - 167.3) * progressWithoutShowExtra / FAI_Spells[spellid][CAST_TIME] + 167.3, 0.0);
 		} else {
-			TextDrawTextSize(WOW_Bosses[bossid][TEXTDRAW][5], (470.0 - ((470.0 - 167.3) * progressWithoutShowExtra / WOW_Spells[spellid][CAST_TIME] + 167.3)) + 167.3, 0.0);
+			TextDrawTextSize(FAI_Bosses[bossid][TEXTDRAW][5], (470.0 - ((470.0 - 167.3) * progressWithoutShowExtra / FAI_Spells[spellid][CAST_TIME] + 167.3)) + 167.3, 0.0);
 		}
 		//Reshow the textdraw to make the changes (color + size) visible
 		for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
 			//Only update the textdraw for a player if he is seeing the textdraw of the boss
 			//Last part of condition:  we don't need to display things to an npc
 			if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid)) {
-				new closestBoss = WOW_GetClosestBossToDisplay(playerid);
-				if(WOW_IsValidBoss(closestBoss) && bossid == closestBoss) {
-					TextDrawShowForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][4]);
-					TextDrawShowForPlayer(playerid, WOW_Bosses[bossid][TEXTDRAW][5]);
+				new closestBoss = FAI_GetClosestBossToDisplay(playerid);
+				if(FAI_IsValidBoss(closestBoss) && bossid == closestBoss) {
+					TextDrawShowForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][4]);
+					TextDrawShowForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][5]);
 				}
 			}
 		}
-		TextDrawSetString(WOW_Bosses[bossid][TEXTDRAW][6], WOW_Spells[spellid][NAME]);
+		TextDrawSetString(FAI_Bosses[bossid][TEXTDRAW][6], FAI_Spells[spellid][NAME]);
 		new string[21 + 1 + 21 + 2 + 1];
 		new Float:castProgress = float(progressWithoutShowExtra);
 		//Show an inverted number representation if needed
-	    if(WOW_Spells[spellid][CAST_TIME_INVERTED]) {
-	    	castProgress = float(WOW_Spells[spellid][CAST_TIME] - progressWithoutShowExtra);
+	    if(FAI_Spells[spellid][CAST_TIME_INVERTED]) {
+	    	castProgress = float(FAI_Spells[spellid][CAST_TIME] - progressWithoutShowExtra);
 	    }
-		new Float:castTime = float(WOW_Spells[spellid][CAST_TIME]);
+		new Float:castTime = float(FAI_Spells[spellid][CAST_TIME]);
 		if(castProgress / 1000 / 60 >= 1) {
-			format(string, sizeof(string), "%sm", WOW_DisplayReadableFloat(castProgress / 1000 / 60, 2, 2));
+			format(string, sizeof(string), "%sm", FAI_DisplayReadableFloat(castProgress / 1000 / 60, 2, 2));
 		} else {
-			format(string, sizeof(string), "%ss", WOW_DisplayReadableFloat(castProgress / 1000, 2, 2));
+			format(string, sizeof(string), "%ss", FAI_DisplayReadableFloat(castProgress / 1000, 2, 2));
 		}
 		if(castTime / 1000 / 60 >= 1) {
-			format(string, sizeof(string), "%s/%sm", string, WOW_DisplayReadableFloat(castTime / 1000 / 60, 2, 2));
+			format(string, sizeof(string), "%s/%sm", string, FAI_DisplayReadableFloat(castTime / 1000 / 60, 2, 2));
 		} else {
-			format(string, sizeof(string), "%s/%ss", string, WOW_DisplayReadableFloat(castTime / 1000, 2, 2));
+			format(string, sizeof(string), "%s/%ss", string, FAI_DisplayReadableFloat(castTime / 1000, 2, 2));
 		}
-		TextDrawSetString(WOW_Bosses[bossid][TEXTDRAW][7], string);
+		TextDrawSetString(FAI_Bosses[bossid][TEXTDRAW][7], string);
  	}
 }
-static WOW_IncreaseBossCastProgress(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
-		if(WOW_IsBossCasting(bossid)) {
-		    new spellid = WOW_Casting[bossid][SPELLID];
+static FAI_IncreaseBossCastProgress(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
+		if(FAI_IsBossCasting(bossid)) {
+		    new spellid = FAI_Casting[bossid][SPELLID];
 			//Don't cast above castTime
-			if(WOW_Spells[spellid][CAST_TIME] - WOW_Casting[bossid][CAST_PROGRESS] <= WOW_UPDATE_TIME) {
-			    WOW_SetBossCastingProgress(bossid, WOW_Spells[spellid][CAST_TIME]); //We set the CAST_PROGRESS to CAST_TIME (say 500) instead of CAST_PROGRESS + WOW_UPDATE_TIME (say 490 + 49), because we want showextra to start exactly at 0 (say 500 - 500) and not something > 0 (say 490 - 500 + 49)
+			if(FAI_Spells[spellid][CAST_TIME] - FAI_Casting[bossid][CAST_PROGRESS] <= FAI_UPDATE_TIME) {
+			    FAI_SetBossCastingProgress(bossid, FAI_Spells[spellid][CAST_TIME]); //We set the CAST_PROGRESS to CAST_TIME (say 500) instead of CAST_PROGRESS + FAI_UPDATE_TIME (say 490 + 49), because we want showextra to start exactly at 0 (say 500 - 500) and not something > 0 (say 490 - 500 + 49)
 			} else {
-			    WOW_SetBossCastingProgress(bossid, WOW_Casting[bossid][CAST_PROGRESS] + WOW_UPDATE_TIME);
+			    FAI_SetBossCastingProgress(bossid, FAI_Casting[bossid][CAST_PROGRESS] + FAI_UPDATE_TIME);
 			    //If the spell target becomes invalid, stop the cast
 				//Otherwise: start cast, spell target dies before cast on him ends, spell target respawns, spell will still be executed on him
-			    if(WOW_Casting[bossid][TARGETID] != INVALID_PLAYER_ID && !WOW_IsBossValidForPlayer(WOW_Casting[bossid][TARGETID], bossid)) {
-					WOW_StopBossCasting(bossid);
+			    if(FAI_Casting[bossid][TARGETID] != INVALID_PLAYER_ID && !FAI_IsBossValidForPlayer(FAI_Casting[bossid][TARGETID], bossid)) {
+					FAI_StopBossCasting(bossid);
 			    }
 			}
-			WOW_UpdateBossCastDisplay(bossid);
+			FAI_UpdateBossCastDisplay(bossid);
 		}
 		//Keep showing the castbar for a small additional time after the cast is complete
-		else if(WOW_IsBossCastBarExtra(bossid)) {
-		    WOW_SetBossCastingExtraProgress(bossid, WOW_GetBossCastingExtraProgress(bossid) + WOW_UPDATE_TIME);
+		else if(FAI_IsBossCastBarExtra(bossid)) {
+		    FAI_SetBossCastingExtraProgress(bossid, FAI_GetBossCastingExtraProgress(bossid) + FAI_UPDATE_TIME);
 		}
 	}
 }
-stock bool:WOW_BossHasMeleeWeapons(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
-		new weaponid = FCNPC_GetWeapon(WOW_GetBossNPCID(bossid));
+stock bool:FAI_BossHasMeleeWeapons(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
+		new weaponid = FCNPC_GetWeapon(FAI_GetBossNPCID(bossid));
 		if(weaponid >= 0 && weaponid <= 15) {
 	 		return true;
 		}
@@ -1637,55 +1637,55 @@ stock bool:WOW_BossHasMeleeWeapons(bossid) {
 //Is casting & canmove & !canattack & not in attack range	==> move to target
 //Is casting & !canmove & !canattack & in attack range		==> nothing
 //Is casting & !canmove & !canattack & not in attack range	==> nothing
-static WOW_BossAttackTarget(bossid, targetid) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsBossValidForPlayer(targetid, bossid)) {
-		new bossplayerid = WOW_GetBossNPCID(bossid);
+static FAI_BossAttackTarget(bossid, targetid) {
+	if(FAI_IsValidBoss(bossid) && FAI_IsBossValidForPlayer(targetid, bossid)) {
+		new bossplayerid = FAI_GetBossNPCID(bossid);
 		new Float:bossX, Float:bossY, Float:bossZ;
 		FCNPC_GetPosition(bossplayerid, bossX, bossY, bossZ);
 		new Float:distance = GetPlayerDistanceFromPoint(targetid, bossX, bossY, bossZ);
-		new Float:attackDistance = WOW_Bosses[bossid][RANGED_ATTACK_DISTANCE];
-		new bool:isMelee = WOW_BossHasMeleeWeapons(bossid);
+		new Float:attackDistance = FAI_Bosses[bossid][RANGED_ATTACK_DISTANCE];
+		new bool:isMelee = FAI_BossHasMeleeWeapons(bossid);
 		if(isMelee) {
-		    attackDistance = WOW_Bosses[bossid][MELEE_ATTACK_DISTANCE];
+		    attackDistance = FAI_Bosses[bossid][MELEE_ATTACK_DISTANCE];
 		}
 		new bool:canMove = true;
 		new bool:canAttack = true;
-		if(WOW_IsBossCasting(bossid)) {
-		    new spellid = WOW_Casting[bossid][SPELLID];
-		    canMove = WOW_Spells[spellid][CAN_MOVE];
-		    canAttack = WOW_Spells[spellid][CAN_ATTACK];
+		if(FAI_IsBossCasting(bossid)) {
+		    new spellid = FAI_Casting[bossid][SPELLID];
+		    canMove = FAI_Spells[spellid][CAN_MOVE];
+		    canAttack = FAI_Spells[spellid][CAN_ATTACK];
 		}
 		//Target in attack range, attack if allowed
 		if(distance <= attackDistance) {
 		    if(canAttack) {
-		        WOW_BossAttackAim(bossid, targetid);
+		        FAI_BossAttackAim(bossid, targetid);
 		    } else {
 		        if(canMove) {
-		        	WOW_BossAttackMove(bossid, targetid);
+		        	FAI_BossAttackMove(bossid, targetid);
 		        } else {
-		            WOW_BossStopAttack(bossid);
+		            FAI_BossStopAttack(bossid);
 		        }
 		    }
 		}
 		//Target not in attack range, move to target if allowed
 		else {
 		    if(canMove) {
-		        WOW_BossAttackMove(bossid, targetid);
+		        FAI_BossAttackMove(bossid, targetid);
 		    } else {
 			    if(canAttack) {
-		        	WOW_BossAttackAim(bossid, targetid);
+		        	FAI_BossAttackAim(bossid, targetid);
 			    } else {
-		            WOW_BossStopAttack(bossid);
+		            FAI_BossStopAttack(bossid);
 			    }
 		    }
 		}
 	}
 	return 1;
 }
-static WOW_BossAttackAim(bossid, targetid) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsBossValidForPlayer(targetid, bossid)) {
-	    new bossplayerid = WOW_GetBossNPCID(bossid);
-		new bool:isMelee = WOW_BossHasMeleeWeapons(bossid);
+static FAI_BossAttackAim(bossid, targetid) {
+	if(FAI_IsValidBoss(bossid) && FAI_IsBossValidForPlayer(targetid, bossid)) {
+	    new bossplayerid = FAI_GetBossNPCID(bossid);
+		new bool:isMelee = FAI_BossHasMeleeWeapons(bossid);
 		if(FCNPC_IsMoving(bossplayerid)) {
  			FCNPC_Stop(bossplayerid);
 	    }
@@ -1694,21 +1694,21 @@ static WOW_BossAttackAim(bossid, targetid) {
 	    		FCNPC_StopAttack(bossplayerid);
 		    }
 	        if(!FCNPC_IsAimingAtPlayer(bossplayerid, targetid)) { //So we don't aim again when we were already aiming at that same player. If aiming at another player, this will execute
-				FCNPC_AimAtPlayer(bossplayerid, targetid, true, WOW_Bosses[bossid][RANGED_ATTACK_DELAY], WOW_Bosses[bossid][RANGED_ATTACK_SET_ANGLE]);
+				FCNPC_AimAtPlayer(bossplayerid, targetid, true, FAI_Bosses[bossid][RANGED_ATTACK_DELAY], FAI_Bosses[bossid][RANGED_ATTACK_SET_ANGLE]);
 			}
 		} else {
 		    if(FCNPC_IsAiming(bossplayerid)) { //In case the npc switched weapons
 			    FCNPC_StopAim(bossplayerid);
 		    }
 	        if(!FCNPC_IsAttacking(bossplayerid)) { //So we don't attack again when we were already attacking
-		    	FCNPC_MeleeAttack(bossplayerid, WOW_Bosses[bossid][MELEE_ATTACK_DELAY], WOW_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE]);
+		    	FCNPC_MeleeAttack(bossplayerid, FAI_Bosses[bossid][MELEE_ATTACK_DELAY], FAI_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE]);
 		    }
 		}
 	}
 }
-static WOW_BossAttackMove(bossid, targetid) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsBossValidForPlayer(targetid, bossid)) {
-	    new bossplayerid = WOW_GetBossNPCID(bossid);
+static FAI_BossAttackMove(bossid, targetid) {
+	if(FAI_IsValidBoss(bossid) && FAI_IsBossValidForPlayer(targetid, bossid)) {
+	    new bossplayerid = FAI_GetBossNPCID(bossid);
 	    if(FCNPC_IsAiming(bossplayerid)) {
 		    FCNPC_StopAim(bossplayerid);
 	    }
@@ -1716,17 +1716,17 @@ static WOW_BossAttackMove(bossid, targetid) {
     		FCNPC_StopAttack(bossplayerid);
     	}
     	if(!FCNPC_IsMovingAtPlayer(bossplayerid, targetid)) { //So we don't move again when we were already moving to that same player. If moving at another player, this will execute
-    	    #if WOW_USE_MAP_ANDREAS == true
-				FCNPC_GoToPlayer(bossplayerid, targetid, WOW_Bosses[bossid][MOVE_TYPE], WOW_Bosses[bossid][MOVE_SPEED], WOW_Bosses[bossid][MOVE_USE_MAP_ANDREAS], WOW_Bosses[bossid][MOVE_RADIUS], WOW_Bosses[bossid][MOVE_SET_ANGLE]);
+    	    #if FAI_USE_MAP_ANDREAS == true
+				FCNPC_GoToPlayer(bossplayerid, targetid, FAI_Bosses[bossid][MOVE_TYPE], FAI_Bosses[bossid][MOVE_SPEED], FAI_Bosses[bossid][MOVE_USE_MAP_ANDREAS], FAI_Bosses[bossid][MOVE_RADIUS], FAI_Bosses[bossid][MOVE_SET_ANGLE]);
 			#else
-				FCNPC_GoToPlayer(bossplayerid, targetid, WOW_Bosses[bossid][MOVE_TYPE], WOW_Bosses[bossid][MOVE_SPEED], false, WOW_Bosses[bossid][MOVE_RADIUS], WOW_Bosses[bossid][MOVE_SET_ANGLE]);
+				FCNPC_GoToPlayer(bossplayerid, targetid, FAI_Bosses[bossid][MOVE_TYPE], FAI_Bosses[bossid][MOVE_SPEED], false, FAI_Bosses[bossid][MOVE_RADIUS], FAI_Bosses[bossid][MOVE_SET_ANGLE]);
 			#endif
 		}
 	}
 }
-static WOW_BossStopAttack(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
-		new bossplayerid = WOW_GetBossNPCID(bossid);
+static FAI_BossStopAttack(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
+		new bossplayerid = FAI_GetBossNPCID(bossid);
 	    if(FCNPC_IsMoving(bossplayerid)) {
 			FCNPC_Stop(bossplayerid);
 	    }
@@ -1738,107 +1738,107 @@ static WOW_BossStopAttack(bossid) {
     	}
     }
 }
-stock bool:WOW_IsEncounterStarted(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
-		if(WOW_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
+stock bool:FAI_IsEncounterStarted(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
+		if(FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
 	 		return true;
 		}
 	}
 	return false;
 }
-stock WOW_StopEncounter(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
+stock FAI_StopEncounter(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
 		//Reset target
-		WOW_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
+		FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
 		return 1;
 	}
 	return 0;
 }
 
 //Spell
-static WOW_InitAllSpells() {
-	for(new spellid = 0; spellid < WOW_MAX_SPELLS; spellid++) {
-	    WOW_InitSpell(spellid);
+static FAI_InitAllSpells() {
+	for(new spellid = 0; spellid < FAI_MAX_SPELLS; spellid++) {
+	    FAI_InitSpell(spellid);
 	}
 }
-static WOW_InitSpell(spellid) {
-	//Don't use WOW_IsValidSpell(spellid)
-	if(spellid >= 0 && spellid < WOW_MAX_SPELLS) {
-		WOW_strcpy(WOW_Spells[spellid][NAME], WOW_INVALID_STRING, WOW_MAX_SPELL_NAME + 1);
-		WOW_Spells[spellid][TYPE] = WOW_SPELL_TYPE_INVALID;
-		WOW_Spells[spellid][CAST_TIME] = 0;
-		WOW_Spells[spellid][AMOUNT] = 0.0;
-		WOW_Spells[spellid][PERCENT_TYPE] = WOW_PERCENT_TYPE_INVALID;
-		WOW_Spells[spellid][CAST_BAR_COLOR_DARK] = WOW_INVALID_COLOR;
-		WOW_Spells[spellid][CAST_BAR_COLOR_LIGHT] = WOW_INVALID_COLOR;
-		WOW_Spells[spellid][CAST_BAR_INVERTED] = false;
-		WOW_Spells[spellid][CAST_TIME_INVERTED] = false;
-		WOW_Spells[spellid][CAN_MOVE] = false;
-		WOW_Spells[spellid][CAN_ATTACK] = false;
-		WOW_strcpy(WOW_Spells[spellid][INFO], WOW_INVALID_STRING, WOW_MAX_SPELL_INFO + 1);
+static FAI_InitSpell(spellid) {
+	//Don't use FAI_IsValidSpell(spellid)
+	if(spellid >= 0 && spellid < FAI_MAX_SPELLS) {
+		FAI_strcpy(FAI_Spells[spellid][NAME], FAI_INVALID_STRING, FAI_MAX_SPELL_NAME + 1);
+		FAI_Spells[spellid][TYPE] = FAI_SPELL_TYPE_INVALID;
+		FAI_Spells[spellid][CAST_TIME] = 0;
+		FAI_Spells[spellid][AMOUNT] = 0.0;
+		FAI_Spells[spellid][PERCENT_TYPE] = FAI_PERCENT_TYPE_INVALID;
+		FAI_Spells[spellid][CAST_BAR_COLOR_DARK] = FAI_INVALID_COLOR;
+		FAI_Spells[spellid][CAST_BAR_COLOR_LIGHT] = FAI_INVALID_COLOR;
+		FAI_Spells[spellid][CAST_BAR_INVERTED] = false;
+		FAI_Spells[spellid][CAST_TIME_INVERTED] = false;
+		FAI_Spells[spellid][CAN_MOVE] = false;
+		FAI_Spells[spellid][CAN_ATTACK] = false;
+		FAI_strcpy(FAI_Spells[spellid][INFO], FAI_INVALID_STRING, FAI_MAX_SPELL_INFO + 1);
 	}
 }
-stock bool:WOW_IsValidSpell(spellid) {
-	if(spellid >= 0 && spellid < WOW_MAX_SPELLS && WOW_Spells[spellid][TYPE] != WOW_SPELL_TYPE_INVALID) {
+stock bool:FAI_IsValidSpell(spellid) {
+	if(spellid >= 0 && spellid < FAI_MAX_SPELLS && FAI_Spells[spellid][TYPE] != FAI_SPELL_TYPE_INVALID) {
 	    return true;
 	}
 	return false;
 }
-stock WOW_DestroyAllSpells() {
-	for(new spellid = 0; spellid < WOW_MAX_SPELLS; spellid++) {
-	    WOW_DestroySpell(spellid);
+stock FAI_DestroyAllSpells() {
+	for(new spellid = 0; spellid < FAI_MAX_SPELLS; spellid++) {
+	    FAI_DestroySpell(spellid);
 	}
 	return 1;
 }
-stock WOW_DestroySpell(spellid) {
-	if(WOW_IsValidSpell(spellid)) {
-		for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-			WOW_StopAllBossesCastingSpell(spellid);
+stock FAI_DestroySpell(spellid) {
+	if(FAI_IsValidSpell(spellid)) {
+		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+			FAI_StopAllBossesCastingSpell(spellid);
 		}
-		WOW_InitSpell(spellid);
+		FAI_InitSpell(spellid);
 		return 1;
 	}
 	return 0;
 }
-stock WOW_CreateSpellFull(name[], type = WOW_SPELL_TYPE_CUSTOM, castTime = 2000, Float:amount = 0.0, percentType = WOW_PERCENT_TYPE_CUSTOM, castBarColorDark = 0x645005ff, castBarColorLight = 0xb4820aff,
-bool:castBarInverted = false, bool:castTimeInverted = false, bool:canMove = false, bool:canAttack = false, info[] = WOW_INVALID_STRING) {
-	for(new spellid = 0; spellid < WOW_MAX_SPELLS; spellid++) {
-	    if(WOW_Spells[spellid][TYPE] == WOW_SPELL_TYPE_INVALID) {
-	    	WOW_Spells[spellid][TYPE] = type;
-			WOW_SetSpellName(spellid, name);
-			WOW_SetSpellType(spellid, type);
-			WOW_SetSpellCastTime(spellid, castTime, false);
-			WOW_SetSpellAmount(spellid, amount);
-			WOW_SetSpellPercentType(spellid, percentType);
-			WOW_SetSpellCastBarColorDark(spellid, castBarColorDark);
-			WOW_SetSpellCastBarColorLight(spellid, castBarColorLight);
-			WOW_SetSpellCastBarInverted(spellid, castBarInverted, false);
-			WOW_SetSpellCastTimeInverted(spellid, castTimeInverted, false);
-			WOW_SetSpellCanMove(spellid, canMove);
-			WOW_SetSpellCanAttack(spellid, canAttack);
-			WOW_SetSpellInfo(spellid, info);
+stock FAI_CreateSpellFull(name[], type = FAI_SPELL_TYPE_CUSTOM, castTime = 2000, Float:amount = 0.0, percentType = FAI_PERCENT_TYPE_CUSTOM, castBarColorDark = 0x645005ff, castBarColorLight = 0xb4820aff,
+bool:castBarInverted = false, bool:castTimeInverted = false, bool:canMove = false, bool:canAttack = false, info[] = FAI_INVALID_STRING) {
+	for(new spellid = 0; spellid < FAI_MAX_SPELLS; spellid++) {
+	    if(FAI_Spells[spellid][TYPE] == FAI_SPELL_TYPE_INVALID) {
+	    	FAI_Spells[spellid][TYPE] = type;
+			FAI_SetSpellName(spellid, name);
+			FAI_SetSpellType(spellid, type);
+			FAI_SetSpellCastTime(spellid, castTime, false);
+			FAI_SetSpellAmount(spellid, amount);
+			FAI_SetSpellPercentType(spellid, percentType);
+			FAI_SetSpellCastBarColorDark(spellid, castBarColorDark);
+			FAI_SetSpellCastBarColorLight(spellid, castBarColorLight);
+			FAI_SetSpellCastBarInverted(spellid, castBarInverted, false);
+			FAI_SetSpellCastTimeInverted(spellid, castTimeInverted, false);
+			FAI_SetSpellCanMove(spellid, canMove);
+			FAI_SetSpellCanAttack(spellid, canAttack);
+			FAI_SetSpellInfo(spellid, info);
 	    	return spellid;
 		}
 	}
 	//Max amount of spells reached
-	return WOW_INVALID_SPELL_ID;
+	return FAI_INVALID_SPELL_ID;
 }
-stock WOW_CreateSpell(name[]) {
-	return WOW_CreateSpellFull(name);
+stock FAI_CreateSpell(name[]) {
+	return FAI_CreateSpellFull(name);
 }
-stock WOW_GetSpellName(spellid, name[], len) {
-	if(WOW_IsValidSpell(spellid)) {
-	    WOW_strcpy(name, WOW_Spells[spellid][NAME], len);
+stock FAI_GetSpellName(spellid, name[], len) {
+	if(FAI_IsValidSpell(spellid)) {
+	    FAI_strcpy(name, FAI_Spells[spellid][NAME], len);
 		return strlen(name);
 	}
 	return -1;
 }
-stock WOW_SetSpellName(spellid, name[]) {
-	if(WOW_IsValidSpell(spellid)) {
-	    WOW_strcpy(WOW_Spells[spellid][NAME], name, WOW_MAX_SPELL_NAME + 1);
-	    for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-	        if(WOW_IsValidBoss(bossid) && (WOW_IsBossCastingSpell(bossid, spellid) || WOW_IsBossCastBarExtraForSpell(bossid, spellid))) {
-				TextDrawSetString(WOW_Bosses[bossid][TEXTDRAW][6], WOW_Spells[spellid][NAME]);
+stock FAI_SetSpellName(spellid, name[]) {
+	if(FAI_IsValidSpell(spellid)) {
+	    FAI_strcpy(FAI_Spells[spellid][NAME], name, FAI_MAX_SPELL_NAME + 1);
+	    for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+	        if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid))) {
+				TextDrawSetString(FAI_Bosses[bossid][TEXTDRAW][6], FAI_Spells[spellid][NAME]);
 				//Textdraw updates automatically
 	        }
 	    }
@@ -1846,23 +1846,23 @@ stock WOW_SetSpellName(spellid, name[]) {
 	}
 	return 0;
 }
-stock WOW_GetSpellType(spellid) {
-	if(WOW_IsValidSpell(spellid)) {
-	    return WOW_Spells[spellid][TYPE];
+stock FAI_GetSpellType(spellid) {
+	if(FAI_IsValidSpell(spellid)) {
+	    return FAI_Spells[spellid][TYPE];
 	}
-	return WOW_SPELL_TYPE_INVALID;
+	return FAI_SPELL_TYPE_INVALID;
 }
-stock WOW_SetSpellType(spellid, type) {
+stock FAI_SetSpellType(spellid, type) {
 	//Don't check for type <= CUSTOM, so the user can create additionale types
-	if(WOW_IsValidSpell(spellid) && type != WOW_SPELL_TYPE_INVALID && type >= 0) {
-		WOW_Spells[spellid][TYPE] = type;
+	if(FAI_IsValidSpell(spellid) && type != FAI_SPELL_TYPE_INVALID && type >= 0) {
+		FAI_Spells[spellid][TYPE] = type;
 	    return 1;
 	}
 	return 0;
 }
-stock WOW_GetSpellCastTime(spellid) {
-	if(WOW_IsValidSpell(spellid)) {
-	    return WOW_Spells[spellid][CAST_TIME];
+stock FAI_GetSpellCastTime(spellid) {
+	if(FAI_IsValidSpell(spellid)) {
+	    return FAI_Spells[spellid][CAST_TIME];
 	}
 	return -1;
 }
@@ -1872,53 +1872,53 @@ Instant:
 - casttime 500, progress 850, extraprogress 350 => casttime 0 (instant), progress becomes 0, init cast immediately (not complete stopcast as well, because it has already been called, because there is extraprogress)
 ShowExtra:
 - casttime 500, progress 850, extraprogress 350 => casttime 400, progress becomes 750 which is casttime + extraprogress (keep showextra fixed, otherwise showextra will start again)
-- casttime 500, progress 850, extraprogress 350 => casttime 900, progress becomes 1250 which is casttime + extraprogress (keep showextra fixed, otherwise WOW_OnBossStopCasting will be called again when progress reaches casttime again)
+- casttime 500, progress 850, extraprogress 350 => casttime 900, progress becomes 1250 which is casttime + extraprogress (keep showextra fixed, otherwise FAI_OnBossStopCasting will be called again when progress reaches casttime again)
 Keeppercent:
 - casttime 500, progress 450, extraprogress 0 => casttime 400, progress becomes 360
 - casttime 500, progress 450, extraprogress 0 => casttime 600, progress becomes 540
 Dont keeppercent:
 - casttime 500, progress 450, extraprogress 0 => casttime 400, progress becomes 400 which is casttime, execute complete stopcast immediately (not init cast as well to allow for showExtra, except if showExtra is invalid)
 - casttime 500, progress 450, extraprogress 0 => casttime 600, progress stays 450
-In other words: showextra does never scale it will always remain a fixed number. Instants don't have showextra time. Both are to prevent showextra from going over WOW_CAST_BAR_SHOW_EXTRA_TIME and to prevent WOW_OnBossStopCasting from being called twice.
+In other words: showextra does never scale it will always remain a fixed number. Instants don't have showextra time. Both are to prevent showextra from going over FAI_CAST_BAR_SHOW_EXTRA_TIME and to prevent FAI_OnBossStopCasting from being called twice.
 */
-stock WOW_SetSpellCastTime(spellid, castTime, bool:keepCastPercent = false) {
-	if(WOW_IsValidSpell(spellid)) {
+stock FAI_SetSpellCastTime(spellid, castTime, bool:keepCastPercent = false) {
+	if(FAI_IsValidSpell(spellid)) {
 	    if(castTime < 0) {
 			castTime = 0;
 		}
-		new oldCastTime = WOW_Spells[spellid][CAST_TIME];
-		WOW_Spells[spellid][CAST_TIME] = castTime;
-		for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-		    if(WOW_IsValidBoss(bossid) && (WOW_IsBossCastingSpell(bossid, spellid) || WOW_IsBossCastBarExtraForSpell(bossid, spellid))) {
-			    new showExtraProgress = WOW_Casting[bossid][CAST_PROGRESS] - oldCastTime;
+		new oldCastTime = FAI_Spells[spellid][CAST_TIME];
+		FAI_Spells[spellid][CAST_TIME] = castTime;
+		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		    if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid))) {
+			    new showExtraProgress = FAI_Casting[bossid][CAST_PROGRESS] - oldCastTime;
 				if(showExtraProgress < 0) {
 				    showExtraProgress = 0;
 				}
 		        if(castTime == 0) {
-			    	WOW_Casting[bossid][CAST_PROGRESS] = 0; //Must be set before WOW_BossCastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
+			    	FAI_Casting[bossid][CAST_PROGRESS] = 0; //Must be set before FAI_BossCastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
 			    	if(showExtraProgress == 0) {
-						WOW_BossCastProgressComplete(bossid, spellid);
+						FAI_BossCastProgressComplete(bossid, spellid);
 					}
-	    			WOW_InitBossCasting(bossid);
+	    			FAI_InitBossCasting(bossid);
 		        } else {
 		            if(showExtraProgress != 0) {
-		                WOW_Casting[bossid][CAST_PROGRESS] = castTime + showExtraProgress;
+		                FAI_Casting[bossid][CAST_PROGRESS] = castTime + showExtraProgress;
 		            } else {
 		                if(keepCastPercent) {
-							WOW_Casting[bossid][CAST_PROGRESS] = floatround(float(WOW_Casting[bossid][CAST_PROGRESS]) / oldCastTime * castTime, floatround_floor); //floatround_floor, because (say 400.9) the next progress integer (401) wasn't reached yet
+							FAI_Casting[bossid][CAST_PROGRESS] = floatround(float(FAI_Casting[bossid][CAST_PROGRESS]) / oldCastTime * castTime, floatround_floor); //floatround_floor, because (say 400.9) the next progress integer (401) wasn't reached yet
 						} else {
-							if(WOW_Casting[bossid][CAST_PROGRESS] >= castTime) {
-								WOW_Casting[bossid][CAST_PROGRESS] = castTime; //Must be set before WOW_BossCastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
-								WOW_BossCastProgressComplete(bossid, spellid);
-								#if WOW_CAST_BAR_SHOW_EXTRA_TIME <= 0
-									WOW_InitBossCasting(bossid);
+							if(FAI_Casting[bossid][CAST_PROGRESS] >= castTime) {
+								FAI_Casting[bossid][CAST_PROGRESS] = castTime; //Must be set before FAI_BossCastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
+								FAI_BossCastProgressComplete(bossid, spellid);
+								#if FAI_CAST_BAR_SHOW_EXTRA_TIME <= 0
+									FAI_InitBossCasting(bossid);
 								#endif
 							}
 		                }
 		            }
 		            //Don't update castbar with instants or if no show extra
-		            #if WOW_CAST_BAR_SHOW_EXTRA_TIME > 0
-						WOW_UpdateBossCastDisplay(bossid);
+		            #if FAI_CAST_BAR_SHOW_EXTRA_TIME > 0
+						FAI_UpdateBossCastDisplay(bossid);
 					#endif
 				}
 			}
@@ -1927,76 +1927,76 @@ stock WOW_SetSpellCastTime(spellid, castTime, bool:keepCastPercent = false) {
 	}
 	return 0;
 }
-stock WOW_GetSpellAmount(spellid, &Float:amount) {
-	if(WOW_IsValidSpell(spellid)) {
-	    amount = WOW_Spells[spellid][AMOUNT];
+stock FAI_GetSpellAmount(spellid, &Float:amount) {
+	if(FAI_IsValidSpell(spellid)) {
+	    amount = FAI_Spells[spellid][AMOUNT];
 	    return 1;
 	}
 	return 0;
 }
-stock WOW_SetSpellAmount(spellid, Float:amount) {
-	if(WOW_IsValidSpell(spellid)) {
+stock FAI_SetSpellAmount(spellid, Float:amount) {
+	if(FAI_IsValidSpell(spellid)) {
 	    if(amount < 0.0) {
 			amount = 0.0;
 		}
-	    WOW_Spells[spellid][AMOUNT] = amount;
+	    FAI_Spells[spellid][AMOUNT] = amount;
 	    return 1;
 	}
 	return 0;
 }
-stock WOW_GetSpellPercentType(spellid) {
-	if(WOW_IsValidSpell(spellid)) {
-	    return WOW_Spells[spellid][PERCENT_TYPE];
+stock FAI_GetSpellPercentType(spellid) {
+	if(FAI_IsValidSpell(spellid)) {
+	    return FAI_Spells[spellid][PERCENT_TYPE];
 	}
-	return WOW_PERCENT_TYPE_INVALID;
+	return FAI_PERCENT_TYPE_INVALID;
 }
-stock WOW_SetSpellPercentType(spellid, type) {
+stock FAI_SetSpellPercentType(spellid, type) {
 	//Don't check for type <= CUSTOM, so the user can create additionale types
-	if(WOW_IsValidSpell(spellid) && type != WOW_PERCENT_TYPE_INVALID && type >= 0) {
-		WOW_Spells[spellid][PERCENT_TYPE] = type;
+	if(FAI_IsValidSpell(spellid) && type != FAI_PERCENT_TYPE_INVALID && type >= 0) {
+		FAI_Spells[spellid][PERCENT_TYPE] = type;
 	    return 1;
 	}
 	return 0;
 }
-stock WOW_GetSpellCastBarColorDark(spellid) {
-	if(WOW_IsValidSpell(spellid)) {
-		return WOW_Spells[spellid][CAST_BAR_COLOR_DARK];
+stock FAI_GetSpellCastBarColorDark(spellid) {
+	if(FAI_IsValidSpell(spellid)) {
+		return FAI_Spells[spellid][CAST_BAR_COLOR_DARK];
 	}
 	return -1;
 }
-stock WOW_SetSpellCastBarColorDark(spellid, color) {
-	if(WOW_IsValidSpell(spellid)) {
-		WOW_Spells[spellid][CAST_BAR_COLOR_DARK] = color;
-		for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-		    if(WOW_IsValidBoss(bossid) && (WOW_IsBossCastingSpell(bossid, spellid) || WOW_IsBossCastBarExtraForSpell(bossid, spellid))) {
-    			WOW_UpdateBossCastDisplay(bossid);
+stock FAI_SetSpellCastBarColorDark(spellid, color) {
+	if(FAI_IsValidSpell(spellid)) {
+		FAI_Spells[spellid][CAST_BAR_COLOR_DARK] = color;
+		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		    if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid))) {
+    			FAI_UpdateBossCastDisplay(bossid);
 		    }
 	    }
 	    return 1;
 	}
 	return 0;
 }
-stock WOW_GetSpellCastBarColorLight(spellid) {
-	if(WOW_IsValidSpell(spellid)) {
-		return WOW_Spells[spellid][CAST_BAR_COLOR_LIGHT];
+stock FAI_GetSpellCastBarColorLight(spellid) {
+	if(FAI_IsValidSpell(spellid)) {
+		return FAI_Spells[spellid][CAST_BAR_COLOR_LIGHT];
 	}
 	return -1;
 }
-stock WOW_SetSpellCastBarColorLight(spellid, color) {
-	if(WOW_IsValidSpell(spellid)) {
-		WOW_Spells[spellid][CAST_BAR_COLOR_LIGHT] = color;
-		for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-		    if(WOW_IsValidBoss(bossid) && (WOW_IsBossCastingSpell(bossid, spellid) || WOW_IsBossCastBarExtraForSpell(bossid, spellid))) {
-    			WOW_UpdateBossCastDisplay(bossid);
+stock FAI_SetSpellCastBarColorLight(spellid, color) {
+	if(FAI_IsValidSpell(spellid)) {
+		FAI_Spells[spellid][CAST_BAR_COLOR_LIGHT] = color;
+		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		    if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid))) {
+    			FAI_UpdateBossCastDisplay(bossid);
 		    }
 	    }
 	    return 1;
 	}
 	return 0;
 }
-stock bool:WOW_GetSpellCastBarInverted(spellid) {
-	if(WOW_IsValidSpell(spellid)) {
-		return WOW_Spells[spellid][CAST_BAR_INVERTED];
+stock bool:FAI_GetSpellCastBarInverted(spellid) {
+	if(FAI_IsValidSpell(spellid)) {
+		return FAI_Spells[spellid][CAST_BAR_INVERTED];
 	}
 	return false;
 }
@@ -2011,16 +2011,16 @@ Dont invertprogressmade:
 - showextra                                                     => bar inverts, progress doesn't change, extraprogress doesn't change, further increases
 In other words: all values will always be positive, but the representation on the textdraw is adapted. When showextra is true, progress or extraprogress never changes, to keep showextra a consistent time.
 */
-stock WOW_SetSpellCastBarInverted(spellid, bool:inverted, bool:invertProgressMade = false) {
-	if(WOW_IsValidSpell(spellid)) {
+stock FAI_SetSpellCastBarInverted(spellid, bool:inverted, bool:invertProgressMade = false) {
+	if(FAI_IsValidSpell(spellid)) {
 	    //Don't inv if already inv and vice versa
-	    new bool:oldInverted = WOW_Spells[spellid][CAST_BAR_INVERTED];
-		WOW_Spells[spellid][CAST_BAR_INVERTED] = inverted;
-		for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-		    if(WOW_IsValidBoss(bossid) && (WOW_IsBossCastingSpell(bossid, spellid) || WOW_IsBossCastBarExtraForSpell(bossid, spellid))) {
-    			WOW_UpdateBossCastDisplay(bossid);
-		        if(invertProgressMade && WOW_IsBossCastingSpell(bossid, spellid) && oldInverted != inverted) { //Only invert when casting, not when showextra
-		            WOW_Casting[bossid][CAST_PROGRESS] = WOW_Spells[spellid][CAST_TIME] - WOW_Casting[bossid][CAST_PROGRESS];
+	    new bool:oldInverted = FAI_Spells[spellid][CAST_BAR_INVERTED];
+		FAI_Spells[spellid][CAST_BAR_INVERTED] = inverted;
+		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		    if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid))) {
+    			FAI_UpdateBossCastDisplay(bossid);
+		        if(invertProgressMade && FAI_IsBossCastingSpell(bossid, spellid) && oldInverted != inverted) { //Only invert when casting, not when showextra
+		            FAI_Casting[bossid][CAST_PROGRESS] = FAI_Spells[spellid][CAST_TIME] - FAI_Casting[bossid][CAST_PROGRESS];
 		        }
 		    }
 	    }
@@ -2028,9 +2028,9 @@ stock WOW_SetSpellCastBarInverted(spellid, bool:inverted, bool:invertProgressMad
 	}
 	return 0;
 }
-stock bool:WOW_GetSpellCastTimeInverted(spellid) {
-	if(WOW_IsValidSpell(spellid)) {
-		return WOW_Spells[spellid][CAST_TIME_INVERTED];
+stock bool:FAI_GetSpellCastTimeInverted(spellid) {
+	if(FAI_IsValidSpell(spellid)) {
+		return FAI_Spells[spellid][CAST_TIME_INVERTED];
 	}
 	return false;
 }
@@ -2045,16 +2045,16 @@ Dont invertprogressmade:
 - showextra                                                     => time inverts, progress doesn't change, extraprogress doesn't change, further increases
 In other words: all values will always be positive, but the representation on the textdraw is adapted. When showextra is true, progress or extraprogress never changes, to keep showextra a consistent time.
 */
-stock WOW_SetSpellCastTimeInverted(spellid, bool:inverted, bool:invertProgressMade = false) {
-	if(WOW_IsValidSpell(spellid)) {
+stock FAI_SetSpellCastTimeInverted(spellid, bool:inverted, bool:invertProgressMade = false) {
+	if(FAI_IsValidSpell(spellid)) {
 	    //Don't inv if already inv and vice versa
-	    new bool:oldInverted = WOW_Spells[spellid][CAST_TIME_INVERTED];
-		WOW_Spells[spellid][CAST_TIME_INVERTED] = inverted;
-		for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-		    if(WOW_IsValidBoss(bossid) && (WOW_IsBossCastingSpell(bossid, spellid) || WOW_IsBossCastBarExtraForSpell(bossid, spellid))) {
-    			WOW_UpdateBossCastDisplay(bossid);
-		        if(invertProgressMade && WOW_IsBossCastingSpell(bossid, spellid) && oldInverted != inverted) { //Only invert when casting, not when showextra
-		            WOW_Casting[bossid][CAST_PROGRESS] = WOW_Spells[spellid][CAST_TIME] - WOW_Casting[bossid][CAST_PROGRESS];
+	    new bool:oldInverted = FAI_Spells[spellid][CAST_TIME_INVERTED];
+		FAI_Spells[spellid][CAST_TIME_INVERTED] = inverted;
+		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		    if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid))) {
+    			FAI_UpdateBossCastDisplay(bossid);
+		        if(invertProgressMade && FAI_IsBossCastingSpell(bossid, spellid) && oldInverted != inverted) { //Only invert when casting, not when showextra
+		            FAI_Casting[bossid][CAST_PROGRESS] = FAI_Spells[spellid][CAST_TIME] - FAI_Casting[bossid][CAST_PROGRESS];
 		        }
 		    }
 	    }
@@ -2062,108 +2062,108 @@ stock WOW_SetSpellCastTimeInverted(spellid, bool:inverted, bool:invertProgressMa
 	}
 	return 0;
 }
-stock bool:WOW_GetSpellCanMove(spellid) {
-	if(WOW_IsValidSpell(spellid)) {
-		return WOW_Spells[spellid][CAN_MOVE];
+stock bool:FAI_GetSpellCanMove(spellid) {
+	if(FAI_IsValidSpell(spellid)) {
+		return FAI_Spells[spellid][CAN_MOVE];
 	}
 	return false;
 }
-stock WOW_SetSpellCanMove(spellid, bool:canMove) {
-	if(WOW_IsValidSpell(spellid)) {
-		WOW_Spells[spellid][CAN_MOVE] = canMove;
-		for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-		    if(WOW_IsValidBoss(bossid) && (WOW_IsBossCastingSpell(bossid, spellid) || WOW_IsBossCastBarExtraForSpell(bossid, spellid)) && WOW_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
-		      	WOW_BossAttackTarget(bossid, WOW_Bosses[bossid][TARGET]);
+stock FAI_SetSpellCanMove(spellid, bool:canMove) {
+	if(FAI_IsValidSpell(spellid)) {
+		FAI_Spells[spellid][CAN_MOVE] = canMove;
+		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		    if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid)) && FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
+		      	FAI_BossAttackTarget(bossid, FAI_Bosses[bossid][TARGET]);
 		    }
 	    }
 		return 1;
 	}
 	return 0;
 }
-stock bool:WOW_GetSpellCanAttack(spellid) {
-	if(WOW_IsValidSpell(spellid)) {
-		return WOW_Spells[spellid][CAN_ATTACK];
+stock bool:FAI_GetSpellCanAttack(spellid) {
+	if(FAI_IsValidSpell(spellid)) {
+		return FAI_Spells[spellid][CAN_ATTACK];
 	}
 	return false;
 }
-stock WOW_SetSpellCanAttack(spellid, bool:canAttack) {
-	if(WOW_IsValidSpell(spellid)) {
-		WOW_Spells[spellid][CAN_ATTACK] = canAttack;
-		for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-		    if(WOW_IsValidBoss(bossid) && (WOW_IsBossCastingSpell(bossid, spellid) || WOW_IsBossCastBarExtraForSpell(bossid, spellid)) && WOW_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
-		      	WOW_BossAttackTarget(bossid, WOW_Bosses[bossid][TARGET]);
+stock FAI_SetSpellCanAttack(spellid, bool:canAttack) {
+	if(FAI_IsValidSpell(spellid)) {
+		FAI_Spells[spellid][CAN_ATTACK] = canAttack;
+		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		    if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid)) && FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
+		      	FAI_BossAttackTarget(bossid, FAI_Bosses[bossid][TARGET]);
 		    }
 	    }
 		return 1;
 	}
 	return 0;
 }
-stock WOW_GetSpellInfo(spellid, info[], len) {
-	if(WOW_IsValidSpell(spellid)) {
-	    return WOW_strcpy(info, WOW_Spells[spellid][INFO], len);
+stock FAI_GetSpellInfo(spellid, info[], len) {
+	if(FAI_IsValidSpell(spellid)) {
+	    return FAI_strcpy(info, FAI_Spells[spellid][INFO], len);
 	}
 	return -1;
 }
-stock WOW_SetSpellInfo(spellid, info[]) {
-	if(WOW_IsValidSpell(spellid)) {
+stock FAI_SetSpellInfo(spellid, info[]) {
+	if(FAI_IsValidSpell(spellid)) {
 		//If the user didn't provide info, construct info based on other settings
-		if(!WOW_isnull(info) && !strcmp(info, WOW_INVALID_STRING, true)) {
-			new string[WOW_MAX_SPELL_INFO + 1];
+		if(!FAI_isnull(info) && !strcmp(info, FAI_INVALID_STRING, true)) {
+			new string[FAI_MAX_SPELL_INFO + 1];
 			new percentString[21 + 26 + 1];
-			WOW_strcpy(percentString, WOW_DisplayReadableFloat(WOW_Spells[spellid][AMOUNT], 2, 0));
-			switch(WOW_Spells[spellid][PERCENT_TYPE]) {
-			    case WOW_PERCENT_TYPE_NOT: {}
-				case WOW_PERCENT_TYPE_TARG_MAX_HP_AP: {format(percentString, sizeof(percentString), "%s\% of target's max health + armour", percentString);}
-				case WOW_PERCENT_TYPE_CAST_MAX_HP_AP: {format(percentString, sizeof(percentString), "%s\% of caster's max health + armour", percentString);}
-				case WOW_PERCENT_TYPE_TARG_CUR_HP_AP: {format(percentString, sizeof(percentString), "%s\% of target's remaining health + armour", percentString);}
-				case WOW_PERCENT_TYPE_CAST_CUR_HP_AP: {format(percentString, sizeof(percentString), "%s\% of caster's remaining health + armour", percentString);}
-				case WOW_PERCENT_TYPE_TARG_LOS_HP_AP: {format(percentString, sizeof(percentString), "%s\% of target's lost health + armour", percentString);}
-				case WOW_PERCENT_TYPE_CAST_LOS_HP_AP: {format(percentString, sizeof(percentString), "%s\% of caster's lost health + armour", percentString);}
-				case WOW_PERCENT_TYPE_TARG_MAX_HP: {format(percentString, sizeof(percentString), "%s\% of target's max health", percentString);}
-				case WOW_PERCENT_TYPE_CAST_MAX_HP: {format(percentString, sizeof(percentString), "%s\% of caster's max health", percentString);}
-				case WOW_PERCENT_TYPE_TARG_CUR_HP: {format(percentString, sizeof(percentString), "%s\% of target's remaining health", percentString);}
-				case WOW_PERCENT_TYPE_CAST_CUR_HP: {format(percentString, sizeof(percentString), "%s\% of caster's remaining health", percentString);}
-				case WOW_PERCENT_TYPE_TARG_LOS_HP: {format(percentString, sizeof(percentString), "%s\% of target's lost health", percentString);}
-				case WOW_PERCENT_TYPE_CAST_LOS_HP: {format(percentString, sizeof(percentString), "%s\% of caster's lost health", percentString);}
-				case WOW_PERCENT_TYPE_TARG_MAX_AP: {format(percentString, sizeof(percentString), "%s\% of target's max armour", percentString);}
-				case WOW_PERCENT_TYPE_CAST_MAX_AP: {format(percentString, sizeof(percentString), "%s\% of caster's max armour", percentString);}
-				case WOW_PERCENT_TYPE_TARG_CUR_AP: {format(percentString, sizeof(percentString), "%s\% of target's remaining armour", percentString);}
-				case WOW_PERCENT_TYPE_CAST_CUR_AP: {format(percentString, sizeof(percentString), "%s\% of caster's remaining armour", percentString);}
-				case WOW_PERCENT_TYPE_TARG_LOS_AP: {format(percentString, sizeof(percentString), "%s\% of target's lost armour", percentString);}
-				case WOW_PERCENT_TYPE_CAST_LOS_AP: {format(percentString, sizeof(percentString), "%s\% of caster's lost armour", percentString);}
+			FAI_strcpy(percentString, FAI_DisplayReadableFloat(FAI_Spells[spellid][AMOUNT], 2, 0));
+			switch(FAI_Spells[spellid][PERCENT_TYPE]) {
+			    case FAI_PERCENT_TYPE_NOT: {}
+				case FAI_PERCENT_TYPE_TARG_MAX_HP_AP: {format(percentString, sizeof(percentString), "%s\% of target's max health + armour", percentString);}
+				case FAI_PERCENT_TYPE_CAST_MAX_HP_AP: {format(percentString, sizeof(percentString), "%s\% of caster's max health + armour", percentString);}
+				case FAI_PERCENT_TYPE_TARG_CUR_HP_AP: {format(percentString, sizeof(percentString), "%s\% of target's remaining health + armour", percentString);}
+				case FAI_PERCENT_TYPE_CAST_CUR_HP_AP: {format(percentString, sizeof(percentString), "%s\% of caster's remaining health + armour", percentString);}
+				case FAI_PERCENT_TYPE_TARG_LOS_HP_AP: {format(percentString, sizeof(percentString), "%s\% of target's lost health + armour", percentString);}
+				case FAI_PERCENT_TYPE_CAST_LOS_HP_AP: {format(percentString, sizeof(percentString), "%s\% of caster's lost health + armour", percentString);}
+				case FAI_PERCENT_TYPE_TARG_MAX_HP: {format(percentString, sizeof(percentString), "%s\% of target's max health", percentString);}
+				case FAI_PERCENT_TYPE_CAST_MAX_HP: {format(percentString, sizeof(percentString), "%s\% of caster's max health", percentString);}
+				case FAI_PERCENT_TYPE_TARG_CUR_HP: {format(percentString, sizeof(percentString), "%s\% of target's remaining health", percentString);}
+				case FAI_PERCENT_TYPE_CAST_CUR_HP: {format(percentString, sizeof(percentString), "%s\% of caster's remaining health", percentString);}
+				case FAI_PERCENT_TYPE_TARG_LOS_HP: {format(percentString, sizeof(percentString), "%s\% of target's lost health", percentString);}
+				case FAI_PERCENT_TYPE_CAST_LOS_HP: {format(percentString, sizeof(percentString), "%s\% of caster's lost health", percentString);}
+				case FAI_PERCENT_TYPE_TARG_MAX_AP: {format(percentString, sizeof(percentString), "%s\% of target's max armour", percentString);}
+				case FAI_PERCENT_TYPE_CAST_MAX_AP: {format(percentString, sizeof(percentString), "%s\% of caster's max armour", percentString);}
+				case FAI_PERCENT_TYPE_TARG_CUR_AP: {format(percentString, sizeof(percentString), "%s\% of target's remaining armour", percentString);}
+				case FAI_PERCENT_TYPE_CAST_CUR_AP: {format(percentString, sizeof(percentString), "%s\% of caster's remaining armour", percentString);}
+				case FAI_PERCENT_TYPE_TARG_LOS_AP: {format(percentString, sizeof(percentString), "%s\% of target's lost armour", percentString);}
+				case FAI_PERCENT_TYPE_CAST_LOS_AP: {format(percentString, sizeof(percentString), "%s\% of caster's lost armour", percentString);}
 			}
 			new castTimeString[21 + 7 + 1];
-			if(WOW_Spells[spellid][CAST_TIME] != 0) {
-				if(float(WOW_Spells[spellid][CAST_TIME]) / 1000 / 60 >= 1) {
-					format(castTimeString, sizeof(castTimeString), "%s minute", WOW_DisplayReadableFloat(float(WOW_Spells[spellid][CAST_TIME]) / 1000 / 60, 2, 0));
+			if(FAI_Spells[spellid][CAST_TIME] != 0) {
+				if(float(FAI_Spells[spellid][CAST_TIME]) / 1000 / 60 >= 1) {
+					format(castTimeString, sizeof(castTimeString), "%s minute", FAI_DisplayReadableFloat(float(FAI_Spells[spellid][CAST_TIME]) / 1000 / 60, 2, 0));
 				} else {
-					format(castTimeString, sizeof(castTimeString), "%s second", WOW_DisplayReadableFloat(float(WOW_Spells[spellid][CAST_TIME]) / 1000, 2, 0));
+					format(castTimeString, sizeof(castTimeString), "%s second", FAI_DisplayReadableFloat(float(FAI_Spells[spellid][CAST_TIME]) / 1000, 2, 0));
 				}
 			} else {
-				WOW_strcpy(castTimeString, "Instant");
+				FAI_strcpy(castTimeString, "Instant");
 			}
-		    switch(WOW_Spells[spellid][TYPE]) {
-				case WOW_SPELL_TYPE_CUSTOM: {format(string, sizeof(string), "Has a custom effect. %s cast.", castTimeString);}
-				case WOW_SPELL_TYPE_DAM: {format(string, sizeof(string), "Damages %s. %s cast.", percentString, castTimeString);}
-				case WOW_SPELL_TYPE_HEAL: {format(string, sizeof(string), "Heals %s. %s cast.", percentString, castTimeString);}
-				case WOW_SPELL_TYPE_CROWD_CONTROL: {format(string, sizeof(string), "Applies a crowd control effect. %s cast.", percentString, castTimeString);}
+		    switch(FAI_Spells[spellid][TYPE]) {
+				case FAI_SPELL_TYPE_CUSTOM: {format(string, sizeof(string), "Has a custom effect. %s cast.", castTimeString);}
+				case FAI_SPELL_TYPE_DAM: {format(string, sizeof(string), "Damages %s. %s cast.", percentString, castTimeString);}
+				case FAI_SPELL_TYPE_HEAL: {format(string, sizeof(string), "Heals %s. %s cast.", percentString, castTimeString);}
+				case FAI_SPELL_TYPE_CROWD_CONTROL: {format(string, sizeof(string), "Applies a crowd control effect. %s cast.", percentString, castTimeString);}
 			}
-		    WOW_strcpy(WOW_Spells[spellid][INFO], string, WOW_MAX_SPELL_INFO + 1);
+		    FAI_strcpy(FAI_Spells[spellid][INFO], string, FAI_MAX_SPELL_INFO + 1);
 		}
 		//If the user did provide info, use that one
 		else {
-		    WOW_strcpy(WOW_Spells[spellid][INFO], info, WOW_MAX_SPELL_INFO + 1);
+		    FAI_strcpy(FAI_Spells[spellid][INFO], info, FAI_MAX_SPELL_INFO + 1);
 		}
 		return 1;
 	}
 	return 0;
 }
-stock WOW_SpellToString(spellid, string[], len, bool:allowDefaultColors = true) {
-	if(WOW_IsValidSpell(spellid)) {
+stock FAI_SpellToString(spellid, string[], len, bool:allowDefaultColors = true) {
+	if(FAI_IsValidSpell(spellid)) {
 	    if(allowDefaultColors) {
-	    	format(string, len, "{%06x}%s: {%06x}%s", 0xffffffff >>> 8, WOW_Spells[spellid][NAME], 0xffd517ff >>> 8, WOW_Spells[spellid][INFO]);
+	    	format(string, len, "{%06x}%s: {%06x}%s", 0xffffffff >>> 8, FAI_Spells[spellid][NAME], 0xffd517ff >>> 8, FAI_Spells[spellid][INFO]);
 	    } else {
-	    	format(string, len, "%s: %s", WOW_Spells[spellid][NAME], WOW_Spells[spellid][INFO]);
+	    	format(string, len, "%s: %s", FAI_Spells[spellid][NAME], FAI_Spells[spellid][INFO]);
 	    }
 		return strlen(string);
 	}
@@ -2171,115 +2171,115 @@ stock WOW_SpellToString(spellid, string[], len, bool:allowDefaultColors = true) 
 }
 
 //Casting
-stock WOW_StopAllBossesCasting() {
-	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-		WOW_StopBossCasting(bossid);
+stock FAI_StopAllBossesCasting() {
+	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		FAI_StopBossCasting(bossid);
 	}
 	return 1;
 }
-stock WOW_StopBossCasting(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
-		return WOW_StopBossCastingSpell(bossid, WOW_Casting[bossid][SPELLID]);
+stock FAI_StopBossCasting(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
+		return FAI_StopBossCastingSpell(bossid, FAI_Casting[bossid][SPELLID]);
     }
     return 0;
 }
-stock WOW_StopAllBossesCastingSpell(spellid) {
-	if(WOW_IsValidSpell(spellid)) {
-		for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-			WOW_StopBossCastingSpell(bossid, spellid);
+stock FAI_StopAllBossesCastingSpell(spellid) {
+	if(FAI_IsValidSpell(spellid)) {
+		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+			FAI_StopBossCastingSpell(bossid, spellid);
 		}
 		return 1;
 	}
 	return 0;
 }
-static WOW_InitAllBossesCasting() {
-	for(new bossid = 0; bossid < WOW_MAX_BOSSES; bossid++) {
-		WOW_InitBossCasting(bossid);
+static FAI_InitAllBossesCasting() {
+	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		FAI_InitBossCasting(bossid);
 	}
 }
-static WOW_InitBossCasting(bossid) {
-	//Don't use WOW_IsValidBoss(bossid)
-	if(bossid >= 0 && bossid < WOW_MAX_BOSSES) {
-	    WOW_Casting[bossid][SPELLID] = WOW_INVALID_SPELL_ID;
-	    WOW_Casting[bossid][CAST_PROGRESS] = WOW_INVALID_CAST_PROGRESS;
-		WOW_Casting[bossid][TARGETID] = INVALID_PLAYER_ID;
+static FAI_InitBossCasting(bossid) {
+	//Don't use FAI_IsValidBoss(bossid)
+	if(bossid >= 0 && bossid < FAI_MAX_BOSSES) {
+	    FAI_Casting[bossid][SPELLID] = FAI_INVALID_SPELL_ID;
+	    FAI_Casting[bossid][CAST_PROGRESS] = FAI_INVALID_CAST_PROGRESS;
+		FAI_Casting[bossid][TARGETID] = INVALID_PLAYER_ID;
 	}
 }
-forward bool:WOW_IsBossCasting(bossid); //Silence 'used before declaration' warning
-stock bool:WOW_IsBossCasting(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
-		new spellid = WOW_Casting[bossid][SPELLID];
-		if(WOW_IsValidSpell(spellid) && WOW_Spells[spellid][CAST_TIME] > WOW_Casting[bossid][CAST_PROGRESS]) {
+forward bool:FAI_IsBossCasting(bossid); //Silence 'used before declaration' warning
+stock bool:FAI_IsBossCasting(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
+		new spellid = FAI_Casting[bossid][SPELLID];
+		if(FAI_IsValidSpell(spellid) && FAI_Spells[spellid][CAST_TIME] > FAI_Casting[bossid][CAST_PROGRESS]) {
 	    	return true;
 	    }
 	}
 	return false;
 }
-forward bool:WOW_IsBossCastingSpell(bossid, spellid); //Silence used before definition warning
-stock bool:WOW_IsBossCastingSpell(bossid, spellid) {
-	//WOW_IsValidBoss & WOW_IsValidSpell in WOW_IsBossCasting
-	return WOW_IsBossCasting(bossid) && spellid == WOW_Casting[bossid][SPELLID];
+forward bool:FAI_IsBossCastingSpell(bossid, spellid); //Silence used before definition warning
+stock bool:FAI_IsBossCastingSpell(bossid, spellid) {
+	//FAI_IsValidBoss & FAI_IsValidSpell in FAI_IsBossCasting
+	return FAI_IsBossCasting(bossid) && spellid == FAI_Casting[bossid][SPELLID];
 }
-forward bool:WOW_IsBossCastBarExtra(bossid); //Silence used before definition warning
-stock bool:WOW_IsBossCastBarExtra(bossid) {
-	if(WOW_IsValidBoss(bossid)) {
-		new spellid = WOW_Casting[bossid][SPELLID];
-		if(WOW_IsValidSpell(spellid) && WOW_Casting[bossid][CAST_PROGRESS] >= WOW_Spells[spellid][CAST_TIME]) {
+forward bool:FAI_IsBossCastBarExtra(bossid); //Silence used before definition warning
+stock bool:FAI_IsBossCastBarExtra(bossid) {
+	if(FAI_IsValidBoss(bossid)) {
+		new spellid = FAI_Casting[bossid][SPELLID];
+		if(FAI_IsValidSpell(spellid) && FAI_Casting[bossid][CAST_PROGRESS] >= FAI_Spells[spellid][CAST_TIME]) {
 			return true;
 		}
 	}
 	return false;
 }
-forward bool:WOW_IsBossCastBarExtraForSpell(bossid, spellid); //Silence used before definition warning
-stock bool:WOW_IsBossCastBarExtraForSpell(bossid, spellid) {
-	//WOW_IsValidBoss & WOW_IsValidSpell in WOW_IsBossCastBarExtra
-	return WOW_IsBossCastBarExtra(bossid) && spellid == WOW_Casting[bossid][SPELLID];
+forward bool:FAI_IsBossCastBarExtraForSpell(bossid, spellid); //Silence used before definition warning
+stock bool:FAI_IsBossCastBarExtraForSpell(bossid, spellid) {
+	//FAI_IsValidBoss & FAI_IsValidSpell in FAI_IsBossCastBarExtra
+	return FAI_IsBossCastBarExtra(bossid) && spellid == FAI_Casting[bossid][SPELLID];
 }
-stock WOW_StopBossCastingSpell(bossid, spellid) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsValidSpell(spellid) && WOW_IsBossCastingSpell(bossid, spellid)) {
-	    WOW_BossCastProgressInComplete(bossid, spellid);
-	    WOW_InitBossCasting(bossid);
+stock FAI_StopBossCastingSpell(bossid, spellid) {
+	if(FAI_IsValidBoss(bossid) && FAI_IsValidSpell(spellid) && FAI_IsBossCastingSpell(bossid, spellid)) {
+	    FAI_BossCastProgressInComplete(bossid, spellid);
+	    FAI_InitBossCasting(bossid);
 	    return 1;
 	}
 	return 0;
 }
-static WOW_BossCastProgressInComplete(bossid, spellid) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsValidSpell(spellid)) {
-        if(WOW_IsBossCastingSpell(bossid, spellid)) { //Only call the end of the incomplete cast if CastProgress has actually not reached CastTime
-			CallRemoteFunction("WOW_OnBossStopCasting", "ddd", bossid, spellid, WOW_Casting[bossid][TARGETID], false);
+static FAI_BossCastProgressInComplete(bossid, spellid) {
+	if(FAI_IsValidBoss(bossid) && FAI_IsValidSpell(spellid)) {
+        if(FAI_IsBossCastingSpell(bossid, spellid)) { //Only call the end of the incomplete cast if CastProgress has actually not reached CastTime
+			CallRemoteFunction("FAI_OnBossStopCasting", "ddd", bossid, spellid, FAI_Casting[bossid][TARGETID], false);
 		}
 	}
 }
-static WOW_BossCastProgressComplete(bossid, spellid) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsValidSpell(spellid)) {
-        if(WOW_Casting[bossid][CAST_PROGRESS] == WOW_Spells[spellid][CAST_TIME]) { //Only call the end of the complete cast if CastProgress has actually reached CastTime
-			CallRemoteFunction("WOW_OnBossStopCasting", "ddd", bossid, spellid, WOW_Casting[bossid][TARGETID], true);
+static FAI_BossCastProgressComplete(bossid, spellid) {
+	if(FAI_IsValidBoss(bossid) && FAI_IsValidSpell(spellid)) {
+        if(FAI_Casting[bossid][CAST_PROGRESS] == FAI_Spells[spellid][CAST_TIME]) { //Only call the end of the complete cast if CastProgress has actually reached CastTime
+			CallRemoteFunction("FAI_OnBossStopCasting", "ddd", bossid, spellid, FAI_Casting[bossid][TARGETID], true);
 		}
 	}
 }
-stock WOW_StartBossCastingSpell(bossid, spellid, targetid = INVALID_PLAYER_ID) {
+stock FAI_StartBossCastingSpell(bossid, spellid, targetid = INVALID_PLAYER_ID) {
 	//Don't replace if casting already, do replace if showExtra
-	if(WOW_IsValidBoss(bossid) && WOW_IsValidSpell(spellid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID]) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID) && !WOW_IsBossCasting(bossid)) {
-        if(WOW_IsBossCastBarExtra(bossid)) {
-    		WOW_InitBossCasting(bossid);
+	if(FAI_IsValidBoss(bossid) && FAI_IsValidSpell(spellid) && FCNPC_IsSpawned(FAI_Bosses[bossid][NPCID]) && !FCNPC_IsDead(FAI_Bosses[bossid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID) && !FAI_IsBossCasting(bossid)) {
+        if(FAI_IsBossCastBarExtra(bossid)) {
+    		FAI_InitBossCasting(bossid);
         }
-		WOW_Casting[bossid][SPELLID] = spellid;
-		WOW_Casting[bossid][CAST_PROGRESS] = 0;
-		WOW_Casting[bossid][TARGETID] = targetid;
-		CallRemoteFunction("WOW_OnBossStartCasting", "ddd", bossid, spellid, targetid);
+		FAI_Casting[bossid][SPELLID] = spellid;
+		FAI_Casting[bossid][CAST_PROGRESS] = 0;
+		FAI_Casting[bossid][TARGETID] = targetid;
+		CallRemoteFunction("FAI_OnBossStartCasting", "ddd", bossid, spellid, targetid);
 		 //Immediately end cast if instant
-		if(WOW_Spells[spellid][CAST_TIME] == 0) {
-		    WOW_BossCastProgressComplete(bossid, spellid);
-    		WOW_InitBossCasting(bossid);
+		if(FAI_Spells[spellid][CAST_TIME] == 0) {
+		    FAI_BossCastProgressComplete(bossid, spellid);
+    		FAI_InitBossCasting(bossid);
 		}
     	return 1;
 	}
 	return 0;
 }
-stock WOW_GetBossCastingSpell(bossid) {
+stock FAI_GetBossCastingSpell(bossid) {
 	//Don't return anything if showExtra is true, because the boss isn't casting anymore even though the variable is still set to allow for the showExtra functionality
-	if(WOW_IsValidBoss(bossid) && WOW_IsBossCasting(bossid)) {
-	    return WOW_Casting[bossid][SPELLID];
+	if(FAI_IsValidBoss(bossid) && FAI_IsBossCasting(bossid)) {
+	    return FAI_Casting[bossid][SPELLID];
 	}
 	return -1;
 }
@@ -2287,7 +2287,7 @@ stock WOW_GetBossCastingSpell(bossid) {
 Instant:
 - Will never happen because, onstopcast gets called immediately after onstartcast
 ShowExtra:
-- Will never happen, because WOW_IsBossCasting is not true with showExtra. Use WOW_StartBossCastingSpell instead.
+- Will never happen, because FAI_IsBossCasting is not true with showExtra. Use FAI_StartBossCastingSpell instead.
 Keeppercent:
 - casttime 500, progress 250 => casttime 200, progress becomes 100
 - casttime 500, progress 250 => casttime 600, progress becomes 300
@@ -2295,37 +2295,37 @@ Dont keeppercent:
 - casttime 500, progress 250 => casttime 200, progress becomes 200 which is casttime, execute complete stopcast immediately (not init cast as well to allow for showExtra, except if showExtra is invalid)
 - casttime 500, progress 250 => casttime 600, progress stays 250
 */
-stock WOW_SetBossCastingSpell(bossid, spellid, bool:keepCastPercent = false) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsValidSpell(spellid) && WOW_IsBossCasting(bossid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID]) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID])) {
-		new oldCastTime = WOW_Spells[WOW_Casting[bossid][SPELLID]][CAST_TIME];
-		new newCastTime = WOW_Spells[spellid][CAST_TIME];
-		WOW_Casting[bossid][SPELLID] = spellid; //Must be called before
+stock FAI_SetBossCastingSpell(bossid, spellid, bool:keepCastPercent = false) {
+	if(FAI_IsValidBoss(bossid) && FAI_IsValidSpell(spellid) && FAI_IsBossCasting(bossid) && FCNPC_IsSpawned(FAI_Bosses[bossid][NPCID]) && !FCNPC_IsDead(FAI_Bosses[bossid][NPCID])) {
+		new oldCastTime = FAI_Spells[FAI_Casting[bossid][SPELLID]][CAST_TIME];
+		new newCastTime = FAI_Spells[spellid][CAST_TIME];
+		FAI_Casting[bossid][SPELLID] = spellid; //Must be called before
 		if(keepCastPercent) {
-			WOW_Casting[bossid][CAST_PROGRESS] = floatround(float(WOW_Casting[bossid][CAST_PROGRESS]) / oldCastTime * newCastTime, floatround_floor); //floatround_floor, because (say 400.9) the next progress integer (401) wasn't reached yet
+			FAI_Casting[bossid][CAST_PROGRESS] = floatround(float(FAI_Casting[bossid][CAST_PROGRESS]) / oldCastTime * newCastTime, floatround_floor); //floatround_floor, because (say 400.9) the next progress integer (401) wasn't reached yet
 	    } else {
-			if(WOW_Casting[bossid][CAST_PROGRESS] > newCastTime) {
-				WOW_Casting[bossid][CAST_PROGRESS] = newCastTime; //Must be set before WOW_BossCastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
-				WOW_BossCastProgressComplete(bossid, spellid);
-				#if WOW_CAST_BAR_SHOW_EXTRA_TIME <= 0
-					WOW_InitBossCasting(bossid);
+			if(FAI_Casting[bossid][CAST_PROGRESS] > newCastTime) {
+				FAI_Casting[bossid][CAST_PROGRESS] = newCastTime; //Must be set before FAI_BossCastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
+				FAI_BossCastProgressComplete(bossid, spellid);
+				#if FAI_CAST_BAR_SHOW_EXTRA_TIME <= 0
+					FAI_InitBossCasting(bossid);
 				#endif
 			}
 	    }
 		//Don't update castbar with instants or if no show extra
 		if(newCastTime > 0) {
-			#if WOW_CAST_BAR_SHOW_EXTRA_TIME > 0
-				WOW_UpdateBossCastDisplay(bossid);
+			#if FAI_CAST_BAR_SHOW_EXTRA_TIME > 0
+				FAI_UpdateBossCastDisplay(bossid);
 			#endif
 		}
 	    return 1;
 	}
 	return 0;
 }
-stock WOW_GetBossCastingProgress(bossid) {
+stock FAI_GetBossCastingProgress(bossid) {
 	//Don't return anything if showExtra is true, because the boss isn't casting anymore even though the variable is still set to allow for the showExtra functionality
-	//If the showextra progress is needed, use WOW_GetBossCastingExtraProgress
-	if(WOW_IsValidBoss(bossid) && WOW_IsBossCasting(bossid)) {
-	    return WOW_Casting[bossid][CAST_PROGRESS];
+	//If the showextra progress is needed, use FAI_GetBossCastingExtraProgress
+	if(FAI_IsValidBoss(bossid) && FAI_IsBossCasting(bossid)) {
+	    return FAI_Casting[bossid][CAST_PROGRESS];
 	}
 	return -1;
 }
@@ -2333,7 +2333,7 @@ stock WOW_GetBossCastingProgress(bossid) {
 Instant:
 - Will never happen because, onstopcast gets called immediately after onstartcast
 ShowExtra:
-- Will never happen, because WOW_IsBossCasting is not true with showExtra. Use WOW_SetBossCastingExtraProgress instead.
+- Will never happen, because FAI_IsBossCasting is not true with showExtra. Use FAI_SetBossCastingExtraProgress instead.
 (Don't) KeepCastPercent:
 - Not possible, because a spell can be used by multiple bosses. Therefore we can not set the CAST_TIME of a spell according to the CAST_PROGRESS of a particular boss.
   Say we change the cast progress of a boss and thus the cast time of the spell he is currently casting, why should another boss who is also casting the same spell be affected by this?
@@ -2345,52 +2345,52 @@ Other conditions:
 - casttime 500, progress 450, showextramax 50 => progress 560, progress becomes 500, execute complete stopcast immediately (not init cast as well to allow for showExtra, except if showExtra is invalid)
 In other words: if the new progress is >= the casttime, make it equal to the casttime, to allow for a consistent showextra time.
 */
-stock WOW_SetBossCastingProgress(bossid, progress) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsBossCasting(bossid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID]) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID])) {
+stock FAI_SetBossCastingProgress(bossid, progress) {
+	if(FAI_IsValidBoss(bossid) && FAI_IsBossCasting(bossid) && FCNPC_IsSpawned(FAI_Bosses[bossid][NPCID]) && !FCNPC_IsDead(FAI_Bosses[bossid][NPCID])) {
 	    if(progress < 0) {
 	        progress = 0;
 	    }
-		new spellid = WOW_Casting[bossid][SPELLID];
-		if(progress >= WOW_Spells[spellid][CAST_TIME]) {
-			WOW_Casting[bossid][CAST_PROGRESS] = WOW_Spells[spellid][CAST_TIME]; //Must be set before WOW_BossCastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
-			WOW_BossCastProgressComplete(bossid, spellid); //Finish casting, but don't hide the castbar, to allow for showExtra
-			#if WOW_CAST_BAR_SHOW_EXTRA_TIME <= 0 //Do hide castbar if showExtra is invalid
-				WOW_InitBossCasting(bossid);
+		new spellid = FAI_Casting[bossid][SPELLID];
+		if(progress >= FAI_Spells[spellid][CAST_TIME]) {
+			FAI_Casting[bossid][CAST_PROGRESS] = FAI_Spells[spellid][CAST_TIME]; //Must be set before FAI_BossCastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
+			FAI_BossCastProgressComplete(bossid, spellid); //Finish casting, but don't hide the castbar, to allow for showExtra
+			#if FAI_CAST_BAR_SHOW_EXTRA_TIME <= 0 //Do hide castbar if showExtra is invalid
+				FAI_InitBossCasting(bossid);
 			#endif
 		} else {
-			WOW_Casting[bossid][CAST_PROGRESS] = progress;
+			FAI_Casting[bossid][CAST_PROGRESS] = progress;
 		}
 		//Don't update castbar with instants or if no show extra
-		if(WOW_Spells[spellid][CAST_TIME] > 0) {
-			#if WOW_CAST_BAR_SHOW_EXTRA_TIME > 0
-				WOW_UpdateBossCastDisplay(bossid);
+		if(FAI_Spells[spellid][CAST_TIME] > 0) {
+			#if FAI_CAST_BAR_SHOW_EXTRA_TIME > 0
+				FAI_UpdateBossCastDisplay(bossid);
 			#endif
 		}
 	    return 1;
 	}
 	return 0;
 }
-stock WOW_GetBossCastingTarget(bossid) {
+stock FAI_GetBossCastingTarget(bossid) {
 	//Don't return anything if showExtra is true, because the boss isn't casting anymore even though the variable is still set to allow for the showExtra functionality
-	if(WOW_IsValidBoss(bossid) && WOW_IsBossCasting(bossid)) {
-	    return WOW_Casting[bossid][TARGETID];
+	if(FAI_IsValidBoss(bossid) && FAI_IsBossCasting(bossid)) {
+	    return FAI_Casting[bossid][TARGETID];
 	}
 	return -1;
 }
 //The casting target doesn't have to be valid
 //The casting target doesn't have to be streamed in
 //The casting target doesn't have to be in aggro range
-stock WOW_SetBossCastingTarget(bossid, targetid) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsBossCasting(bossid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID]) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)) {
-		WOW_Casting[bossid][TARGETID] = targetid;
+stock FAI_SetBossCastingTarget(bossid, targetid) {
+	if(FAI_IsValidBoss(bossid) && FAI_IsBossCasting(bossid) && FCNPC_IsSpawned(FAI_Bosses[bossid][NPCID]) && !FCNPC_IsDead(FAI_Bosses[bossid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)) {
+		FAI_Casting[bossid][TARGETID] = targetid;
 		return 1;
 	}
 	return 0;
 }
-stock WOW_GetBossCastingExtraProgress(bossid) {
+stock FAI_GetBossCastingExtraProgress(bossid) {
 	//Don't return anything if casting is true, because the spell isn't yet in showextra
-	if(WOW_IsValidBoss(bossid) && WOW_IsBossCastBarExtra(bossid)) {
-	    return WOW_Casting[bossid][CAST_PROGRESS] - WOW_Spells[WOW_Casting[bossid][SPELLID]][CAST_TIME];
+	if(FAI_IsValidBoss(bossid) && FAI_IsBossCastBarExtra(bossid)) {
+	    return FAI_Casting[bossid][CAST_PROGRESS] - FAI_Spells[FAI_Casting[bossid][SPELLID]][CAST_TIME];
 	}
 	return -1;
 }
@@ -2398,7 +2398,7 @@ stock WOW_GetBossCastingExtraProgress(bossid) {
 Instant:
 - Will never happen because, onstopcast gets called immediately after onstartcast
 -Casting:
-- Will never happen, because WOW_IsBossCastBarExtra is not true when the boss is casting. Use WOW_SetBossCastingProgress instead.
+- Will never happen, because FAI_IsBossCastBarExtra is not true when the boss is casting. Use FAI_SetBossCastingProgress instead.
 (Don't) KeepCastPercent:
 - Not possible, because a spell can be used by multiple bosses. Therefore we can not set the CAST_TIME of a spell according to the showextraprogress of a particular boss.
   Say we change the showextraprogress of a boss and thus the cast time of the spell he is currently casting, why should another boss who is also casting the same spell be affected by this?
@@ -2409,18 +2409,18 @@ Other conditions:
 - casttime 500, progress 525, showextra 25, showextramax 50 => showextra 55, progress becomes 50 (progress 550), init cast immediately (not complete stopcast as well, because it has already been called, because there is extraprogress)
 In other words: if the new showextra is >= the casttime + showextramax, init cast immediately, to allow for a consistent showextra time.
 */
-stock WOW_SetBossCastingExtraProgress(bossid, progress) {
-	if(WOW_IsValidBoss(bossid) && WOW_IsBossCastBarExtra(bossid) && FCNPC_IsSpawned(WOW_Bosses[bossid][NPCID]) && !FCNPC_IsDead(WOW_Bosses[bossid][NPCID]) ) {
+stock FAI_SetBossCastingExtraProgress(bossid, progress) {
+	if(FAI_IsValidBoss(bossid) && FAI_IsBossCastBarExtra(bossid) && FCNPC_IsSpawned(FAI_Bosses[bossid][NPCID]) && !FCNPC_IsDead(FAI_Bosses[bossid][NPCID]) ) {
 		if(progress < 0) {
 	        progress = 0;
 	    }
 		//We don't need to update the castbar display, because showextra is not shown on the castbar
-	    new spellid = WOW_Casting[bossid][SPELLID];
-		if(progress + WOW_Spells[spellid][CAST_TIME] >= WOW_Spells[spellid][CAST_TIME] + WOW_CAST_BAR_SHOW_EXTRA_TIME) {
-			WOW_Casting[bossid][CAST_PROGRESS] = WOW_Spells[spellid][CAST_TIME] + WOW_CAST_BAR_SHOW_EXTRA_TIME;
-			WOW_InitBossCasting(bossid);
+	    new spellid = FAI_Casting[bossid][SPELLID];
+		if(progress + FAI_Spells[spellid][CAST_TIME] >= FAI_Spells[spellid][CAST_TIME] + FAI_CAST_BAR_SHOW_EXTRA_TIME) {
+			FAI_Casting[bossid][CAST_PROGRESS] = FAI_Spells[spellid][CAST_TIME] + FAI_CAST_BAR_SHOW_EXTRA_TIME;
+			FAI_InitBossCasting(bossid);
 		} else {
-			WOW_Casting[bossid][CAST_PROGRESS] = progress + WOW_Spells[spellid][CAST_TIME];
+			FAI_Casting[bossid][CAST_PROGRESS] = progress + FAI_Spells[spellid][CAST_TIME];
 		}
 	    return 1;
 	}
