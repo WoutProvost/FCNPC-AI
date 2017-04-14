@@ -1,4 +1,4 @@
-FCNPC Boss
+FCNPC A.I.
 ==========
 
 1.0.3
