@@ -1,17 +1,17 @@
 /*
  * License:
- * See LICENSE.md included in the release download, or at https://github.com/WoutProvost/FCNPC-Boss/blob/master/LICENSE.md if not included.
+ * See LICENSE.md included in the release download, or at https://github.com/WoutProvost/FCNPC-A.I./blob/master/LICENSE.md if not included.
 
  * Credits:
- * See CREDITS.md included in the release download, or at https://github.com/WoutProvost/FCNPC-Boss/blob/master/CREDITS.md if not included.
+ * See CREDITS.md included in the release download, or at https://github.com/WoutProvost/FCNPC-A.I./blob/master/CREDITS.md if not included.
 */
 
 #define FILTERSCRIPT
 
-#define WOW_USE_MAP_ANDREAS             true //Redefinition before #include <WOW>
+#define FAI_USE_MAP_ANDREAS             true //Redefinition before #include <FAI>
 
-#define WOW_DECIMAL_MARK                ',' //Redefinition before #include <WOW>
-#include <WOW>
+#define FAI_DECIMAL_MARK                ',' //Redefinition before #include <FAI>
+#include <FAI>
 
 #define USE_STREAMER    true //Set this to false, if you don't use Incognito's streamer. This example script uses this streamer to create dynamic pickups and objects
 #if USE_STREAMER == true
@@ -20,18 +20,18 @@
 #define INTERIOR_NORMAL             	0
 #define VIRTUAL_WORLD_NORMAL        	0
 
-new BossBigSmoke = WOW_INVALID_BOSS_ID;
-new SpellCarpetOfFire = WOW_INVALID_SPELL_ID;
-new SpellWallOfFire = WOW_INVALID_SPELL_ID;
-new SpellMarkOfDeath = WOW_INVALID_SPELL_ID;
-new SpellNoPlaceIsSafe = WOW_INVALID_SPELL_ID;
-new SpellFlightOfTheBumblebee = WOW_INVALID_SPELL_ID;
-new SpellRockOfLife = WOW_INVALID_SPELL_ID;
-new BossIdleMessageTimer = WOW_INVALID_TIMER_ID; //3 purpose timer: works as an idle message timer when he is spawned but an encounter hasn't started, works as a respawn timer when he is dead, works as a casting timer during an encoutner
+new BossBigSmoke = FAI_INVALID_BOSS_ID;
+new SpellCarpetOfFire = FAI_INVALID_SPELL_ID;
+new SpellWallOfFire = FAI_INVALID_SPELL_ID;
+new SpellMarkOfDeath = FAI_INVALID_SPELL_ID;
+new SpellNoPlaceIsSafe = FAI_INVALID_SPELL_ID;
+new SpellFlightOfTheBumblebee = FAI_INVALID_SPELL_ID;
+new SpellRockOfLife = FAI_INVALID_SPELL_ID;
+new BossIdleMessageTimer = FAI_INVALID_TIMER_ID; //3 purpose timer: works as an idle message timer when he is spawned but an encounter hasn't started, works as a respawn timer when he is dead, works as a casting timer during an encoutner
 new BossExecuteSpellCount = 0;
 new Float:BossTargetNotMovingPos[3] = {0.0, ...};
 new BossTargetNotMovingObject = INVALID_OBJECT_ID;
-new BossTargetNotMovingTimer = WOW_INVALID_TIMER_ID;
+new BossTargetNotMovingTimer = FAI_INVALID_TIMER_ID;
 new BossBigSmokeHealthState = 100;
 new RewardPickups[500] = {-1, ...};
 //Some variables, shared by all spells created in this script
@@ -40,21 +40,21 @@ new RewardPickups[500] = {-1, ...};
 //In this case GroundMarks and Bombs have an equal size, so we can handle everything in the same loop
 new GroundMarks[20] = {INVALID_OBJECT_ID, ...};
 new Bombs[20] = {INVALID_OBJECT_ID, ...};
-new ExplosionTimer = WOW_INVALID_TIMER_ID;
+new ExplosionTimer = FAI_INVALID_TIMER_ID;
 new ExplosionCount = 0;
 
 #if defined FILTERSCRIPT
 public OnFilterScriptInit()
 {
-	BossBigSmoke = WOW_CreateBossFull("BossBigSmoke", "Melvin \"Big Smoke\" Harris", 65, 8, 0xff0000ff, MAPICON_LOCAL, 5000.0);
-	WOW_SetBossMoveInfo(BossBigSmoke, MOVE_TYPE_SPRINT, MOVE_SPEED_AUTO, true);
+	BossBigSmoke = FAI_CreateBossFull("BossBigSmoke", "Melvin \"Big Smoke\" Harris", 65, 8, 0xff0000ff, MAPICON_LOCAL, 5000.0);
+	FAI_SetBossMoveInfo(BossBigSmoke, MOVE_TYPE_SPRINT, MOVE_SPEED_AUTO, true);
 	SetBossAtSpawn(BossBigSmoke);
-    SpellCarpetOfFire = WOW_CreateSpell("Carpet of Fire");
-    SpellWallOfFire = WOW_CreateSpell("Wall of Fire");
-    SpellMarkOfDeath = WOW_CreateSpellFull("Mark of Death", WOW_SPELL_TYPE_CUSTOM, 0);
-	SpellNoPlaceIsSafe = WOW_CreateSpellFull("No place is safe", WOW_SPELL_TYPE_CUSTOM, 20000, 0.0, WOW_PERCENT_TYPE_CUSTOM, 0x645005ff, 0xb4820aff, true, true);
-	SpellFlightOfTheBumblebee = WOW_CreateSpellFull("Flight of the Bumblebee", WOW_SPELL_TYPE_CROWD_CONTROL, 2000, 0.0, WOW_PERCENT_TYPE_CUSTOM, 0x3333ccff, 0x6699ffff);
-	SpellRockOfLife = WOW_CreateSpellFull("Rock of Life", WOW_SPELL_TYPE_CROWD_CONTROL, 5000, 0.0, WOW_PERCENT_TYPE_CUSTOM, 0x00cc66ff, 0x00ff99ff);
+    SpellCarpetOfFire = FAI_CreateSpell("Carpet of Fire");
+    SpellWallOfFire = FAI_CreateSpell("Wall of Fire");
+    SpellMarkOfDeath = FAI_CreateSpellFull("Mark of Death", FAI_SPELL_TYPE_CUSTOM, 0);
+	SpellNoPlaceIsSafe = FAI_CreateSpellFull("No place is safe", FAI_SPELL_TYPE_CUSTOM, 20000, 0.0, FAI_PERCENT_TYPE_CUSTOM, 0x645005ff, 0xb4820aff, true, true);
+	SpellFlightOfTheBumblebee = FAI_CreateSpellFull("Flight of the Bumblebee", FAI_SPELL_TYPE_CROWD_CONTROL, 2000, 0.0, FAI_PERCENT_TYPE_CUSTOM, 0x3333ccff, 0x6699ffff);
+	SpellRockOfLife = FAI_CreateSpellFull("Rock of Life", FAI_SPELL_TYPE_CROWD_CONTROL, 5000, 0.0, FAI_PERCENT_TYPE_CUSTOM, 0x00cc66ff, 0x00ff99ff);
 	return 1;
 }
 
@@ -68,24 +68,24 @@ public OnFilterScriptExit()
 
 public OnPlayerDisconnect(playerid, reason)
 {
-	new bossid = WOW_GetBossIDFromNPCID(playerid);
-	if(bossid != WOW_INVALID_BOSS_ID) {
+	new bossid = FAI_GetBossIDFromNPCID(playerid);
+	if(bossid != FAI_INVALID_BOSS_ID) {
 		if(bossid == BossBigSmoke) {
-			//WOW_DestroyBoss(BossBigSmoke); //We don't need to do this, since the boss is already disconnecting
-			BossBigSmoke = WOW_INVALID_BOSS_ID;
+			//FAI_DestroyBoss(BossBigSmoke); //We don't need to do this, since the boss is already disconnecting
+			BossBigSmoke = FAI_INVALID_BOSS_ID;
 		    //We still need to destroy the spells, since it is possible that the boss is just disconnecting and the script isn't exiting and we want that the spells destroy along with the boss
-			WOW_DestroySpell(SpellCarpetOfFire);
-			SpellCarpetOfFire = WOW_INVALID_SPELL_ID;
-			WOW_DestroySpell(SpellNoPlaceIsSafe);
-			SpellNoPlaceIsSafe = WOW_INVALID_SPELL_ID;
-			WOW_DestroySpell(SpellWallOfFire);
-			SpellWallOfFire = WOW_INVALID_SPELL_ID;
-			WOW_DestroySpell(SpellMarkOfDeath);
-			SpellMarkOfDeath = WOW_INVALID_SPELL_ID;
-			WOW_DestroySpell(SpellFlightOfTheBumblebee);
-			SpellFlightOfTheBumblebee = WOW_INVALID_SPELL_ID;
-			WOW_DestroySpell(SpellRockOfLife);
-			SpellRockOfLife = WOW_INVALID_SPELL_ID;
+			FAI_DestroySpell(SpellCarpetOfFire);
+			SpellCarpetOfFire = FAI_INVALID_SPELL_ID;
+			FAI_DestroySpell(SpellNoPlaceIsSafe);
+			SpellNoPlaceIsSafe = FAI_INVALID_SPELL_ID;
+			FAI_DestroySpell(SpellWallOfFire);
+			SpellWallOfFire = FAI_INVALID_SPELL_ID;
+			FAI_DestroySpell(SpellMarkOfDeath);
+			SpellMarkOfDeath = FAI_INVALID_SPELL_ID;
+			FAI_DestroySpell(SpellFlightOfTheBumblebee);
+			SpellFlightOfTheBumblebee = FAI_INVALID_SPELL_ID;
+			FAI_DestroySpell(SpellRockOfLife);
+			SpellRockOfLife = FAI_INVALID_SPELL_ID;
 			for(new groundMark = 0, groundMarkCount = sizeof(GroundMarks); groundMark < groundMarkCount; groundMark++) {
 				#if USE_STREAMER == false
 				    DestroyObject(GroundMarks[groundMark]);
@@ -98,16 +98,16 @@ public OnPlayerDisconnect(playerid, reason)
 				Bombs[groundMark] = INVALID_OBJECT_ID;
 			}
 			KillTimer(ExplosionTimer);
-			ExplosionTimer = WOW_INVALID_TIMER_ID;
+			ExplosionTimer = FAI_INVALID_TIMER_ID;
 			ExplosionCount = 0;
 			KillTimer(BossIdleMessageTimer);
-			BossIdleMessageTimer = WOW_INVALID_TIMER_ID;
+			BossIdleMessageTimer = FAI_INVALID_TIMER_ID;
 			BossExecuteSpellCount = 0;
 			BossTargetNotMovingPos[0] = 0.0;
 			BossTargetNotMovingPos[1] = 0.0;
 			BossTargetNotMovingPos[2] = 0.0;
 			KillTimer(BossTargetNotMovingTimer);
-			BossTargetNotMovingTimer = WOW_INVALID_TIMER_ID;
+			BossTargetNotMovingTimer = FAI_INVALID_TIMER_ID;
 			#if USE_STREAMER == false
 				DestroyObject(BossTargetNotMovingObject);
 			#else
@@ -142,8 +142,8 @@ public FCNPC_OnRespawn(npcid)
 
 public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss)
 {
-	new bossid = WOW_GetBossIDFromNPCID(npcid);
-	if(bossid != WOW_INVALID_BOSS_ID) {
+	new bossid = FAI_GetBossIDFromNPCID(npcid);
+	if(bossid != FAI_INVALID_BOSS_ID) {
 		if(bossid == BossBigSmoke) {
       /*
 			BossBigSmokeHealthState: we need to use this since there is a setCurrentHealth mechanic
@@ -151,7 +151,7 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 			- Next: some healing spell heals the boss to 95%
 			- Next: boss gets damaged to 90%, we don't want to call make the boss yell again because he passed the same point
    */
-			new BossHealthPercent = WOW_GetBossCurrentHealthPercent(bossid);
+			new BossHealthPercent = FAI_GetBossCurrentHealthPercent(bossid);
 			if(BossHealthPercent < BossBigSmokeHealthState) {
 				BossBigSmokeHealthState = BossHealthPercent;
 				switch(BossBigSmokeHealthState) {
@@ -195,7 +195,7 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 	}
 #endif
 
-public WOW_OnBossEncounterStart(bossid, bool:reasonShot, firstTarget)
+public FAI_OnBossEncounterStart(bossid, bool:reasonShot, firstTarget)
 {
 	if(bossid == BossBigSmoke) {
 	    //The boss encounter started because a player came in his aggro range
@@ -215,7 +215,7 @@ public WOW_OnBossEncounterStart(bossid, bool:reasonShot, firstTarget)
 	return 1;
 }
 
-public WOW_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
+public FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 {
 	if(bossid == BossBigSmoke) {
 		if(!reasonDeath) {
@@ -235,7 +235,7 @@ public WOW_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
   			BossYell(bossid, "I wish I'd have stayed home and watched the fucking game", 15891);
 			//Reward for killing the boss
 			new Float:bossX, Float:bossY, Float:bossZ, Float:cashX, Float:cashY, Float:cashZ, Float:radius, Float:angle;
-			new bossplayerid = WOW_GetBossNPCID(bossid);
+			new bossplayerid = FAI_GetBossNPCID(bossid);
 			#if USE_STREAMER == true
 				new bossInterior = FCNPC_GetInterior(bossplayerid);
 			#endif
@@ -246,7 +246,7 @@ public WOW_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 			    angle = RandomFloatGivenInteger(360);
 				cashX = bossX + (radius * floatcos(angle + 90, degrees));
 				cashY = bossY + (radius * floatsin(angle + 90, degrees));
-                #if WOW_USE_MAP_ANDREAS == true
+                #if FAI_USE_MAP_ANDREAS == true
 					MapAndreas_FindZ_For2DCoord(cashX, cashY, cashZ);
 				#endif
 				#if USE_STREAMER == false
@@ -267,7 +267,7 @@ public WOW_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 		BossTargetNotMovingPos[1] = 0.0;
 		BossTargetNotMovingPos[2] = 0.0;
 		KillTimer(BossTargetNotMovingTimer); //In case SpellMarkOfDeathExplosion is still going
-		BossTargetNotMovingTimer = WOW_INVALID_TIMER_ID;
+		BossTargetNotMovingTimer = FAI_INVALID_TIMER_ID;
 		#if USE_STREAMER == false
 			DestroyObject(BossTargetNotMovingObject);
 		#else
@@ -278,37 +278,37 @@ public WOW_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 	return 1;
 }
 
-public WOW_OnPlayerGetAggro(playerid, bossid)
+public FAI_OnPlayerGetAggro(playerid, bossid)
 {
 	if(bossid == BossBigSmoke) {
-		new bossPlayerColor = GetPlayerColor(WOW_GetBossNPCID(bossid));
-		new string[144 + 1], fullName[WOW_MAX_BOSS_FULL_NAME + 1];
-		WOW_GetBossFullName(bossid, fullName, sizeof(fullName));
+		new bossPlayerColor = GetPlayerColor(FAI_GetBossNPCID(bossid));
+		new string[144 + 1], fullName[FAI_MAX_BOSS_FULL_NAME + 1];
+		FAI_GetBossFullName(bossid, fullName, sizeof(fullName));
 		format(string, sizeof(string), "{%06x}[Boss] %s whispers:{%06x} Come here, I will get you!", bossPlayerColor >>> 8, fullName, 0xffffffff >>> 8);
 		SendClientMessage(playerid, -1, string);
 	}
 	return 1;
 }
 
-public WOW_OnPlayerLoseAggro(playerid, bossid)
+public FAI_OnPlayerLoseAggro(playerid, bossid)
 {
 	if(bossid == BossBigSmoke) {
-		new bossPlayerColor = GetPlayerColor(WOW_GetBossNPCID(bossid));
-		new string[144 + 1], fullName[WOW_MAX_BOSS_FULL_NAME + 1];
-		WOW_GetBossFullName(bossid, fullName, sizeof(fullName));
+		new bossPlayerColor = GetPlayerColor(FAI_GetBossNPCID(bossid));
+		new string[144 + 1], fullName[FAI_MAX_BOSS_FULL_NAME + 1];
+		FAI_GetBossFullName(bossid, fullName, sizeof(fullName));
 		format(string, sizeof(string), "{%06x}[Boss] %s whispers:{%06x} Maybe next time when our paths cross...", bossPlayerColor >>> 8, fullName, 0xffffffff >>> 8);
 		SendClientMessage(playerid, -1, string);
 	}
 	return 1;
 }
 
-public WOW_OnBossStartCasting(bossid, spellid, targetid)
+public FAI_OnBossStartCasting(bossid, spellid, targetid)
 {
 	if(bossid == BossBigSmoke) {
-	    new bossplayerid = WOW_GetBossNPCID(bossid);
+	    new bossplayerid = FAI_GetBossNPCID(bossid);
 		FCNPC_ApplyAnimation(bossplayerid, "PARK", "Tai_Chi_Loop", 4.1, 1, 1, 1, 0, 0);
 		if(spellid == SpellCarpetOfFire) {
-		    new spellCastTime = WOW_GetSpellCastTime(spellid);
+		    new spellCastTime = FAI_GetSpellCastTime(spellid);
 			new Float:bossX, Float:bossY, Float:bossZ, Float:markX, Float:markY, Float:markZ, Float:radius, Float:angle, Float:bombHeight = 50.0;
 			#if USE_STREAMER == true
 				new bossInterior = FCNPC_GetInterior(bossplayerid);
@@ -320,7 +320,7 @@ public WOW_OnBossStartCasting(bossid, spellid, targetid)
 			    angle = RandomFloatGivenInteger(360);
 				markX = bossX + (radius * floatcos(angle + 90, degrees));
 				markY = bossY + (radius * floatsin(angle + 90, degrees));
-                #if WOW_USE_MAP_ANDREAS == true
+                #if FAI_USE_MAP_ANDREAS == true
 		    		MapAndreas_FindZ_For2DCoord(markX, markY, markZ);
 			    	//For positions under bridges, ..., should be replaced with a ColAndreas implementation for better results
 			    	//With MapAndreas: problem with small height changes
@@ -357,7 +357,7 @@ public WOW_OnBossStartCasting(bossid, spellid, targetid)
 			    radius = 40.0 - 40.0 / 20 * groundMark;
 				markX = bossX + (radius * floatcos(bossA + 90, degrees));
 				markY = bossY + (radius * floatsin(bossA + 90, degrees));
-                #if WOW_USE_MAP_ANDREAS == true
+                #if FAI_USE_MAP_ANDREAS == true
 		    		MapAndreas_FindZ_For2DCoord(markX, markY, markZ);
 		    	#endif
 				#if USE_STREAMER == false
@@ -374,7 +374,7 @@ public WOW_OnBossStartCasting(bossid, spellid, targetid)
 			if(targetid != INVALID_PLAYER_ID) {
 				new Float:playerX, Float:playerY, Float:playerZ;
 			  	GetPlayerPos(targetid, playerX, playerY, playerZ);
-                #if WOW_USE_MAP_ANDREAS == true
+                #if FAI_USE_MAP_ANDREAS == true
 			  		MapAndreas_FindZ_For2DCoord(playerX, playerY, playerZ);
 			  	#endif
 				#if USE_STREAMER == false
@@ -405,10 +405,10 @@ public WOW_OnBossStartCasting(bossid, spellid, targetid)
 	return 1;
 }
 
-public WOW_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete)
+public FAI_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete)
 {
 	if(bossid == BossBigSmoke) {
-	    new bossplayerid = WOW_GetBossNPCID(bossid);
+	    new bossplayerid = FAI_GetBossNPCID(bossid);
 		FCNPC_ClearAnimations(bossplayerid);
 		if(spellid == SpellCarpetOfFire) {
 			new Float:markX, Float:markY, Float:markZ;
@@ -451,7 +451,7 @@ public WOW_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete)
 		if(spellid == SpellNoPlaceIsSafe) {
 			ExplosionCount = 0;
 			KillTimer(ExplosionTimer);
-			ExplosionTimer = WOW_INVALID_TIMER_ID;
+			ExplosionTimer = FAI_INVALID_TIMER_ID;
 		}
 		if(spellid == SpellFlightOfTheBumblebee) {
 		    if(castComplete) {
@@ -499,13 +499,13 @@ public TargetNotMovingCheck(bossid, randomSeconds) {
 	} else {
 		BossExecuteSpellCount++;
 	    //Make sure the boss's target doesn't stand still when the boss is not casting
-	    new targetid = WOW_GetBossTarget(bossid);
+	    new targetid = FAI_GetBossTarget(bossid);
 	    new Float:x, Float:y, Float:z;
 	    GetPlayerPos(targetid, x, y, z);
 	    //2nd last part of condition: we don't need to cast the instant spell again when the previous explosion hasn't happened already
 	    //Last part of condition: we don't need to cast the instant spell when another spell was stopped being cast, but the timer is still going on (like with RockOfLife)
-	    if(BossTargetNotMovingPos[0] == x && BossTargetNotMovingPos[1] == y && BossTargetNotMovingPos[2] == z && BossTargetNotMovingTimer == WOW_INVALID_TIMER_ID && ExplosionTimer == WOW_INVALID_TIMER_ID) {
-			WOW_StartBossCastingSpell(bossid, SpellMarkOfDeath, targetid);
+	    if(BossTargetNotMovingPos[0] == x && BossTargetNotMovingPos[1] == y && BossTargetNotMovingPos[2] == z && BossTargetNotMovingTimer == FAI_INVALID_TIMER_ID && ExplosionTimer == FAI_INVALID_TIMER_ID) {
+			FAI_StartBossCastingSpell(bossid, SpellMarkOfDeath, targetid);
 	    }
 		GetPlayerPos(targetid, BossTargetNotMovingPos[0], BossTargetNotMovingPos[1], BossTargetNotMovingPos[2]);
 	}
@@ -513,11 +513,11 @@ public TargetNotMovingCheck(bossid, randomSeconds) {
 
 stock ExecuteSpell(bossid) {
 	switch(BossBigSmokeHealthState) {
-	    case 81 .. 100: {WOW_StartBossCastingSpell(bossid, SpellFlightOfTheBumblebee, GetRandomPlayerInRange(bossid));}
-	    case 61 .. 80: {WOW_StartBossCastingSpell(bossid, SpellRockOfLife, GetRandomPlayerInRange(bossid, false));}
-	    case 41 .. 60: {WOW_StartBossCastingSpell(bossid, SpellWallOfFire);}
-	    case 21 .. 40: {WOW_StartBossCastingSpell(bossid, SpellCarpetOfFire);}
-	    case 0 .. 20: {WOW_StartBossCastingSpell(bossid, SpellNoPlaceIsSafe);}
+	    case 81 .. 100: {FAI_StartBossCastingSpell(bossid, SpellFlightOfTheBumblebee, GetRandomPlayerInRange(bossid));}
+	    case 61 .. 80: {FAI_StartBossCastingSpell(bossid, SpellRockOfLife, GetRandomPlayerInRange(bossid, false));}
+	    case 41 .. 60: {FAI_StartBossCastingSpell(bossid, SpellWallOfFire);}
+	    case 21 .. 40: {FAI_StartBossCastingSpell(bossid, SpellCarpetOfFire);}
+	    case 0 .. 20: {FAI_StartBossCastingSpell(bossid, SpellNoPlaceIsSafe);}
 	}
 }
 
@@ -531,17 +531,17 @@ new const IdleMessages[][] = {
 };
 forward BossIdleMessage(bossid);
 public BossIdleMessage(bossid) {
-	if(WOW_IsValidBoss(bossid)) { //Only make the boss yell if he actually exists (if he is destroyed for some reason, we don't need to make him yell)
+	if(FAI_IsValidBoss(bossid)) { //Only make the boss yell if he actually exists (if he is destroyed for some reason, we don't need to make him yell)
 		new randomMessage = random(sizeof(IdleMessages));
 		BossYell(bossid, IdleMessages[randomMessage]);
 	}
 }
 
 stock SendTargetidStartCastMessage(targetid, bossid, spellid) {
-	new bossPlayerColor = GetPlayerColor(WOW_GetBossNPCID(bossid));
-	new string[144 + 1], fullName[WOW_MAX_BOSS_FULL_NAME + 1], spellName[WOW_MAX_SPELL_NAME + 1];
-	WOW_GetBossFullName(bossid, fullName, sizeof(fullName));
-	WOW_GetSpellName(spellid, spellName, sizeof(spellName));
+	new bossPlayerColor = GetPlayerColor(FAI_GetBossNPCID(bossid));
+	new string[144 + 1], fullName[FAI_MAX_BOSS_FULL_NAME + 1], spellName[FAI_MAX_SPELL_NAME + 1];
+	FAI_GetBossFullName(bossid, fullName, sizeof(fullName));
+	FAI_GetSpellName(spellid, spellName, sizeof(spellName));
 	format(string, sizeof(string), "{%06x}[Boss] %s{%06x} is casting {%06x}%s{%06x} on you!", bossPlayerColor >>> 8, fullName, 0xffffffff >>> 8, 0xffd517ff >>> 8, spellName, 0xffffffff >>> 8);
 	if(spellid == SpellMarkOfDeath) {
 		format(string, sizeof(string), "%s Don't stand still when you have aggro!", string);
@@ -551,13 +551,13 @@ stock SendTargetidStartCastMessage(targetid, bossid, spellid) {
 }
 
 stock GetRandomPlayerInRange(bossid, bool:vehicleAllowed = true) {
-	new bossplayerid = WOW_GetBossNPCID(bossid);
+	new bossplayerid = FAI_GetBossNPCID(bossid);
 	new Float:bossX, Float:bossY, Float:bossZ, Float:playerDistanceToBoss;
 	new playersInRange[MAX_PLAYERS] = {INVALID_PLAYER_ID, ...};
 	new playersInRangeCount = 0;
 	FCNPC_GetPosition(bossplayerid, bossX, bossY, bossZ);
 	for(new playerid = 0, maxplayerid = GetPlayerPoolSize(); playerid <= maxplayerid; playerid++) {
-	    if(WOW_IsBossValidForPlayer(playerid, bossid) && (vehicleAllowed || !IsPlayerInAnyVehicle(playerid)) && !IsPlayerNPC(playerid)) {
+	    if(FAI_IsBossValidForPlayer(playerid, bossid) && (vehicleAllowed || !IsPlayerInAnyVehicle(playerid)) && !IsPlayerNPC(playerid)) {
             playerDistanceToBoss = GetPlayerDistanceFromPoint(playerid, bossX, bossY, bossZ);
 	  		if(playerDistanceToBoss <= 50.0) {
 		        playersInRange[playersInRangeCount] = playerid;
@@ -573,12 +573,12 @@ stock GetRandomPlayerInRange(bossid, bool:vehicleAllowed = true) {
 
 //Display a message in the playercolor of the boss and play a sound, to all players (not npcs) who are in the same interior and world as the boss
 stock BossYell(bossid, message[], soundid = -1, Float:soundX = 0.0, Float:soundY = 0.0, Float:soundZ = 0.0) {
-	new string[144 + 1], fullName[WOW_MAX_BOSS_FULL_NAME + 1];
-	new bossplayerid = WOW_GetBossNPCID(bossid);
+	new string[144 + 1], fullName[FAI_MAX_BOSS_FULL_NAME + 1];
+	new bossplayerid = FAI_GetBossNPCID(bossid);
 	new bossInterior = FCNPC_GetInterior(bossplayerid);
 	new bossWorld = FCNPC_GetVirtualWorld(bossplayerid);
 	new bossPlayerColor = GetPlayerColor(bossplayerid);
-	WOW_GetBossFullName(bossid, fullName, sizeof(fullName));
+	FAI_GetBossFullName(bossid, fullName, sizeof(fullName));
 	for(new playerid = 0, maxplayerid = GetPlayerPoolSize(); playerid <= maxplayerid; playerid++) {
 		if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid) && GetPlayerInterior(playerid) == bossInterior && GetPlayerVirtualWorld(playerid) == bossWorld) {
 			format(string, sizeof(string), "[Boss] %s yells: %s!", fullName, message);
@@ -592,8 +592,8 @@ stock BossYell(bossid, message[], soundid = -1, Float:soundX = 0.0, Float:soundY
 }
 
 stock BossYellSpawnMessage(npcid) {
-	new bossid = WOW_GetBossIDFromNPCID(npcid);
-	if(bossid != WOW_INVALID_BOSS_ID) {
+	new bossid = FAI_GetBossIDFromNPCID(npcid);
+	if(bossid != FAI_INVALID_BOSS_ID) {
 		if(bossid == BossBigSmoke) {
 	        BossYell(bossid, "You've killed me once CJ, however once wasn't enough");
 	    }
@@ -603,7 +603,7 @@ stock BossYellSpawnMessage(npcid) {
 
 stock CreateExplosionForValidPlayers(bossid, Float:markX, Float:markY, Float:markZ) {
 	for(new playerid = 0, maxplayerid = GetPlayerPoolSize(); playerid <= maxplayerid; playerid++) {
- 	    if(WOW_IsBossValidForPlayer(playerid, bossid)) {
+ 	    if(FAI_IsBossValidForPlayer(playerid, bossid)) {
 			CreateExplosionForPlayer(playerid, markX, markY, markZ + 2.0, 11, 1.0); //markZ + 2.0 because we lowered the object below ground a bit
 		}
 	}
@@ -614,7 +614,7 @@ stock CreateExplosionForValidPlayers(bossid, Float:markX, Float:markY, Float:mar
 #if USE_STREAMER == true
 	stock StreamerUpdateForValidPlayers(bossid) {
 		for(new playerid = 0, maxplayerid = GetPlayerPoolSize(); playerid <= maxplayerid; playerid++) {
-	 	    if(WOW_IsBossValidForPlayer(playerid, bossid)) {
+	 	    if(FAI_IsBossValidForPlayer(playerid, bossid)) {
 				Streamer_Update(playerid, STREAMER_TYPE_OBJECT);
 			}
 		}
@@ -639,7 +639,7 @@ stock Float:RandomFloatGivenInteger(integer) {
 forward SetBossAtSpawn(bossid);
 public SetBossAtSpawn(bossid) {
 	if(bossid == BossBigSmoke) {
-		new bossplayerid = WOW_GetBossNPCID(bossid);
+		new bossplayerid = FAI_GetBossNPCID(bossid);
 		SetPlayerColor(bossplayerid, 0xff000000); //Alpha values = 00 because we don't want an additional playericon on the map
 		if(!FCNPC_IsSpawned(bossplayerid)) {
 		    FCNPC_Spawn(bossplayerid, 149, 1086.9752, 1074.7021, 10.8382);
@@ -665,8 +665,8 @@ public SetBossAtSpawn(bossid) {
 		FCNPC_SetArmour(bossplayerid, 0.0);
 		FCNPC_SetInvulnerable(bossplayerid, false);
 		new Float:maxHealth;
-		WOW_GetBossMaxHealth(bossid, maxHealth);
-		WOW_SetBossCurrentHealth(bossid, maxHealth);
+		FAI_GetBossMaxHealth(bossid, maxHealth);
+		FAI_SetBossCurrentHealth(bossid, maxHealth);
 		BossBigSmokeHealthState = 100;
 		KillTimer(BossIdleMessageTimer);
 		BossIdleMessageTimer = SetTimerEx("BossIdleMessage", 1000 * 60 * 10, true, "d", bossid);
@@ -688,7 +688,7 @@ public SpellMarkOfDeathExplosion(bossid) {
 	BossTargetNotMovingObject = INVALID_OBJECT_ID;
 	CreateExplosionForValidPlayers(bossid, markX, markY, markZ);
 	KillTimer(BossTargetNotMovingTimer);
-	BossTargetNotMovingTimer = WOW_INVALID_TIMER_ID;
+	BossTargetNotMovingTimer = FAI_INVALID_TIMER_ID;
 	return 1;
 }
 			
@@ -707,7 +707,7 @@ public WallOfFireExplosion(bossid) {
 	ExplosionCount--;
 	if(ExplosionCount < 0) {
 		KillTimer(ExplosionTimer);
-		ExplosionTimer = WOW_INVALID_TIMER_ID;
+		ExplosionTimer = FAI_INVALID_TIMER_ID;
 		ExplosionCount = 0;
 	}
 	return 1;
@@ -715,13 +715,13 @@ public WallOfFireExplosion(bossid) {
 forward SpellNoPlaceIsSafeExplosion(bossid, spell);
 public SpellNoPlaceIsSafeExplosion(bossid, spell) {
 	new Float:bossX, Float:bossY, Float:bossZ, Float:markX, Float:markY, Float:markZ, Float:radius, Float:angle;
-	new bossplayerid = WOW_GetBossNPCID(bossid);
+	new bossplayerid = FAI_GetBossNPCID(bossid);
     FCNPC_GetPosition(bossplayerid, bossX, bossY, bossZ);
     radius = RandomFloatGivenInteger(50) + 1.0;
     angle = RandomFloatGivenInteger(360);
 	markX = bossX + (radius * floatcos(angle + 90, degrees));
 	markY = bossY + (radius * floatsin(angle + 90, degrees));
-    #if WOW_USE_MAP_ANDREAS == true
+    #if FAI_USE_MAP_ANDREAS == true
 		MapAndreas_FindZ_For2DCoord(markX, markY, markZ);
 	#endif
 	CreateExplosionForValidPlayers(bossid, markX, markY, markZ - 2.0);
@@ -743,6 +743,6 @@ public SpellRockOfLifeEnd(playerid) {
 	TogglePlayerControllable(playerid, 1);
 	SetCameraBehindPlayer(playerid);
 	KillTimer(ExplosionTimer);
-	ExplosionTimer = WOW_INVALID_TIMER_ID;
+	ExplosionTimer = FAI_INVALID_TIMER_ID;
 	return 1;
 }

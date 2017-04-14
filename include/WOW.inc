@@ -1,9 +1,9 @@
 /*
  * License:
- * See LICENSE.md included in the release download, or at https://github.com/WoutProvost/FCNPC-Boss/blob/master/LICENSE.md if not included.
+ * See LICENSE.md included in the release download, or at https://github.com/WoutProvost/FCNPC-A.I./blob/master/LICENSE.md if not included.
 
  * Credits:
- * See CREDITS.md included in the release download, or at https://github.com/WoutProvost/FCNPC-Boss/blob/master/CREDITS.md if not included.
+ * See CREDITS.md included in the release download, or at https://github.com/WoutProvost/FCNPC-A.I./blob/master/CREDITS.md if not included.
 */
 
 //FAKE NATIVES

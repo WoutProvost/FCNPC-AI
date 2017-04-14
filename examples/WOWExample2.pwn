@@ -1,14 +1,14 @@
 /*
  * License:
- * See LICENSE.md included in the release download, or at https://github.com/WoutProvost/FCNPC-Boss/blob/master/LICENSE.md if not included.
+ * See LICENSE.md included in the release download, or at https://github.com/WoutProvost/FCNPC-A.I./blob/master/LICENSE.md if not included.
 
  * Credits:
- * See CREDITS.md included in the release download, or at https://github.com/WoutProvost/FCNPC-Boss/blob/master/CREDITS.md if not included.
+ * See CREDITS.md included in the release download, or at https://github.com/WoutProvost/FCNPC-A.I./blob/master/CREDITS.md if not included.
 */
 
 #define FILTERSCRIPT
 
-#include <WOW>
+#include <FAI>
 
 #define USE_STREAMER    true //Set this to false, if you don't use Incognito's streamer. This example script uses this streamer to create dynamic pickups and objects
 #if USE_STREAMER == true
@@ -23,8 +23,8 @@
 #define DEFAULT_TIME_H                  12 //Default samp time
 #define DEFAULT_TIME_M                 	0  //Default samp time
 
-new BossLeatherface = WOW_INVALID_BOSS_ID;
-new PlayerInRangeTimer = WOW_INVALID_TIMER_ID;
+new BossLeatherface = FAI_INVALID_BOSS_ID;
+new PlayerInRangeTimer = FAI_INVALID_TIMER_ID;
 new AudioStreamCount[MAX_PLAYERS] = {-1, ...};
 new bool:AlreadyInOutRange[MAX_PLAYERS] = {false, ...}; //True = in range, false = not in range
 new Objects[66] = {INVALID_OBJECT_ID,...};
@@ -35,11 +35,11 @@ new bool:AnimationApplied;
 #if defined FILTERSCRIPT
 public OnFilterScriptInit()
 {
-	BossLeatherface = WOW_CreateBoss("BossLeatherface");
-	WOW_SetBossMaxHealth(BossLeatherface, 2000.0);
-	WOW_SetBossDisplayRange(BossLeatherface, 0.0);
-	WOW_SetBossAggroRange(BossLeatherface, 0.0);
-	WOW_SetBossMeleeAttackInfo(BossLeatherface, 1.5, -1, false);
+	BossLeatherface = FAI_CreateBoss("BossLeatherface");
+	FAI_SetBossMaxHealth(BossLeatherface, 2000.0);
+	FAI_SetBossDisplayRange(BossLeatherface, 0.0);
+	FAI_SetBossAggroRange(BossLeatherface, 0.0);
+	FAI_SetBossMeleeAttackInfo(BossLeatherface, 1.5, -1, false);
 	SetBossAtSpawn(BossLeatherface);
 	PlayerInRangeTimer = SetTimer("CheckPlayerInRange", 100, true);
 	CreateBossObjects();
@@ -56,13 +56,13 @@ public OnFilterScriptExit()
 
 public OnPlayerDisconnect(playerid, reason)
 {
-	new bossid = WOW_GetBossIDFromNPCID(playerid);
-	if(bossid != WOW_INVALID_BOSS_ID) {
+	new bossid = FAI_GetBossIDFromNPCID(playerid);
+	if(bossid != FAI_INVALID_BOSS_ID) {
 		if(bossid == BossLeatherface) {
-			//WOW_DestroyBoss(BossLeatherface); //We don't need to do this, since the boss is already disconnecting
-			BossLeatherface = WOW_INVALID_BOSS_ID;
+			//FAI_DestroyBoss(BossLeatherface); //We don't need to do this, since the boss is already disconnecting
+			BossLeatherface = FAI_INVALID_BOSS_ID;
 			KillTimer(PlayerInRangeTimer);
-			PlayerInRangeTimer = WOW_INVALID_TIMER_ID;
+			PlayerInRangeTimer = FAI_INVALID_TIMER_ID;
 			for(new otherplayerid = 0, highestPlayerid = GetPlayerPoolSize(); otherplayerid <= highestPlayerid; otherplayerid++) {
 				if(IsPlayerConnected(otherplayerid) && !IsPlayerNPC(otherplayerid)) {
 			        if(AlreadyInOutRange[otherplayerid]) {
@@ -84,7 +84,7 @@ public OnPlayerDisconnect(playerid, reason)
 
 public FCNPC_OnReachDestination(npcid)
 {
-	if(WOW_GetBossIDFromNPCID(npcid) == BossLeatherface) {
+	if(FAI_GetBossIDFromNPCID(npcid) == BossLeatherface) {
 	    if(IdleCount != -1) {
 			new Float:x, Float:y, Float:z;
 			FCNPC_GetPosition(npcid, x, y, z);
@@ -104,7 +104,7 @@ public FCNPC_OnReachDestination(npcid)
 	return 1;
 }
 
-public WOW_OnBossEncounterStart(bossid, bool:reasonShot, firstTarget)
+public FAI_OnBossEncounterStart(bossid, bool:reasonShot, firstTarget)
 {
 	if(bossid == BossLeatherface) {
 	    IdleCount = -1;
@@ -112,7 +112,7 @@ public WOW_OnBossEncounterStart(bossid, bool:reasonShot, firstTarget)
 	return 1;
 }
 
-public WOW_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
+public FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 {
 	if(bossid == BossLeatherface) {
 		if(!reasonDeath) {
@@ -292,7 +292,7 @@ stock DestroyBossObjects() {
 forward SetBossAtSpawn(bossid);
 public SetBossAtSpawn(bossid) {
 	if(bossid == BossLeatherface) {
-		new bossplayerid = WOW_GetBossNPCID(bossid);
+		new bossplayerid = FAI_GetBossNPCID(bossid);
 		SetPlayerColor(bossplayerid, 0xff000000); //Alpha values = 00 because we don't want an additional playericon on the map
 		if(!FCNPC_IsSpawned(bossplayerid)) {
 		    FCNPC_Spawn(bossplayerid, 168, -2820.2534, -1530.3491, 140.8438);
@@ -311,8 +311,8 @@ public SetBossAtSpawn(bossid) {
 		FCNPC_SetArmour(bossplayerid, 0.0);
 		FCNPC_SetInvulnerable(bossplayerid, false);
 		new Float:maxHealth;
-		WOW_GetBossMaxHealth(bossid, maxHealth);
-		WOW_SetBossCurrentHealth(bossid, maxHealth);
+		FAI_GetBossMaxHealth(bossid, maxHealth);
+		FAI_SetBossCurrentHealth(bossid, maxHealth);
 		if(IsPlayerAttachedObjectSlotUsed(bossplayerid, ATTACHED_OBJECT_INDEX)) {
 		    RemovePlayerAttachedObject(bossplayerid, ATTACHED_OBJECT_INDEX);
 		}
@@ -333,7 +333,7 @@ public SetBossAtSpawn(bossid) {
 #if USE_STREAMER == true
 	stock StreamerUpdateForValidPlayers(bossid) {
 		for(new playerid = 0, maxplayerid = GetPlayerPoolSize(); playerid <= maxplayerid; playerid++) {
-	 	    if(WOW_IsBossValidForPlayer(playerid, bossid)) {
+	 	    if(FAI_IsBossValidForPlayer(playerid, bossid)) {
 				Streamer_Update(playerid, STREAMER_TYPE_OBJECT);
 			}
 		}
@@ -343,7 +343,7 @@ public SetBossAtSpawn(bossid) {
 
 forward CheckPlayerInRange();
 public CheckPlayerInRange() {
-	new bossplayerid = WOW_GetBossNPCID(BossLeatherface);
+	new bossplayerid = FAI_GetBossNPCID(BossLeatherface);
 	if(bossplayerid != INVALID_PLAYER_ID) {
 	    if(FCNPC_IsDead(bossplayerid)) {
 	        if(DeathCount != -1) {
@@ -387,10 +387,10 @@ public CheckPlayerInRange() {
 		    } else {
                 if(FCNPC_IsMoving(bossplayerid)) {
             		new Float:attackDistance, delay, bool:useFightStyle;
-				    WOW_GetBossMeleeAttackInfo(BossLeatherface, attackDistance, delay, useFightStyle);
+				    FAI_GetBossMeleeAttackInfo(BossLeatherface, attackDistance, delay, useFightStyle);
 					new Float:x, Float:y, Float:z;
 					FCNPC_GetPosition(bossplayerid, x, y, z);
-                    new Float:distance = GetPlayerDistanceFromPoint(WOW_GetBossTarget(BossLeatherface), x, y, z);
+                    new Float:distance = GetPlayerDistanceFromPoint(FAI_GetBossTarget(BossLeatherface), x, y, z);
                     if(distance > attackDistance + 2.0) {
 	                    if(!AnimationApplied) {
 							FCNPC_ApplyAnimation(bossplayerid, "ped", "FightSh_FWD", 4.1, 1, 1, 1, 0, 0);
@@ -408,12 +408,12 @@ public CheckPlayerInRange() {
     		new Float:x, Float:y, Float:z, Float:px, Float:py, Float:pz;
 			FCNPC_GetPosition(bossplayerid, x, y, z);
 			for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
-				if(WOW_IsBossValidForPlayer(playerid, BossLeatherface) && !IsPlayerNPC(playerid)) {
+				if(FAI_IsBossValidForPlayer(playerid, BossLeatherface) && !IsPlayerNPC(playerid)) {
 				    if(IdleCount != -1) {
-					    if(WOW_GetBossTarget(BossLeatherface) == INVALID_PLAYER_ID) {
+					    if(FAI_GetBossTarget(BossLeatherface) == INVALID_PLAYER_ID) {
 							GetPlayerPos(playerid, px, py, pz);
 							if(px <= -2811.0 && px >= -2821.0 && py <= -1515.0 && py >= -1531.0 && pz <= 143.0 && pz >= 140.0) {
-							    WOW_SetBossTarget(BossLeatherface, playerid);
+							    FAI_SetBossTarget(BossLeatherface, playerid);
 							}
 					    }
 				    }
