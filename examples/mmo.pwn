@@ -655,8 +655,10 @@ public SetBossAtSpawn(bossid) {
 		FCNPC_SetVirtualWorld(bossplayerid, VIRTUAL_WORLD_NORMAL);
 		FCNPC_ToggleReloading(bossplayerid, true);
 		FCNPC_ToggleInfiniteAmmo(bossplayerid, true);
-		FCNPC_SetWeaponState(bossplayerid, WEAPONSTATE_MORE_BULLETS);
 	    //FCNPC_SetWeapon(bossplayerid, WEAPON_COLT45);
+	    //FCNPC_SetAmmo(bossplayerid, 1000);
+	    //FCNPC_SetAmmoInClip(bossplayerid, 17);
+		//FCNPC_SetWeaponState(bossplayerid, WEAPONSTATE_MORE_BULLETS);
 		//FCNPC_SetWeaponSkillLevel(bossplayerid, WEAPONSKILL_PISTOL, 0);
 		//FCNPC_SetWeaponInfo(bossplayerid, WEAPON_COLT45, -1, -1, -1, 1.0);
 		FCNPC_SetWeapon(bossplayerid, WEAPON_BRASSKNUCKLE);
