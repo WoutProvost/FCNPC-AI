@@ -11,7 +11,7 @@
 //Boss
 native FAI_CreateBossFull(name[], fullName[] = FAI_INVALID_STRING, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL, Float:maxHealth = 100000.0, Float:rangeDisplay = 100.0, Float:rangeAggro = 20.0, bool:displayIfDead = true, Float:currentHealth = -1.0, targetid = INVALID_PLAYER_ID
 , moveType = MOVE_TYPE_SPRINT, Float:moveSpeed = MOVE_SPEED_AUTO, bool:moveUseMapAndreas = false, Float:moveRadius = 0.0, bool:moveSetAngle = true, Float:rangedAttackDistance = 20.0, rangedAttackDelay = -1, bool:rangedAttackSetAngle = true, Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = false
-, bool:allowNPCTargets = false, behaviour = FAI_BOSS_BEHAVIOUR_NEUTRAL);
+, bool:allowNPCTargets = false);
 native FAI_CreateBoss(name[]);
 native FAI_GetBossFullName(bossid, name[], len);
 native FAI_SetBossFullName(bossid, name[]);
@@ -37,11 +37,6 @@ native FAI_GetBossMeleeAttackInfo(bossid, &Float:distance, &delay, &bool:useFigh
 native FAI_SetBossMeleeAttackInfo(bossid, Float:distance = 1.0, delay = -1, bool:useFightStyle = false);
 native FAI_GetBossAllowNPCTargets(bossid);
 native FAI_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarget = false);
-native FAI_GetBossBehaviour(bossid);
-native FAI_SetBossBehaviour(bossid, behaviour, bool:checkForTarget = false);
-native FAI_GetBossThreatForPlayer(bossid, playerid);
-native FAI_SetBossThreatForPlayer(bossid, playerid, threat, bool:checkForAggroRange = false);
-native FAI_ResetBossThreatForAll(bossid);
 native FAI_DestroyBoss(bossid);
 native FAI_DestroyAllBosses();
 native bool:FAI_IsValidBoss(bossid);
@@ -118,8 +113,6 @@ forward FAI_OnBossEncounterStart(bossid, bool:reasonShot, firstTarget);
 forward FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget);
 forward FAI_OnPlayerGetAggro(playerid, bossid);
 forward FAI_OnPlayerLoseAggro(playerid, bossid);
-forward FAI_OnPlayerIncreaseThreat(playerid, bossid, amount);
-forward FAI_OnPlayerDecreaseThreat(playerid, bossid, amount);
 
 //Casting
 forward FAI_OnBossStartCasting(bossid, spellid, targetid);
@@ -587,7 +580,7 @@ public OnPlayerUpdate(playerid)
 #endif
 
 /*
-* FCNPC BEHAVIOUR:
+* FCNPC:
 * FCNPC_Spawn when not yet spawned => spawn, health is full, even if FCNPC_SetHealth was used after FCNPC_Create
 * FCNPC_Spawn when already spawned => nothing
 * FCNPC_Spawn when dead => nothing
@@ -659,7 +652,7 @@ stock FAI_DamageBoss(bossid, damagerid, Float:amount) {
 		//4th part of condition: neccesary to reject invalid damage done: the NPC is visible and thus damagable in other interiors
 	 	if(FCNPC_IsSpawned(bossplayerid) && !FCNPC_IsDead(bossplayerid) && (damagerid == INVALID_PLAYER_ID || FAI_IsBossValidForPlayer(damagerid, bossid))) {
 			//Only set target if the encounter has not yet started AND the behaviour is neutral or unfriendly
-			if(FAI_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && FAI_Bosses[bossid][BEHAVIOUR] != FAI_BOSS_BEHAVIOUR_FRIENDLY) {
+			if(FAI_Bosses[bossid][TARGET] == INVALID_PLAYER_ID) {
 				//Set target to damagerid if no target yet (valid damagerid + no target yet check in setter)
 				FAI_SetBossTargetWithReason(bossid, damagerid, 1);
 			}
@@ -798,7 +791,7 @@ public FAI_Update() {
 			//Get new target if no target, or if old target invalid, or if the boss is not streamed in anymore for his old target
 			if(!FAI_IsBossValidForPlayer(FAI_Bosses[bossid][TARGET], bossid) || !IsPlayerStreamedIn(FAI_Bosses[bossid][NPCID], FAI_Bosses[bossid][TARGET])) {
 		 		//Only set target if the encounter has already started OR if the behaviour is unfriendly
-		 		if(FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID || FAI_Bosses[bossid][BEHAVIOUR] == FAI_BOSS_BEHAVIOUR_UNFRIENDLY)  {
+		 		if(FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
 				    //Set target to closestPlayerid (valid closestPlayerid check in setter)
 					FAI_SetBossTargetWithReason(bossid, FAI_GetClosestPlayerToTakeAggro(bossid), 3);
 				}
@@ -1016,7 +1009,7 @@ static FAI_DestroyBossNoFCNPC_Destroy(bossid) {
 stock FAI_CreateBossFull(name[], fullName[] = FAI_INVALID_STRING, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL, Float:maxHealth = 100000.0,
 Float:rangeDisplay = 100.0, Float:rangeAggro = 20.0, bool:displayIfDead = true, Float:currentHealth = -1.0, targetid = INVALID_PLAYER_ID,
 moveType = MOVE_TYPE_SPRINT, Float:moveSpeed = MOVE_SPEED_AUTO, bool:moveUseMapAndreas = false, Float:moveRadius = 0.0, bool:moveSetAngle = true, Float:rangedAttackDistance = 20.0, rangedAttackDelay = -1, bool:rangedAttackSetAngle = true,
-Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = false, bool:allowNPCTargets = false, behaviour = FAI_BOSS_BEHAVIOUR_NEUTRAL) {
+Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = false, bool:allowNPCTargets = false) {
 	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
 		if(FAI_Bosses[bossid][NPCID] == INVALID_PLAYER_ID) {
 			FAI_Bosses[bossid][NPCID] = FCNPC_Create(name);
@@ -1033,7 +1026,6 @@ Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFight
 				FAI_SetBossRangedAttackInfo(bossid, rangedAttackDistance, rangedAttackDelay, rangedAttackSetAngle);
 				FAI_SetBossMeleeAttackInfo(bossid, meleeAttackDistance, meleeAttackDelay, meleeAttackUseFightStyle);
 				FAI_SetBossAllowNPCTargets(bossid, allowNPCTargets, false);
-				FAI_SetBossBehaviour(bossid, behaviour, false);
 		    	return bossid;
 		    } else {
 		        //FCNPC_Create failed
@@ -1316,7 +1308,6 @@ static FAI_SetBossTargetWithReason(bossid, newtargetid, reason, bool:checkForAgg
 	      				FAI_BossStopAttack(bossid);
 	      				FAI_StopBossCasting(bossid);
 	      				//Reset threat
-	      				FAI_ResetBossThreatForAll(bossid);
 						CallRemoteFunction("FAI_OnBossEncounterStop", "dbd", bossid, reasonDeath, oldtargetid);
 					}
 				}
@@ -1411,31 +1402,6 @@ stock FAI_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarg
 		return 1;
 	}
 	return 0;
-}
-stock FAI_GetBossBehaviour(bossid) {
-	if(FAI_IsValidBoss(bossid)) {
-		return FAI_Bosses[bossid][BEHAVIOUR];
-	}
-	return -1;
-}
-stock FAI_SetBossBehaviour(bossid, behaviour, bool:checkForTarget = false) {
-	if(FAI_IsValidBoss(bossid)) {
-		FAI_Bosses[bossid][BEHAVIOUR] = behaviour;
-		if(checkForTarget) {
-		    if(behaviour == FAI_BOSS_BEHAVIOUR_FRIENDLY && FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
-		        //Reset target
-				FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
-		    }
-		}
-		return 1;
-	}
-	return 0;
-}
-stock FAI_GetBossThreatForPlayer(bossid, playerid) {
-}
-stock FAI_SetBossThreatForPlayer(bossid, playerid, threat, bool:checkForAggroRange = false) {
-}
-stock FAI_ResetBossThreatForAll(bossid) {
 }
 stock FAI_GetBossNPCID(bossid) {
 	if(FAI_IsValidBoss(bossid)) {
