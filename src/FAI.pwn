@@ -1406,7 +1406,7 @@ stock FAI_GetBossNPCID(bossid) {
 	}
 	return INVALID_PLAYER_ID;
 }
-#define FAI_GetBossPlayerID(%0) FAI_GetBossNPCID(%0); //Alias
+#define FAI_GetBossPlayerID(%0) FAI_GetBossNPCID(%0) //Alias
 /*stock FAI_GetBossPlayerID(bossid) {
 	return FAI_GetBossNPCID(bossid);
 }*/
@@ -1431,7 +1431,7 @@ stock FAI_GetBossIDFromNPCID(npcid) {
 	}
 	return FAI_INVALID_BOSS_ID;
 }
-#define FAI_GetBossIDFromPlayerID(%0) FAI_GetBossIDFromNPCID(%0); //Alias
+#define FAI_GetBossIDFromPlayerID(%0) FAI_GetBossIDFromNPCID(%0) //Alias
 /*stock FAI_GetBossIDFromPlayerID(playerid) {
 	return FAI_GetBossIDFromNPCID(playerid);
 }*/
