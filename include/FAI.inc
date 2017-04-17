@@ -121,7 +121,7 @@ forward FAI_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete);
 //General
 //Include guards are already built into pawn, so no need to check
 #include <a_samp>
-#define FAI_VERSION                       	"1.0.3"
+#define FAI_VERSION                       	"1.1.0"
 #if !defined FAI_USE_MAP_ANDREAS
 	#define FAI_USE_MAP_ANDREAS           	false
 #endif
