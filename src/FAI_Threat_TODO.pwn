@@ -7,7 +7,9 @@ native FAI_SetBossBehaviour(bossid, behaviour, bool:checkForTarget = false);
 //Damageboss
 && FAI_Bosses[bossid][BEHAVIOUR] != FAI_BOSS_BEHAVIOUR_FRIENDLY
 //Update
-|| FAI_Bosses[bossid][BEHAVIOUR] == FAI_BOSS_BEHAVIOUR_UNFRIENDLY
+//Only set target if the encounter has already started OR if the behaviour is unfriendly
+if(FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID || FAI_Bosses[bossid][BEHAVIOUR] == FAI_BOSS_BEHAVIOUR_UNFRIENDLY) {
+}
 //Wrapper implementation
 , behaviour = FAI_BOSS_BEHAVIOUR_NEUTRAL
 FAI_SetBossBehaviour(bossid, behaviour, false);

@@ -790,11 +790,8 @@ public FAI_Update() {
 			FAI_IncreaseBossCastProgress(bossid);
 			//Get new target if no target, or if old target invalid, or if the boss is not streamed in anymore for his old target
 			if(!FAI_IsBossValidForPlayer(FAI_Bosses[bossid][TARGET], bossid) || !IsPlayerStreamedIn(FAI_Bosses[bossid][NPCID], FAI_Bosses[bossid][TARGET])) {
-		 		//Only set target if the encounter has already started OR if the behaviour is unfriendly
-		 		if(FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
-				    //Set target to closestPlayerid (valid closestPlayerid check in setter)
-					FAI_SetBossTargetWithReason(bossid, FAI_GetClosestPlayerToTakeAggro(bossid), 3);
-				}
+				//Set target to closestPlayerid (valid closestPlayerid check in setter)
+				FAI_SetBossTargetWithReason(bossid, FAI_GetClosestPlayerToTakeAggro(bossid), 3);
 			}
 	        //Attack target (which can be set above) if target known
 	        if(FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
