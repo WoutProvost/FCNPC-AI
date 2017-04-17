@@ -163,6 +163,11 @@ static FAI_PauseTimer = FAI_INVALID_TIMER_ID;
 #define FAI_INVALID_BOSS_ID					-1
 #define FAI_INVALID_ICON_ID					-1
 #define FAI_MAX_BOSS_TEXTDRAWS              8
+enum {
+	FAI_BOSS_BEHAVIOUR_FRIENDLY,
+	FAI_BOSS_BEHAVIOUR_NEUTRAL,
+	FAI_BOSS_BEHAVIOUR_UNFRIENDLY
+}
 enum FAI_ENUM_BOSS {
 	//Can be set by the user
 	FULL_NAME[FAI_MAX_BOSS_FULL_NAME + 1],
@@ -188,6 +193,8 @@ enum FAI_ENUM_BOSS {
 	MELEE_ATTACK_DELAY,
 	bool:MELEE_ATTACK_USE_FIGHT_STYLE,
 	bool:ALLOW_NPC_TARGETS,
+	BEHAVIOUR,
+	THREAT[MAX_PLAYERS],
 	//Cannot be set by the user
 	NPCID,
 	Text:TEXTDRAW[FAI_MAX_BOSS_TEXTDRAWS]
@@ -382,10 +389,10 @@ static FAI_RemoveUnnecessaryDecimals(Float:amount, maxDecimals = 6, minDecimals 
 
     public OnFilterScriptExit()
 	{
-	    FAI_ExitScript();
 	    #if defined FAI_OnFilterScriptExit
 	        FAI_OnFilterScriptExit();
 	    #endif
+	    FAI_ExitScript(); //Call after
 	    return 1;
 	}
 	#if defined _ALS_OnFilterScriptExit
@@ -418,10 +425,10 @@ static FAI_RemoveUnnecessaryDecimals(Float:amount, maxDecimals = 6, minDecimals 
 
     public OnGameModeExit()
 	{
-	    FAI_ExitScript();
 	    #if defined FAI_OnGameModeExit
 	        FAI_OnGameModeExit();
 	    #endif
+	    FAI_ExitScript(); //Call after
 	    return 1;
 	}
 	#if defined _ALS_OnGameModeExit
@@ -488,13 +495,13 @@ static FAI_ExitScript() {
 }
 
 public OnPlayerDisconnect(playerid, reason) {
-    new bossid = FAI_GetBossIDFromNPCID(playerid);
-    if(FAI_IsValidBoss(bossid)) {
-		FAI_DestroyBossNoFCNPC_Destroy(bossid);
-    }
     #if defined FAI_OnPlayerDisconnect
         FAI_OnPlayerDisconnect(playerid, reason);
     #endif
+    new bossid = FAI_GetBossIDFromNPCID(playerid);
+    if(FAI_IsValidBoss(bossid)) {
+		FAI_DestroyBossNoFCNPC_Destroy(bossid); //Call after
+    }
 	return 1;
 }
 #if defined _ALS_OnPlayerDisconnect
@@ -573,7 +580,7 @@ public OnPlayerUpdate(playerid)
 #endif
 
 /*
-* FCNPC BEHAVIOUR:
+* FCNPC:
 * FCNPC_Spawn when not yet spawned => spawn, health is full, even if FCNPC_SetHealth was used after FCNPC_Create
 * FCNPC_Spawn when already spawned => nothing
 * FCNPC_Spawn when dead => nothing
@@ -596,7 +603,7 @@ public FCNPC_OnRespawn(npcid)
 			if(FAI_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(bossid)) {
 		      	FAI_StopBossCasting(bossid);
 			}
-			//Reset target
+			//Reset target & threat for all players
 			FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
 	    } else {
 			FAI_SetBossCurrentHealth(bossid, FAI_Bosses[bossid][MAX_HEALTH]);
@@ -644,8 +651,11 @@ stock FAI_DamageBoss(bossid, damagerid, Float:amount) {
 		//3rd part of condition: damage not inflicted by players (falling, ...)
 		//4th part of condition: neccesary to reject invalid damage done: the NPC is visible and thus damagable in other interiors
 	 	if(FCNPC_IsSpawned(bossplayerid) && !FCNPC_IsDead(bossplayerid) && (damagerid == INVALID_PLAYER_ID || FAI_IsBossValidForPlayer(damagerid, bossid))) {
-			//Set target to damagerid if no target yet (valid damagerid + no target yet check in setter)
-			FAI_SetBossTargetWithReason(bossid, damagerid, 1);
+			//Only set target if the encounter has not yet started AND the behaviour is neutral or unfriendly
+			if(FAI_Bosses[bossid][TARGET] == INVALID_PLAYER_ID) {
+				//Set target to damagerid if no target yet (valid damagerid + no target yet check in setter)
+				FAI_SetBossTargetWithReason(bossid, damagerid, 1);
+			}
 			//Dont damage below 0
 			if(FAI_Bosses[bossid][CUR_HEALTH] > amount) {
 				FAI_SetBossCurrentHealth(bossid, FAI_Bosses[bossid][CUR_HEALTH] - amount);
@@ -684,7 +694,7 @@ public FCNPC_OnDeath(npcid, killerid, weaponid)
 		if(FAI_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(bossid)) {
 	      	FAI_StopBossCasting(bossid);
 		}
-	    //Reset target
+	    //Reset target & threat for all players
 		FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 2);
 		//If the boss was killed with FCNPC_Kill or FCNPC_SetHealth with value <= 0.0, not by taking damage
 		FAI_SetBossCurrentHealth(bossid, 0);
@@ -780,7 +790,7 @@ public FAI_Update() {
 			FAI_IncreaseBossCastProgress(bossid);
 			//Get new target if no target, or if old target invalid, or if the boss is not streamed in anymore for his old target
 			if(!FAI_IsBossValidForPlayer(FAI_Bosses[bossid][TARGET], bossid) || !IsPlayerStreamedIn(FAI_Bosses[bossid][NPCID], FAI_Bosses[bossid][TARGET])) {
-			    //Set target to closestPlayerid (valid closestPlayerid check in setter)
+				//Set target to closestPlayerid (valid closestPlayerid check in setter)
 				FAI_SetBossTargetWithReason(bossid, FAI_GetClosestPlayerToTakeAggro(bossid), 3);
 			}
 	        //Attack target (which can be set above) if target known
@@ -929,6 +939,10 @@ static FAI_ResetBossStats(bossid) {
 		FAI_Bosses[bossid][MELEE_ATTACK_DELAY] = 0;
 		FAI_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE] = false;
 		FAI_Bosses[bossid][ALLOW_NPC_TARGETS] = false;
+		FAI_Bosses[bossid][BEHAVIOUR] = FAI_BOSS_BEHAVIOUR_NEUTRAL;
+		for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
+			FAI_Bosses[bossid][THREAT][playerid] = 0;
+		}
 		FAI_Bosses[bossid][NPCID] = INVALID_PLAYER_ID;
 	}
 }
@@ -968,7 +982,7 @@ static FAI_DestroyBossNoFCNPC_Destroy(bossid) {
 		if(FAI_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(bossid)) {
 	      	FAI_StopBossCasting(bossid);
 		}
-		//Reset target
+		//Reset target & threat for all players
 		FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0); //FAI_Casting gets reset in here, so we don't need to reset it manually again
 		TextDrawDestroy(FAI_Bosses[bossid][TEXTDRAW][0]);
 		TextDrawDestroy(FAI_Bosses[bossid][TEXTDRAW][1]);
@@ -1253,7 +1267,7 @@ Reason:
 static FAI_SetBossTargetWithReason(bossid, newtargetid, reason, bool:checkForAggroRange = false) {
 	if(FAI_IsValidBoss(bossid)) {
 		new oldtargetid = FAI_Bosses[bossid][TARGET];
-		if(oldtargetid != newtargetid && (reason != 1 || oldtargetid == INVALID_PLAYER_ID)) {
+		if(oldtargetid != newtargetid) {
 		    new bool:newTargetValid = true;
 		    new bool:newTargetStreamedIn = true;
 		    if(newtargetid != INVALID_PLAYER_ID) {
@@ -1290,6 +1304,7 @@ static FAI_SetBossTargetWithReason(bossid, newtargetid, reason, bool:checkForAgg
 			            }
 	      				FAI_BossStopAttack(bossid);
 	      				FAI_StopBossCasting(bossid);
+	      				//Reset threat
 						CallRemoteFunction("FAI_OnBossEncounterStop", "dbd", bossid, reasonDeath, oldtargetid);
 					}
 				}
@@ -1391,9 +1406,10 @@ stock FAI_GetBossNPCID(bossid) {
 	}
 	return INVALID_PLAYER_ID;
 }
-stock FAI_GetBossPlayerID(bossid) {
+#define FAI_GetBossPlayerID(%0) FAI_GetBossNPCID(%0); //Alias
+/*stock FAI_GetBossPlayerID(bossid) {
 	return FAI_GetBossNPCID(bossid);
-}
+}*/
 stock Text:FAI_GetBossTextDraw(bossid, textdraw) {
 	if(FAI_IsValidBoss(bossid) && textdraw >= 0 && textdraw < FAI_MAX_BOSS_TEXTDRAWS) {
 		return FAI_Bosses[bossid][TEXTDRAW][textdraw];
@@ -1415,9 +1431,10 @@ stock FAI_GetBossIDFromNPCID(npcid) {
 	}
 	return FAI_INVALID_BOSS_ID;
 }
-stock FAI_GetBossIDFromPlayerID(playerid) {
+#define FAI_GetBossIDFromPlayerID(%0) FAI_GetBossIDFromNPCID(%0); //Alias
+/*stock FAI_GetBossIDFromPlayerID(playerid) {
 	return FAI_GetBossIDFromNPCID(playerid);
-}
+}*/
 forward bool:FAI_IsBossValidForPlayer(playerid, bossid); //Silence 'used before declaration' warning
 stock bool:FAI_IsBossValidForPlayer(playerid, bossid) {
 	if(IsPlayerConnected(playerid) && FAI_IsValidBoss(bossid)) {
@@ -1748,7 +1765,7 @@ stock bool:FAI_IsEncounterStarted(bossid) {
 }
 stock FAI_StopEncounter(bossid) {
 	if(FAI_IsValidBoss(bossid)) {
-		//Reset target
+		//Reset target & threat for all players
 		FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
 		return 1;
 	}
