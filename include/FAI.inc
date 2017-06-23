@@ -144,8 +144,8 @@ forward FAI_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete);
 #if !defined FAI_DECIMAL_MARK
 	#define FAI_DECIMAL_MARK    			'.'
 #endif
-#if !defined FAI_SHORTEN_HEALTH
-	#define FAI_SHORTEN_HEALTH            	false
+#if !defined FAI_SHORTEN_NUMBERS
+	#define FAI_SHORTEN_NUMBERS            	false
 #endif
 #define FAI_isnull(%1) ((!(%1[0])) || (((%1[0]) == '\1') && (!(%1[1]))))
 static FAI_UpdateTimer = FAI_INVALID_TIMER_ID;
@@ -1548,10 +1548,12 @@ static FAI_UpdateBossHealthDisplay(bossid) {
 		format(string, sizeof(string), "%d%", FAI_GetBossCurrentHealthPercent(bossid));
 		TextDrawSetString(FAI_Bosses[bossid][TEXTDRAW][1], string);
 		new healthInteger = floatround(FAI_Bosses[bossid][CUR_HEALTH], floatround_ceil); //Ceil so 0.3 still displays as 1 instead of 0
-		#if FAI_SHORTEN_HEALTH == false
+		#if FAI_SHORTEN_NUMBERS == false
 			TextDrawSetString(FAI_Bosses[bossid][TEXTDRAW][2], FAI_DisplayReadableInteger(healthInteger));
 		#else
-		    if(float(healthInteger) / 1000 / 1000 >= 1) {
+			if(float(healthInteger) / 1000 / 1000 / 1000 >= 1) {
+				format(string, sizeof(string), "%s B", FAI_DisplayReadableFloat(float(healthInteger) / 1000 / 1000 / 1000, 2, 2));
+			} else if(float(healthInteger) / 1000 / 1000 >= 1) {
 				format(string, sizeof(string), "%s M", FAI_DisplayReadableFloat(float(healthInteger) / 1000 / 1000, 2, 2));
 			} else if(float(healthInteger) / 1000 >= 1) {
 				format(string, sizeof(string), "%s K", FAI_DisplayReadableFloat(float(healthInteger) / 1000, 2, 2));
