@@ -27,7 +27,8 @@ new SpellMarkOfDeath = FAI_INVALID_SPELL_ID;
 new SpellNoPlaceIsSafe = FAI_INVALID_SPELL_ID;
 new SpellFlightOfTheBumblebee = FAI_INVALID_SPELL_ID;
 new SpellRockOfLife = FAI_INVALID_SPELL_ID;
-new BossIdleMessageTimer = FAI_INVALID_TIMER_ID; //3 purpose timer: works as an idle message timer when he is spawned but an encounter hasn't started, works as a respawn timer when he is dead, works as a casting timer during an encoutner
+new SpellSummonAdds = FAI_INVALID_SPELL_ID;
+new BossIdleMessageTimer = FAI_INVALID_TIMER_ID; //3 purpose timer: works as an idle message timer when he is spawned but an encounter hasn't started, works as a respawn timer when he is dead, works as a casting timer during an encounter
 new BossExecuteSpellCount = 0;
 new Float:BossTargetNotMovingPos[3] = {0.0, ...};
 new BossTargetNotMovingObject = INVALID_OBJECT_ID;
@@ -42,6 +43,8 @@ new GroundMarks[20] = {INVALID_OBJECT_ID, ...};
 new Bombs[20] = {INVALID_OBJECT_ID, ...};
 new ExplosionTimer = FAI_INVALID_TIMER_ID;
 new ExplosionCount = 0;
+new BossAdds[2] = {FAI_INVALID_BOSS_ID, ...};
+new SpellRockOfLifeTarget = INVALID_PLAYER_ID;
 
 #if defined FILTERSCRIPT
 public OnFilterScriptInit()
@@ -55,6 +58,17 @@ public OnFilterScriptInit()
 	SpellNoPlaceIsSafe = FAI_CreateSpellFull("No place is safe", FAI_SPELL_TYPE_CUSTOM, 20000, 0.0, FAI_PERCENT_TYPE_CUSTOM, 0x645005ff, 0xb4820aff, true, true);
 	SpellFlightOfTheBumblebee = FAI_CreateSpellFull("Flight of the Bumblebee", FAI_SPELL_TYPE_CROWD_CONTROL, 2000, 0.0, FAI_PERCENT_TYPE_CUSTOM, 0x3333ccff, 0x6699ffff);
 	SpellRockOfLife = FAI_CreateSpellFull("Rock of Life", FAI_SPELL_TYPE_CROWD_CONTROL, 5000, 0.0, FAI_PERCENT_TYPE_CUSTOM, 0x00cc66ff, 0x00ff99ff);
+	SpellSummonAdds = FAI_CreateSpellFull("Summon Adds", FAI_SPELL_TYPE_SPAWN_ADD, 6000, sizeof(BossAdds), FAI_PERCENT_TYPE_CUSTOM, 0x800080ff, 0xda70d6ff);
+	for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
+		new name[MAX_PLAYER_NAME + 1];
+		format(name, sizeof(name), "BossBigSmokeAdd%d", add);
+		BossAdds[add] = FAI_CreateBossFull(name, FAI_INVALID_STRING, FAI_INVALID_ICON_ID, 23, 0xff0000ff, MAPICON_LOCAL, 100.0, 0.0, 0.0, false, -1.0, INVALID_PLAYER_ID, MOVE_TYPE_RUN);
+		new npcid = FAI_GetBossNPCID(BossAdds[add]);
+		SetPlayerColor(npcid, 0xffffff00);
+		FCNPC_Spawn(npcid, 0, 1086.9752, 1074.7021, -50.0);
+		FCNPC_SetInterior(npcid, INTERIOR_NORMAL);
+		FCNPC_SetVirtualWorld(npcid, VIRTUAL_WORLD_NORMAL);
+	}
 	return 1;
 }
 
@@ -86,6 +100,8 @@ public OnPlayerDisconnect(playerid, reason)
 			SpellFlightOfTheBumblebee = FAI_INVALID_SPELL_ID;
 			FAI_DestroySpell(SpellRockOfLife);
 			SpellRockOfLife = FAI_INVALID_SPELL_ID;
+			FAI_DestroySpell(SpellSummonAdds);
+			SpellSummonAdds = FAI_INVALID_SPELL_ID;
 			for(new groundMark = 0, groundMarkCount = sizeof(GroundMarks); groundMark < groundMarkCount; groundMark++) {
 				#if USE_STREAMER == false
 				    DestroyObject(GroundMarks[groundMark]);
@@ -100,6 +116,10 @@ public OnPlayerDisconnect(playerid, reason)
 			KillTimer(ExplosionTimer);
 			ExplosionTimer = FAI_INVALID_TIMER_ID;
 			ExplosionCount = 0;
+			for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
+				FAI_DestroyBoss(BossAdds[add]); //Destroy the adds when their master gets destroyed
+				BossAdds[add] = FAI_INVALID_BOSS_ID;
+			}
 			KillTimer(BossIdleMessageTimer);
 			BossIdleMessageTimer = FAI_INVALID_TIMER_ID;
 			BossExecuteSpellCount = 0;
@@ -122,6 +142,18 @@ public OnPlayerDisconnect(playerid, reason)
 			    	DestroyDynamicPickup(RewardPickups[rewardPickup]);
 			    #endif
 			    RewardPickups[rewardPickup] = -1;
+			}
+			if(SpellRockOfLifeTarget != INVALID_PLAYER_ID) {
+			    SpellRockOfLifeEnd(SpellRockOfLifeTarget);
+				SpellRockOfLifeTarget = INVALID_PLAYER_ID;
+			}
+		} else {
+			for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
+				if(bossid == BossAdds[add]) {
+				    //FAI_DestroyBoss(BossAdds[add]); //We don't need to do this, since the add is already disconnecting
+					BossAdds[add] = FAI_INVALID_BOSS_ID;
+				    break;
+				}
 			}
 		}
 	}
@@ -266,7 +298,7 @@ public FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 		BossTargetNotMovingPos[0] = 0.0;
 		BossTargetNotMovingPos[1] = 0.0;
 		BossTargetNotMovingPos[2] = 0.0;
-		KillTimer(BossTargetNotMovingTimer); //In case SpellMarkOfDeathExplosion is still going
+		KillTimer(BossTargetNotMovingTimer);
 		BossTargetNotMovingTimer = FAI_INVALID_TIMER_ID;
 		#if USE_STREAMER == false
 			DestroyObject(BossTargetNotMovingObject);
@@ -274,6 +306,42 @@ public FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 			DestroyDynamicObject(BossTargetNotMovingObject);
 		#endif
 		BossTargetNotMovingObject = INVALID_OBJECT_ID;
+		for(new groundMark = 0, groundMarkCount = sizeof(GroundMarks); groundMark < groundMarkCount; groundMark++) {
+			#if USE_STREAMER == false
+			    DestroyObject(GroundMarks[groundMark]);
+			    DestroyObject(Bombs[groundMark]);
+		    #else
+				DestroyDynamicObject(GroundMarks[groundMark]);
+				DestroyDynamicObject(Bombs[groundMark]);
+			#endif
+			GroundMarks[groundMark] = INVALID_OBJECT_ID;
+			Bombs[groundMark] = INVALID_OBJECT_ID;
+		}
+		KillTimer(ExplosionTimer);
+		ExplosionTimer = FAI_INVALID_TIMER_ID;
+		ExplosionCount = 0;
+		for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
+		    if(BossAdds[add] != FAI_INVALID_BOSS_ID) {
+				new npcid = FAI_GetBossNPCID(BossAdds[add]);
+				SetPlayerColor(npcid, 0xffffff00);
+				FCNPC_SetPosition(npcid, 1086.9752, 1074.7021, -50.0);
+				FAI_SetBossAggroRange(BossAdds[add], 0.0);
+			}
+		}
+		if(SpellRockOfLifeTarget != INVALID_PLAYER_ID) {
+		    SpellRockOfLifeEnd(SpellRockOfLifeTarget);
+			SpellRockOfLifeTarget = INVALID_PLAYER_ID;
+		}
+	} else {
+		for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
+			if(BossAdds[add] != FAI_INVALID_BOSS_ID && bossid == BossAdds[add]) {
+				new npcid = FAI_GetBossNPCID(bossid);
+				SetPlayerColor(npcid, 0xffffff00);
+				FCNPC_SetPosition(npcid, 1086.9752, 1074.7021, -50.0);
+				FAI_SetBossAggroRange(bossid, 0.0);
+			    break;
+			}
+		}
 	}
 	return 1;
 }
@@ -401,6 +469,27 @@ public FAI_OnBossStartCasting(bossid, spellid, targetid)
 		if(spellid == SpellRockOfLife) {
 			 SendTargetidStartCastMessage(targetid, bossid, spellid);
 		}
+		if(spellid == SpellSummonAdds) {
+		    new currentAddCount = 0;
+		    for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
+		        //If the add is not available, count as used
+		        if(BossAdds[add] == FAI_INVALID_BOSS_ID) {
+		            currentAddCount++;
+		        }
+		        //If the add is available, count as used when above -45.0 z position
+				else {
+				    new Float:x, Float:y, Float:z;
+				    FCNPC_GetPosition(FAI_GetBossNPCID(BossAdds[add]), x, y, z);
+				    if(z > -45.0) {
+				    	currentAddCount++;
+				    }
+		        }
+		    }
+		    //Only show the message when we are actually able to spawn adds
+		    if(currentAddCount != sizeof(BossAdds)) {
+				BossYell(bossid, "Back me up", 35648);
+		    }
+		}
 	}
 	return 1;
 }
@@ -480,10 +569,84 @@ public FAI_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete)
 					camY = playerY + (radius * floatsin(angle + 90, degrees));
 				 	SetPlayerCameraPos(targetid, camX, camY, playerZ + 10.0);
 				 	SetPlayerCameraLookAt(targetid, playerX, playerY, playerZ);
+				 	SpellRockOfLifeTarget = targetid;
 					KillTimer(ExplosionTimer);
 					ExplosionTimer = SetTimerEx("SpellRockOfLifeEnd", 2000, false, "d", targetid);
 				}
 			}
+		}
+		if(spellid == SpellSummonAdds) {
+		    if(castComplete) {
+			    new currentAddCount = 0;
+			    for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
+			    	//If the add is not available, count as used
+			        if(BossAdds[add] == FAI_INVALID_BOSS_ID) {
+			            currentAddCount++;
+			        }
+			        //If the add is available, count as used when above -45.0 z position
+					else {
+					    new Float:x, Float:y, Float:z;
+					    FCNPC_GetPosition(FAI_GetBossNPCID(BossAdds[add]), x, y, z);
+					    if(z > -45.0) {
+					    	currentAddCount++;
+					    } else {
+					        new Float:BSX, Float:BSY, Float:BSZ, Float:addX, Float:addY, Float:addZ, Float:angle;
+					        FCNPC_GetPosition(FAI_GetBossNPCID(BossBigSmoke), BSX, BSY, BSZ);
+						    angle = RandomFloatGivenInteger(360);
+							addX = BSX + (50.0 * floatcos(angle + 90, degrees));
+							addY = BSY + (50.0 * floatsin(angle + 90, degrees));
+						    #if FAI_USE_MAP_ANDREAS == true
+								MapAndreas_FindZ_For2DCoord(addX, addY, addZ);
+							#endif
+				            new randomSkin = random(3) + 102;
+				            new randomWeapon = random(2);
+							new addplayerid = FAI_GetBossNPCID(BossAdds[add]);
+							if(!FCNPC_IsSpawned(addplayerid)) {
+							    FCNPC_Spawn(addplayerid, randomSkin, addX, addY, addZ + 1.0);
+							} else {
+								if(FCNPC_IsDead(addplayerid)) {
+							    	FCNPC_Respawn(addplayerid);
+							    }
+								FCNPC_SetSkin(addplayerid, randomSkin);
+								FCNPC_SetPosition(addplayerid, addX, addY, addZ + 1.0);
+							}
+							FCNPC_SetAngle(addplayerid, angle + 180);
+							FCNPC_SetInterior(addplayerid, INTERIOR_NORMAL);
+							FCNPC_SetVirtualWorld(addplayerid, VIRTUAL_WORLD_NORMAL);
+							FCNPC_ToggleReloading(addplayerid, true);
+							FCNPC_ToggleInfiniteAmmo(addplayerid, true);
+							switch(randomWeapon) {
+								case 0: {
+									FCNPC_SetWeapon(addplayerid, WEAPON_UZI);
+									FCNPC_SetWeaponSkillLevel(addplayerid, WEAPONSKILL_MICRO_UZI, 0);
+									FCNPC_SetWeaponInfo(addplayerid, WEAPON_UZI, 1200, 200, 50, 0.5);
+									FCNPC_SetAmmoInClip(addplayerid, 50);
+									FCNPC_SetWeaponState(addplayerid, WEAPONSTATE_MORE_BULLETS);
+								}
+								case 1: {
+							        FCNPC_SetWeapon(addplayerid, WEAPON_COLT45);
+									FCNPC_SetWeaponSkillLevel(addplayerid, WEAPONSKILL_PISTOL, 0);
+									FCNPC_SetWeaponInfo(addplayerid, WEAPON_COLT45, 1300, 160, 17, 0.5);
+									FCNPC_SetAmmoInClip(addplayerid, 17);
+									FCNPC_SetWeaponState(addplayerid, WEAPONSTATE_MORE_BULLETS);
+								}
+							}
+							FCNPC_SetFightingStyle(addplayerid, FIGHT_STYLE_NORMAL);
+							FCNPC_SetHealth(addplayerid, 100.0);
+							FCNPC_SetArmour(addplayerid, 0.0);
+							FCNPC_SetInvulnerable(addplayerid, false);
+							FAI_SetBossMaxHealth(BossAdds[add], 100.0);
+							FAI_SetBossCurrentHealth(BossAdds[add], 100.0);
+							FAI_SetBossAggroRange(BossAdds[add], 1000.0);
+							SetPlayerColor(addplayerid, 0xb31a1eff);
+					    }
+			        }
+				}
+			    //Only show the message when we are actually able to spawn adds
+			    if(currentAddCount != sizeof(BossAdds)) {
+					BossYell(bossid, "What took you so long?", 35623);
+			    }
+		    }
 		}
 	}
 	return 1;
@@ -494,7 +657,38 @@ public TargetNotMovingCheck(bossid, randomSeconds) {
 	if(randomSeconds == BossExecuteSpellCount) {
 		KillTimer(BossIdleMessageTimer);
 		BossExecuteSpellCount = 0;
-        ExecuteSpell(bossid);
+		new rand = random(2);
+		switch(rand) {
+		    case 0: {
+		        //Execute normal spell
+        		ExecuteSpell(bossid);
+		    }
+		    case 1: {
+			    new currentAddCount = 0;
+			    for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
+			        //If the add is not available, count as used
+			        if(BossAdds[add] == FAI_INVALID_BOSS_ID) {
+			            currentAddCount++;
+			        }
+			        //If the add is available, count as used when above -45.0 z position
+					else {
+					    new Float:x, Float:y, Float:z;
+					    FCNPC_GetPosition(FAI_GetBossNPCID(BossAdds[add]), x, y, z);
+					    if(z > -45.0) {
+					    	currentAddCount++;
+					    }
+			        }
+			    }
+		        //Spawn add(s) if there is at least 1 add slot free
+			    if(currentAddCount != sizeof(BossAdds)) {
+					FAI_StartBossCastingSpell(bossid, SpellSummonAdds);
+			    }
+			    //Otherwise execute a normal spell
+				else {
+        			ExecuteSpell(bossid);
+			    }
+		    }
+		}
 		BossIdleMessageTimer = SetTimerEx("TargetNotMovingCheck", 1000, true, "ii", bossid, random(11) + 10);
 	} else {
 		BossExecuteSpellCount++;
@@ -677,8 +871,6 @@ public SetBossAtSpawn(bossid) {
 }
 forward SpellMarkOfDeathExplosion(bossid);
 public SpellMarkOfDeathExplosion(bossid) {
-	//SpellMarkOfDeath will continue executing if it was cast and no encounter was started and the boss dies/respawns/gets destroyed, which is ok
-	//SpellMarkOfDeath will not continue executing if it was cast and an encounter was started and the boss dies/respawns/gets destroyed, which is ok
 	new Float:markX, Float:markY, Float:markZ;
 	#if USE_STREAMER == false
 		GetObjectPos(BossTargetNotMovingObject, markX, markY, markZ);
@@ -744,6 +936,7 @@ public SpellRockOfLifeEnd(playerid) {
 	GroundMarks[0] = INVALID_OBJECT_ID;
 	TogglePlayerControllable(playerid, 1);
 	SetCameraBehindPlayer(playerid);
+	SpellRockOfLifeTarget = INVALID_PLAYER_ID;
 	KillTimer(ExplosionTimer);
 	ExplosionTimer = FAI_INVALID_TIMER_ID;
 	return 1;
