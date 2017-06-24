@@ -54,11 +54,11 @@ public OnFilterScriptInit()
 	SetBossAtSpawn(BossBigSmoke);
     SpellCarpetOfFire = FAI_CreateSpell("Carpet of Fire");
     SpellWallOfFire = FAI_CreateSpell("Wall of Fire");
-    SpellMarkOfDeath = FAI_CreateSpellFull("Mark of Death", FAI_SPELL_TYPE_CUSTOM, 0);
-	SpellNoPlaceIsSafe = FAI_CreateSpellFull("No place is safe", FAI_SPELL_TYPE_CUSTOM, 20000, 0.0, FAI_PERCENT_TYPE_CUSTOM, 0x645005ff, 0xb4820aff, true, true);
-	SpellFlightOfTheBumblebee = FAI_CreateSpellFull("Flight of the Bumblebee", FAI_SPELL_TYPE_CROWD_CONTROL, 2000, 0.0, FAI_PERCENT_TYPE_CUSTOM, 0x3333ccff, 0x6699ffff);
-	SpellRockOfLife = FAI_CreateSpellFull("Rock of Life", FAI_SPELL_TYPE_CROWD_CONTROL, 5000, 0.0, FAI_PERCENT_TYPE_CUSTOM, 0x00cc66ff, 0x00ff99ff);
-	SpellSummonAdds = FAI_CreateSpellFull("Summon Adds", FAI_SPELL_TYPE_SPAWN_ADD, 6000, sizeof(BossAdds), FAI_PERCENT_TYPE_CUSTOM, 0x800080ff, 0xda70d6ff);
+    SpellMarkOfDeath = FAI_CreateSpellFull("Mark of Death", 0);
+	SpellNoPlaceIsSafe = FAI_CreateSpellFull("No place is safe", 20000, 0.0, 0x645005ff, 0xb4820aff, true, true);
+	SpellFlightOfTheBumblebee = FAI_CreateSpellFull("Flight of the Bumblebee", 2000, 0.0, 0x3333ccff, 0x6699ffff);
+	SpellRockOfLife = FAI_CreateSpellFull("Rock of Life", 5000, 0.0, 0x00cc66ff, 0x00ff99ff);
+	SpellSummonAdds = FAI_CreateSpellFull("Summon Adds", 6000, 0, 0x800080ff, 0xda70d6ff);
 	for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
 		new name[MAX_PLAYER_NAME + 1];
 		format(name, sizeof(name), "BossBigSmokeAdd%d", add);

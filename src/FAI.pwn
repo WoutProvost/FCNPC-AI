@@ -56,18 +56,14 @@ native bool:FAI_IsEncounterStarted(bossid);
 native FAI_StopEncounter(bossid);
 
 //Spell
-native FAI_CreateSpellFull(name[], type = FAI_SPELL_TYPE_CUSTOM, castTime = 2000, Float:amount = 0.0, percentType = FAI_PERCENT_TYPE_CUSTOM, castBarColorDark = 0x645005ff, castBarColorLight = 0xb4820aff, bool:castBarInverted = false, bool:castTimeInverted = false, bool:canMove = false, bool:canAttack = false, info[] = FAI_INVALID_STRING);
+native FAI_CreateSpellFull(name[], castTime = 2000, Float:amount = 0.0, castBarColorDark = 0x645005ff, castBarColorLight = 0xb4820aff, bool:castBarInverted = false, bool:castTimeInverted = false, bool:canMove = false, bool:canAttack = false, info[] = FAI_INVALID_STRING);
 native FAI_CreateSpell(name[]);
 native FAI_GetSpellName(spellid, name[], len);
 native FAI_SetSpellName(spellid, name[]);
-native FAI_GetSpellType(spellid);
-native FAI_SetSpellType(spellid, type);
 native FAI_GetSpellCastTime(spellid);
 native FAI_SetSpellCastTime(spellid, castTime, bool:keepCastPercent = false);
 native FAI_GetSpellAmount(spellid, &Float:amount);
 native FAI_SetSpellAmount(spellid, Float:amount);
-native FAI_GetSpellPercentType(spellid);
-native FAI_SetSpellPercentType(spellid, type);
 native FAI_GetSpellCastBarColorDark(spellid);
 native FAI_SetSpellCastBarColorDark(spellid, color);
 native FAI_GetSpellCastBarColorLight(spellid);
@@ -218,10 +214,8 @@ static Text:FAI_BossBlackCast = Text:INVALID_TEXT_DRAW;
 enum FAI_ENUM_SPELL {
 	//Can be set by the user
 	NAME[FAI_MAX_SPELL_NAME + 1],
-	TYPE,
 	CAST_TIME,
 	Float:AMOUNT,
-	PERCENT_TYPE,
 	CAST_BAR_COLOR_DARK,
 	CAST_BAR_COLOR_LIGHT,
 	bool:CAST_BAR_INVERTED,
@@ -229,39 +223,6 @@ enum FAI_ENUM_SPELL {
 	bool:CAN_MOVE,
 	bool:CAN_ATTACK,
 	INFO[FAI_MAX_SPELL_INFO + 1]
-}
-enum {
-	FAI_SPELL_TYPE_INVALID = -1,
-	FAI_SPELL_TYPE_DAM,
-	FAI_SPELL_TYPE_HEAL,
-	FAI_SPELL_TYPE_CROWD_CONTROL,
-	FAI_SPELL_TYPE_INTERRUPT,
-	FAI_SPELL_TYPE_DISPELL,
-	FAI_SPELL_TYPE_SPAWN_ADD,
-	FAI_SPELL_TYPE_CUSTOM
-}
-enum {
-	FAI_PERCENT_TYPE_INVALID = -1,
-	FAI_PERCENT_TYPE_NOT,
-	FAI_PERCENT_TYPE_TARG_MAX_HP_AP,
-	FAI_PERCENT_TYPE_CAST_MAX_HP_AP,
-	FAI_PERCENT_TYPE_TARG_CUR_HP_AP,
-	FAI_PERCENT_TYPE_CAST_CUR_HP_AP,
-	FAI_PERCENT_TYPE_TARG_LOS_HP_AP,
-	FAI_PERCENT_TYPE_CAST_LOS_HP_AP,
-	FAI_PERCENT_TYPE_TARG_MAX_HP,
-	FAI_PERCENT_TYPE_CAST_MAX_HP,
-	FAI_PERCENT_TYPE_TARG_CUR_HP,
-	FAI_PERCENT_TYPE_CAST_CUR_HP,
-	FAI_PERCENT_TYPE_TARG_LOS_HP,
-	FAI_PERCENT_TYPE_CAST_LOS_HP,
-	FAI_PERCENT_TYPE_TARG_MAX_AP,
-	FAI_PERCENT_TYPE_CAST_MAX_AP,
-	FAI_PERCENT_TYPE_TARG_CUR_AP,
-	FAI_PERCENT_TYPE_CAST_CUR_AP,
-	FAI_PERCENT_TYPE_TARG_LOS_AP,
-	FAI_PERCENT_TYPE_CAST_LOS_AP,
-	FAI_PERCENT_TYPE_CUSTOM
 }
 static FAI_Spells[FAI_MAX_SPELLS][FAI_ENUM_SPELL];
 
@@ -1784,10 +1745,8 @@ static FAI_InitSpell(spellid) {
 	//Don't use FAI_IsValidSpell(spellid)
 	if(spellid >= 0 && spellid < FAI_MAX_SPELLS) {
 		FAI_strcpy(FAI_Spells[spellid][NAME], FAI_INVALID_STRING, FAI_MAX_SPELL_NAME + 1);
-		FAI_Spells[spellid][TYPE] = FAI_SPELL_TYPE_INVALID;
 		FAI_Spells[spellid][CAST_TIME] = 0;
 		FAI_Spells[spellid][AMOUNT] = 0.0;
-		FAI_Spells[spellid][PERCENT_TYPE] = FAI_PERCENT_TYPE_INVALID;
 		FAI_Spells[spellid][CAST_BAR_COLOR_DARK] = FAI_INVALID_COLOR;
 		FAI_Spells[spellid][CAST_BAR_COLOR_LIGHT] = FAI_INVALID_COLOR;
 		FAI_Spells[spellid][CAST_BAR_INVERTED] = false;
@@ -1798,7 +1757,7 @@ static FAI_InitSpell(spellid) {
 	}
 }
 stock bool:FAI_IsValidSpell(spellid) {
-	if(spellid >= 0 && spellid < FAI_MAX_SPELLS && FAI_Spells[spellid][TYPE] != FAI_SPELL_TYPE_INVALID) {
+	if(spellid >= 0 && spellid < FAI_MAX_SPELLS && strcmp(FAI_Spells[spellid][NAME], FAI_INVALID_STRING, true)) {
 	    return true;
 	}
 	return false;
@@ -1819,16 +1778,14 @@ stock FAI_DestroySpell(spellid) {
 	}
 	return 0;
 }
-stock FAI_CreateSpellFull(name[], type = FAI_SPELL_TYPE_CUSTOM, castTime = 2000, Float:amount = 0.0, percentType = FAI_PERCENT_TYPE_CUSTOM, castBarColorDark = 0x645005ff, castBarColorLight = 0xb4820aff,
+stock FAI_CreateSpellFull(name[], castTime = 2000, Float:amount = 0.0, castBarColorDark = 0x645005ff, castBarColorLight = 0xb4820aff,
 bool:castBarInverted = false, bool:castTimeInverted = false, bool:canMove = false, bool:canAttack = false, info[] = FAI_INVALID_STRING) {
 	for(new spellid = 0; spellid < FAI_MAX_SPELLS; spellid++) {
-	    if(FAI_Spells[spellid][TYPE] == FAI_SPELL_TYPE_INVALID) {
-	    	FAI_Spells[spellid][TYPE] = type;
+	    if(!strcmp(FAI_Spells[spellid][NAME], FAI_INVALID_STRING, true)) {
+	    	FAI_strcpy(FAI_Spells[spellid][NAME], name, FAI_MAX_SPELL_NAME + 1);
 			FAI_SetSpellName(spellid, name);
-			FAI_SetSpellType(spellid, type);
 			FAI_SetSpellCastTime(spellid, castTime, false);
 			FAI_SetSpellAmount(spellid, amount);
-			FAI_SetSpellPercentType(spellid, percentType);
 			FAI_SetSpellCastBarColorDark(spellid, castBarColorDark);
 			FAI_SetSpellCastBarColorLight(spellid, castBarColorLight);
 			FAI_SetSpellCastBarInverted(spellid, castBarInverted, false);
@@ -1862,20 +1819,6 @@ stock FAI_SetSpellName(spellid, name[]) {
 	        }
 	    }
 		return 1;
-	}
-	return 0;
-}
-stock FAI_GetSpellType(spellid) {
-	if(FAI_IsValidSpell(spellid)) {
-	    return FAI_Spells[spellid][TYPE];
-	}
-	return FAI_SPELL_TYPE_INVALID;
-}
-stock FAI_SetSpellType(spellid, type) {
-	//Don't check for type <= CUSTOM, so the user can create additionale types
-	if(FAI_IsValidSpell(spellid) && type != FAI_SPELL_TYPE_INVALID && type >= 0) {
-		FAI_Spells[spellid][TYPE] = type;
-	    return 1;
 	}
 	return 0;
 }
@@ -1959,20 +1902,6 @@ stock FAI_SetSpellAmount(spellid, Float:amount) {
 			amount = 0.0;
 		}
 	    FAI_Spells[spellid][AMOUNT] = amount;
-	    return 1;
-	}
-	return 0;
-}
-stock FAI_GetSpellPercentType(spellid) {
-	if(FAI_IsValidSpell(spellid)) {
-	    return FAI_Spells[spellid][PERCENT_TYPE];
-	}
-	return FAI_PERCENT_TYPE_INVALID;
-}
-stock FAI_SetSpellPercentType(spellid, type) {
-	//Don't check for type <= CUSTOM, so the user can create additionale types
-	if(FAI_IsValidSpell(spellid) && type != FAI_PERCENT_TYPE_INVALID && type >= 0) {
-		FAI_Spells[spellid][PERCENT_TYPE] = type;
 	    return 1;
 	}
 	return 0;
@@ -2128,29 +2057,8 @@ stock FAI_SetSpellInfo(spellid, info[]) {
 		//If the user didn't provide info, construct info based on other settings
 		if(!FAI_isnull(info) && !strcmp(info, FAI_INVALID_STRING, true)) {
 			new string[FAI_MAX_SPELL_INFO + 1];
-			new percentString[21 + 26 + 1];
-			FAI_strcpy(percentString, FAI_DisplayReadableFloat(FAI_Spells[spellid][AMOUNT], 2, 0));
-			switch(FAI_Spells[spellid][PERCENT_TYPE]) {
-			    case FAI_PERCENT_TYPE_NOT: {}
-				case FAI_PERCENT_TYPE_TARG_MAX_HP_AP: {format(percentString, sizeof(percentString), "%s\% of target's max health + armour", percentString);}
-				case FAI_PERCENT_TYPE_CAST_MAX_HP_AP: {format(percentString, sizeof(percentString), "%s\% of caster's max health + armour", percentString);}
-				case FAI_PERCENT_TYPE_TARG_CUR_HP_AP: {format(percentString, sizeof(percentString), "%s\% of target's remaining health + armour", percentString);}
-				case FAI_PERCENT_TYPE_CAST_CUR_HP_AP: {format(percentString, sizeof(percentString), "%s\% of caster's remaining health + armour", percentString);}
-				case FAI_PERCENT_TYPE_TARG_LOS_HP_AP: {format(percentString, sizeof(percentString), "%s\% of target's lost health + armour", percentString);}
-				case FAI_PERCENT_TYPE_CAST_LOS_HP_AP: {format(percentString, sizeof(percentString), "%s\% of caster's lost health + armour", percentString);}
-				case FAI_PERCENT_TYPE_TARG_MAX_HP: {format(percentString, sizeof(percentString), "%s\% of target's max health", percentString);}
-				case FAI_PERCENT_TYPE_CAST_MAX_HP: {format(percentString, sizeof(percentString), "%s\% of caster's max health", percentString);}
-				case FAI_PERCENT_TYPE_TARG_CUR_HP: {format(percentString, sizeof(percentString), "%s\% of target's remaining health", percentString);}
-				case FAI_PERCENT_TYPE_CAST_CUR_HP: {format(percentString, sizeof(percentString), "%s\% of caster's remaining health", percentString);}
-				case FAI_PERCENT_TYPE_TARG_LOS_HP: {format(percentString, sizeof(percentString), "%s\% of target's lost health", percentString);}
-				case FAI_PERCENT_TYPE_CAST_LOS_HP: {format(percentString, sizeof(percentString), "%s\% of caster's lost health", percentString);}
-				case FAI_PERCENT_TYPE_TARG_MAX_AP: {format(percentString, sizeof(percentString), "%s\% of target's max armour", percentString);}
-				case FAI_PERCENT_TYPE_CAST_MAX_AP: {format(percentString, sizeof(percentString), "%s\% of caster's max armour", percentString);}
-				case FAI_PERCENT_TYPE_TARG_CUR_AP: {format(percentString, sizeof(percentString), "%s\% of target's remaining armour", percentString);}
-				case FAI_PERCENT_TYPE_CAST_CUR_AP: {format(percentString, sizeof(percentString), "%s\% of caster's remaining armour", percentString);}
-				case FAI_PERCENT_TYPE_TARG_LOS_AP: {format(percentString, sizeof(percentString), "%s\% of target's lost armour", percentString);}
-				case FAI_PERCENT_TYPE_CAST_LOS_AP: {format(percentString, sizeof(percentString), "%s\% of caster's lost armour", percentString);}
-			}
+			new amountString[21 + 8 + 1];
+			format(amountString, sizeof(amountString), "Amount %s.", FAI_DisplayReadableFloat(FAI_Spells[spellid][AMOUNT], 2, 0));
 			new castTimeString[21 + 7 + 1];
 			if(FAI_Spells[spellid][CAST_TIME] != 0) {
 				if(float(FAI_Spells[spellid][CAST_TIME]) / 1000 / 60 >= 1) {
@@ -2161,12 +2069,7 @@ stock FAI_SetSpellInfo(spellid, info[]) {
 			} else {
 				FAI_strcpy(castTimeString, "Instant");
 			}
-		    switch(FAI_Spells[spellid][TYPE]) {
-				case FAI_SPELL_TYPE_CUSTOM: {format(string, sizeof(string), "Has a custom effect. %s cast.", castTimeString);}
-				case FAI_SPELL_TYPE_DAM: {format(string, sizeof(string), "Damages %s. %s cast.", percentString, castTimeString);}
-				case FAI_SPELL_TYPE_HEAL: {format(string, sizeof(string), "Heals %s. %s cast.", percentString, castTimeString);}
-				case FAI_SPELL_TYPE_CROWD_CONTROL: {format(string, sizeof(string), "Applies a crowd control effect. %s cast.", percentString, castTimeString);}
-			}
+			format(string, sizeof(string), "%s %s cast.", amountString, castTimeString);
 		    FAI_strcpy(FAI_Spells[spellid][INFO], string, FAI_MAX_SPELL_INFO + 1);
 		}
 		//If the user did provide info, use that one
