@@ -1,3 +1,19 @@
+/*
+Effect examples:
+-decrease/increase damage from some weapon (maybe even immunity)
+-decrease/increase max/current HP
+-movement slower/quicker
+-decrease/increase cast time
+
+Effect considerations:
+-damage decrease can't be above 100%
+-damage increase can be above 100%
+
+Effect textdraws:
+-icons with textdraw previews or text like (H+ and H-)
+-show remaining effect ticks visually with a decreasing y axis
+*/
+
 #define WOW_MAX_EFFECTS                 20
 #define WOW_MAX_EFFECT_NAME				20
 #define WOW_MAX_EFFECT_INFO				144

@@ -1,11 +1,14 @@
-//SPELL_TYPES
-WOW_SPELL_TYPE_INTERRUPT, //TODO
-WOW_SPELL_TYPE_DISPEL //TODO
+/*
+Spell cooldown:
+-When does the cooldown start? From start of cast or from end of cast?
+-Cooldown should be per boss per spell
+
+Spell examples:
+-mimic: the boss asumes the skin of the target and the weapon that target has currently equiped
+*/
+
 //ENUM_SPELL
 IMMUNES[MAX_PLAYERS],
-
-//TODO show "Interrupted" on red cast bar for a second
-//TODO show "Immune" on red cast bar for a second
 
 //INTERNAL
 forward WOW_CastSpellDone(issuerid);
