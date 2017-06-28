@@ -1770,9 +1770,7 @@ stock FAI_DestroyAllSpells() {
 }
 stock FAI_DestroySpell(spellid) {
 	if(FAI_IsValidSpell(spellid)) {
-		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
-			FAI_StopAllBossesCastingSpell(spellid);
-		}
+		FAI_StopAllBossesCastingSpell(spellid);
 		FAI_InitSpell(spellid);
 		return 1;
 	}
