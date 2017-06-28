@@ -53,7 +53,9 @@ public OnFilterScriptInit()
 	FAI_SetBossFullName(BossBigSmoke, "Melvin \"Big Smoke\" Harris");
 	FAI_SetBossMapiconInfo(BossBigSmoke, 65, 8);
  	FAI_SetBossMaxHealth(BossBigSmoke, 5000.0);
+ 	FAI_SetBossDisplayRange(BossBigSmoke, 100.0);
 	FAI_SetBossMoveInfo(BossBigSmoke, MOVE_TYPE_SPRINT, MOVE_SPEED_AUTO, true);
+	FAI_SetBossAllowNPCTargets(BossBigSmoke, false);
 	SetBossAtSpawn(BossBigSmoke);
     SpellCarpetOfFire = FAI_CreateSpell("Carpet of Fire");
     SpellWallOfFire = FAI_CreateSpell("Wall of Fire");
@@ -81,10 +83,9 @@ public OnFilterScriptInit()
 		new name[MAX_PLAYER_NAME + 1];
 		format(name, sizeof(name), "BossBigSmokeAdd%d", add);
 		BossAdds[add] = FAI_CreateBoss(name);
-		FAI_SetBossMaxHealth(BossAdds[add], 100.0);
-		FAI_SetBossDisplayRange(BossAdds[add], 0.0);
 		FAI_SetBossAggroRange(BossAdds[add], 0.0);
-		FAI_SetBossMoveInfo(BossAdds[add], MOVE_TYPE_RUN, MOVE_SPEED_AUTO, true);
+		FAI_SetBossMoveInfo(BossAdds[add], MOVE_TYPE_AUTO, MOVE_SPEED_AUTO, true);
+		FAI_SetBossAllowNPCTargets(BossAdds[add], false);
 		new npcid = FAI_GetBossNPCID(BossAdds[add]);
 		SetPlayerColor(npcid, 0xffffff00);
 		FCNPC_Spawn(npcid, 0, 1086.9752, 1074.7021, -50.0);

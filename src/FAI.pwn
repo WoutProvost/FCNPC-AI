@@ -967,16 +967,16 @@ stock FAI_CreateBoss(name[]) {
 			if(FAI_Bosses[bossid][NPCID] != INVALID_PLAYER_ID) {
 		 		FAI_SetBossFullName(bossid, FAI_INVALID_STRING);
 				FAI_SetBossMapiconInfo(bossid, FAI_INVALID_ICON_ID, 23, 0xff0000ff, MAPICON_LOCAL);
-				FAI_SetBossMaxHealth(bossid, 100000.0, false);
-				FAI_SetBossDisplayRange(bossid, 100.0);
+				FAI_SetBossMaxHealth(bossid, 100.0, false);
+				FAI_SetBossDisplayRange(bossid, 0.0);
 				FAI_SetBossAggroRange(bossid, 20.0, false);
 				FAI_SetBossDisplayIfDead(bossid, true);
 				FAI_SetBossCurrentHealth(bossid, -1.0, false);
 				FAI_SetBossTarget(bossid, INVALID_PLAYER_ID, false);
-				FAI_SetBossMoveInfo(bossid, MOVE_TYPE_SPRINT, MOVE_SPEED_AUTO, false, 0.0, true);
+				FAI_SetBossMoveInfo(bossid, MOVE_TYPE_AUTO, MOVE_SPEED_AUTO, false, 0.0, true);
 				FAI_SetBossRangedAttackInfo(bossid, 20.0, -1, true);
 				FAI_SetBossMeleeAttackInfo(bossid, 1.0, -1, false);
-				FAI_SetBossAllowNPCTargets(bossid, false, false);
+				FAI_SetBossAllowNPCTargets(bossid, true, false);
 		    	return bossid;
 		    } else {
 		        //FCNPC_Create failed
