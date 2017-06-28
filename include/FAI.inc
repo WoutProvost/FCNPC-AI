@@ -9,9 +9,6 @@
 //FAKE NATIVES
 /*
 //Boss
-native FAI_CreateBossFull(name[], fullName[] = FAI_INVALID_STRING, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL, Float:maxHealth = 100000.0, Float:rangeDisplay = 100.0, Float:rangeAggro = 20.0, bool:displayIfDead = true, Float:currentHealth = -1.0, targetid = INVALID_PLAYER_ID
-, moveType = MOVE_TYPE_SPRINT, Float:moveSpeed = MOVE_SPEED_AUTO, bool:moveUseMapAndreas = false, Float:moveRadius = 0.0, bool:moveSetAngle = true, Float:rangedAttackDistance = 20.0, rangedAttackDelay = -1, bool:rangedAttackSetAngle = true, Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = false
-, bool:allowNPCTargets = false);
 native FAI_CreateBoss(name[]);
 native FAI_GetBossFullName(bossid, name[], len);
 native FAI_SetBossFullName(bossid, name[]);
@@ -56,7 +53,6 @@ native bool:FAI_IsEncounterStarted(bossid);
 native FAI_StopEncounter(bossid);
 
 //Spell
-native FAI_CreateSpellFull(name[], castTime = 2000, Float:amount = 0.0, castBarColorDark = 0x645005ff, castBarColorLight = 0xb4820aff, bool:castBarInverted = false, bool:castTimeInverted = false, bool:canMove = false, bool:canAttack = false, info[] = FAI_INVALID_STRING);
 native FAI_CreateSpell(name[]);
 native FAI_GetSpellName(spellid, name[], len);
 native FAI_SetSpellName(spellid, name[]);
@@ -964,26 +960,23 @@ static FAI_DestroyBossNoFCNPC_Destroy(bossid) {
 	    FAI_ResetBossStats(bossid);
 	}
 }
-stock FAI_CreateBossFull(name[], fullName[] = FAI_INVALID_STRING, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL, Float:maxHealth = 100000.0,
-Float:rangeDisplay = 100.0, Float:rangeAggro = 20.0, bool:displayIfDead = true, Float:currentHealth = -1.0, targetid = INVALID_PLAYER_ID,
-moveType = MOVE_TYPE_SPRINT, Float:moveSpeed = MOVE_SPEED_AUTO, bool:moveUseMapAndreas = false, Float:moveRadius = 0.0, bool:moveSetAngle = true, Float:rangedAttackDistance = 20.0, rangedAttackDelay = -1, bool:rangedAttackSetAngle = true,
-Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFightStyle = false, bool:allowNPCTargets = false) {
+stock FAI_CreateBoss(name[]) {
 	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
 		if(FAI_Bosses[bossid][NPCID] == INVALID_PLAYER_ID) {
 			FAI_Bosses[bossid][NPCID] = FCNPC_Create(name);
 			if(FAI_Bosses[bossid][NPCID] != INVALID_PLAYER_ID) {
-		 		FAI_SetBossFullName(bossid, fullName);
-				FAI_SetBossMapiconInfo(bossid, iconid, iconMarker, iconColor, iconStyle);
-				FAI_SetBossMaxHealth(bossid, maxHealth, false);
-				FAI_SetBossDisplayRange(bossid, rangeDisplay);
-				FAI_SetBossAggroRange(bossid, rangeAggro, false);
-				FAI_SetBossDisplayIfDead(bossid, displayIfDead);
-				FAI_SetBossCurrentHealth(bossid, currentHealth, false);
-				FAI_SetBossTarget(bossid, targetid, false);
-				FAI_SetBossMoveInfo(bossid, moveType, moveSpeed, moveUseMapAndreas, moveRadius, moveSetAngle);
-				FAI_SetBossRangedAttackInfo(bossid, rangedAttackDistance, rangedAttackDelay, rangedAttackSetAngle);
-				FAI_SetBossMeleeAttackInfo(bossid, meleeAttackDistance, meleeAttackDelay, meleeAttackUseFightStyle);
-				FAI_SetBossAllowNPCTargets(bossid, allowNPCTargets, false);
+		 		FAI_SetBossFullName(bossid, FAI_INVALID_STRING);
+				FAI_SetBossMapiconInfo(bossid, FAI_INVALID_ICON_ID, 23, 0xff0000ff, MAPICON_LOCAL);
+				FAI_SetBossMaxHealth(bossid, 100000.0, false);
+				FAI_SetBossDisplayRange(bossid, 100.0);
+				FAI_SetBossAggroRange(bossid, 20.0, false);
+				FAI_SetBossDisplayIfDead(bossid, true);
+				FAI_SetBossCurrentHealth(bossid, -1.0, false);
+				FAI_SetBossTarget(bossid, INVALID_PLAYER_ID, false);
+				FAI_SetBossMoveInfo(bossid, MOVE_TYPE_SPRINT, MOVE_SPEED_AUTO, false, 0.0, true);
+				FAI_SetBossRangedAttackInfo(bossid, 20.0, -1, true);
+				FAI_SetBossMeleeAttackInfo(bossid, 1.0, -1, false);
+				FAI_SetBossAllowNPCTargets(bossid, false, false);
 		    	return bossid;
 		    } else {
 		        //FCNPC_Create failed
@@ -993,9 +986,6 @@ Float:meleeAttackDistance = 1.0, meleeAttackDelay = -1, bool:meleeAttackUseFight
 	}
 	//Max amount of bosses reached
 	return FAI_INVALID_BOSS_ID;
-}
-stock FAI_CreateBoss(name[]) {
-	return FAI_CreateBossFull(name);
 }
 stock FAI_GetBossFullName(bossid, name[], len) {
 	if(FAI_IsValidBoss(bossid)) {
@@ -1770,37 +1760,31 @@ stock FAI_DestroyAllSpells() {
 }
 stock FAI_DestroySpell(spellid) {
 	if(FAI_IsValidSpell(spellid)) {
-		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
-			FAI_StopAllBossesCastingSpell(spellid);
-		}
+		FAI_StopAllBossesCastingSpell(spellid);
 		FAI_InitSpell(spellid);
 		return 1;
 	}
 	return 0;
 }
-stock FAI_CreateSpellFull(name[], castTime = 2000, Float:amount = 0.0, castBarColorDark = 0x645005ff, castBarColorLight = 0xb4820aff,
-bool:castBarInverted = false, bool:castTimeInverted = false, bool:canMove = false, bool:canAttack = false, info[] = FAI_INVALID_STRING) {
+stock FAI_CreateSpell(name[]) {
 	for(new spellid = 0; spellid < FAI_MAX_SPELLS; spellid++) {
 	    if(!strcmp(FAI_Spells[spellid][NAME], FAI_INVALID_STRING, true)) {
 	    	FAI_strcpy(FAI_Spells[spellid][NAME], name, FAI_MAX_SPELL_NAME + 1);
 			FAI_SetSpellName(spellid, name);
-			FAI_SetSpellCastTime(spellid, castTime, false);
-			FAI_SetSpellAmount(spellid, amount);
-			FAI_SetSpellCastBarColorDark(spellid, castBarColorDark);
-			FAI_SetSpellCastBarColorLight(spellid, castBarColorLight);
-			FAI_SetSpellCastBarInverted(spellid, castBarInverted, false);
-			FAI_SetSpellCastTimeInverted(spellid, castTimeInverted, false);
-			FAI_SetSpellCanMove(spellid, canMove);
-			FAI_SetSpellCanAttack(spellid, canAttack);
-			FAI_SetSpellInfo(spellid, info);
+			FAI_SetSpellCastTime(spellid, 2000, false);
+			FAI_SetSpellAmount(spellid, 0.0);
+			FAI_SetSpellCastBarColorDark(spellid, 0x645005ff);
+			FAI_SetSpellCastBarColorLight(spellid, 0xb4820aff);
+			FAI_SetSpellCastBarInverted(spellid, false, false);
+			FAI_SetSpellCastTimeInverted(spellid, false, false);
+			FAI_SetSpellCanMove(spellid, false);
+			FAI_SetSpellCanAttack(spellid, false);
+			FAI_SetSpellInfo(spellid, FAI_INVALID_STRING);
 	    	return spellid;
 		}
 	}
 	//Max amount of spells reached
 	return FAI_INVALID_SPELL_ID;
-}
-stock FAI_CreateSpell(name[]) {
-	return FAI_CreateSpellFull(name);
 }
 stock FAI_GetSpellName(spellid, name[], len) {
 	if(FAI_IsValidSpell(spellid)) {
