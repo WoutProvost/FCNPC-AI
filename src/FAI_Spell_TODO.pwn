@@ -3,6 +3,15 @@ Spell cooldown:
 -When does the cooldown start? From start of cast or from end of cast?
 -Cooldown should be per boss per spell
 
+Spell mana:
+-Mana is not consumed until the casting time is completed.
+-A spell cast can't be started when the spell requires more mana than the boss has.
+-With an inverted cast progress, mana is consumed before the channeling starts.
+
+Spell reduce cast progress on damage:
+-Some events can reduce the casting time.
+-With an inverted cast progress, the bar will be more empty.
+
 Spell examples:
 -mimic: the boss asumes the skin of the target and the weapon that target has currently equiped
 */
