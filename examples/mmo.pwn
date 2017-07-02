@@ -217,6 +217,10 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 					case 20: {BossYell(bossid, "Shoot him! Help me", 33302); ExecuteSpell(bossid);}
 				}
 			}
+			//Reduce cast progress a bit when damaged
+			if(FAI_IsBossCastingSpell(bossid, SpellFlightOfTheBumblebee)) {
+			    FAI_SetBossCastingProgress(bossid, FAI_GetBossCastingProgress(bossid) - floatround(health_loss, floatround_floor));
+			}
 		}
 	}
 	return 1;
