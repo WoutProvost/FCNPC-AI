@@ -1626,7 +1626,7 @@ static FAI_BossAttackTarget(bossid, targetid) {
 		    canAttack = FAI_Spells[spellid][CAN_ATTACK];
 		}
 		//Target in attack range, attack if allowed
-		if(distance <= attackDistance) {
+		if(attackDistance == -1 || distance <= attackDistance) {
 		    if(canAttack) {
 		        FAI_BossAttackAim(bossid, targetid);
 		    } else {
