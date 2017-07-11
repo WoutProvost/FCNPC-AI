@@ -27,7 +27,7 @@ native FAI_SetBossCurrentHealth(bossid, Float:health, bool:keepHealthPercent = f
 native FAI_GetBossTarget(bossid);
 native FAI_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false);
 native FAI_GetBossMoveInfo(bossid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle);
-native FAI_SetBossMoveInfo(bossid, type = MOVE_TYPE_SPRINT, Float:speed = MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true);
+native FAI_SetBossMoveInfo(bossid, type = MOVE_TYPE_AUTO, Float:speed = MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true);
 native FAI_GetBossRangedAttackInfo(bossid, &Float:distance, &delay, &bool:setAngle);
 native FAI_SetBossRangedAttackInfo(bossid, Float:distance = 20.0, delay = -1, bool:setAngle = true);
 native FAI_GetBossMeleeAttackInfo(bossid, &Float:distance, &delay, &bool:useFightStyle);
@@ -1276,7 +1276,7 @@ stock FAI_GetBossMoveInfo(bossid, &type, &Float:speed, &bool:useMapAndreas, &Flo
 	}
 	return 0;
 }
-stock FAI_SetBossMoveInfo(bossid, type = MOVE_TYPE_SPRINT, Float:speed = MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true) {
+stock FAI_SetBossMoveInfo(bossid, type = MOVE_TYPE_AUTO, Float:speed = MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true) {
 	if(FAI_IsValidBoss(bossid)) {
 	    FAI_Bosses[bossid][MOVE_TYPE] = type;
 	    FAI_Bosses[bossid][MOVE_SPEED] = speed;
