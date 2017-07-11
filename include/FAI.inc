@@ -28,10 +28,10 @@ native FAI_GetBossTarget(bossid);
 native FAI_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false);
 native FAI_GetBossMoveInfo(bossid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle);
 native FAI_SetBossMoveInfo(bossid, type = MOVE_TYPE_AUTO, Float:speed = MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true);
-native FAI_GetBossRangedAttackInfo(bossid, &Float:distance, &delay, &bool:setAngle);
-native FAI_SetBossRangedAttackInfo(bossid, Float:distance = 20.0, delay = -1, bool:setAngle = true);
-native FAI_GetBossMeleeAttackInfo(bossid, &Float:distance, &delay, &bool:useFightStyle);
-native FAI_SetBossMeleeAttackInfo(bossid, Float:distance = 1.0, delay = -1, bool:useFightStyle = false);
+native FAI_GetBossRangedAttackInfo(bossid, &Float:range, &delay, &bool:setAngle);
+native FAI_SetBossRangedAttackInfo(bossid, Float:range = 20.0, delay = -1, bool:setAngle = true);
+native FAI_GetBossMeleeAttackInfo(bossid, &Float:range, &delay, &bool:useFightStyle);
+native FAI_SetBossMeleeAttackInfo(bossid, Float:range = 1.0, delay = -1, bool:useFightStyle = false);
 native FAI_GetBossAllowNPCTargets(bossid);
 native FAI_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarget = false);
 native FAI_DestroyBoss(bossid);
@@ -178,10 +178,10 @@ enum FAI_ENUM_BOSS {
 	bool:MOVE_USE_MAP_ANDREAS,
 	Float:MOVE_RADIUS,
 	bool:MOVE_SET_ANGLE,
-	Float:RANGED_ATTACK_DISTANCE,
+	Float:RANGED_ATTACK_RANGE,
 	RANGED_ATTACK_DELAY,
 	bool:RANGED_ATTACK_SET_ANGLE,
-	Float:MELEE_ATTACK_DISTANCE,
+	Float:MELEE_ATTACK_RANGE,
 	MELEE_ATTACK_DELAY,
 	bool:MELEE_ATTACK_USE_FIGHT_STYLE,
 	bool:ALLOW_NPC_TARGETS,
@@ -889,10 +889,10 @@ static FAI_ResetBossStats(bossid) {
 		FAI_Bosses[bossid][MOVE_USE_MAP_ANDREAS] = false;
 		FAI_Bosses[bossid][MOVE_RADIUS] = 0.0;
 		FAI_Bosses[bossid][MOVE_SET_ANGLE] = false;
-		FAI_Bosses[bossid][RANGED_ATTACK_DISTANCE] = 0.0;
+		FAI_Bosses[bossid][RANGED_ATTACK_RANGE] = 0.0;
 		FAI_Bosses[bossid][RANGED_ATTACK_DELAY] = 0;
 		FAI_Bosses[bossid][RANGED_ATTACK_SET_ANGLE] = false;
-		FAI_Bosses[bossid][MELEE_ATTACK_DISTANCE] = 0.0;
+		FAI_Bosses[bossid][MELEE_ATTACK_RANGE] = 0.0;
 		FAI_Bosses[bossid][MELEE_ATTACK_DELAY] = 0;
 		FAI_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE] = false;
 		FAI_Bosses[bossid][ALLOW_NPC_TARGETS] = false;
@@ -1290,18 +1290,18 @@ stock FAI_SetBossMoveInfo(bossid, type = MOVE_TYPE_AUTO, Float:speed = MOVE_SPEE
 	}
 	return 0;
 }
-stock FAI_GetBossRangedAttackInfo(bossid, &Float:distance, &delay, &bool:setAngle) {
+stock FAI_GetBossRangedAttackInfo(bossid, &Float:range, &delay, &bool:setAngle) {
 	if(FAI_IsValidBoss(bossid)) {
-	    distance = FAI_Bosses[bossid][RANGED_ATTACK_DISTANCE];
+	    range = FAI_Bosses[bossid][RANGED_ATTACK_RANGE];
 	    delay = FAI_Bosses[bossid][RANGED_ATTACK_DELAY];
 	    setAngle = FAI_Bosses[bossid][RANGED_ATTACK_SET_ANGLE];
 	    return 1;
 	}
 	return 0;
 }
-stock FAI_SetBossRangedAttackInfo(bossid, Float:distance = 20.0, delay = -1, bool:setAngle = true) {
+stock FAI_SetBossRangedAttackInfo(bossid, Float:range = 20.0, delay = -1, bool:setAngle = true) {
 	if(FAI_IsValidBoss(bossid)) {
-	    FAI_Bosses[bossid][RANGED_ATTACK_DISTANCE] = distance;
+	    FAI_Bosses[bossid][RANGED_ATTACK_RANGE] = range;
 	    FAI_Bosses[bossid][RANGED_ATTACK_DELAY] = delay;
 	    FAI_Bosses[bossid][RANGED_ATTACK_SET_ANGLE] = setAngle;
         if(FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
@@ -1311,18 +1311,18 @@ stock FAI_SetBossRangedAttackInfo(bossid, Float:distance = 20.0, delay = -1, boo
 	}
 	return 0;
 }
-stock FAI_GetBossMeleeAttackInfo(bossid, &Float:distance, &delay, &bool:useFightStyle) {
+stock FAI_GetBossMeleeAttackInfo(bossid, &Float:range, &delay, &bool:useFightStyle) {
 	if(FAI_IsValidBoss(bossid)) {
-	    distance = FAI_Bosses[bossid][MELEE_ATTACK_DISTANCE];
+	    range = FAI_Bosses[bossid][MELEE_ATTACK_RANGE];
 	    delay = FAI_Bosses[bossid][MELEE_ATTACK_DELAY];
 	    useFightStyle = FAI_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE];
 	    return 1;
 	}
 	return 0;
 }
-stock FAI_SetBossMeleeAttackInfo(bossid, Float:distance = 1.0, delay = -1, bool:useFightStyle = false) {
+stock FAI_SetBossMeleeAttackInfo(bossid, Float:range = 1.0, delay = -1, bool:useFightStyle = false) {
 	if(FAI_IsValidBoss(bossid)) {
-	    FAI_Bosses[bossid][MELEE_ATTACK_DISTANCE] = distance;
+	    FAI_Bosses[bossid][MELEE_ATTACK_RANGE] = range;
 	    FAI_Bosses[bossid][MELEE_ATTACK_DELAY] = delay;
 	    FAI_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE] = useFightStyle;
         if(FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
@@ -1613,10 +1613,10 @@ static FAI_BossAttackTarget(bossid, targetid) {
 		new Float:bossX, Float:bossY, Float:bossZ;
 		FCNPC_GetPosition(bossplayerid, bossX, bossY, bossZ);
 		new Float:distance = GetPlayerDistanceFromPoint(targetid, bossX, bossY, bossZ);
-		new Float:attackDistance = FAI_Bosses[bossid][RANGED_ATTACK_DISTANCE];
+		new Float:attackRange = FAI_Bosses[bossid][RANGED_ATTACK_RANGE];
 		new bool:isMelee = FAI_BossHasMeleeWeapons(bossid);
 		if(isMelee) {
-		    attackDistance = FAI_Bosses[bossid][MELEE_ATTACK_DISTANCE];
+		    attackRange = FAI_Bosses[bossid][MELEE_ATTACK_RANGE];
 		}
 		new bool:canMove = true;
 		new bool:canAttack = true;
@@ -1626,7 +1626,7 @@ static FAI_BossAttackTarget(bossid, targetid) {
 		    canAttack = FAI_Spells[spellid][CAN_ATTACK];
 		}
 		//Target in attack range, attack if allowed
-		if(attackDistance == -1 || distance <= attackDistance) {
+		if(attackRange == -1 || distance <= attackRange) {
 		    if(canAttack) {
 		        FAI_BossAttackAim(bossid, targetid);
 		    } else {
