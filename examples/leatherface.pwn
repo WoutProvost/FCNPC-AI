@@ -37,7 +37,6 @@ public OnFilterScriptInit()
 {
 	BossLeatherface = FAI_CreateBoss("BossLeatherface");
 	FAI_SetBossMaxHealth(BossLeatherface, 2000.0);
-	FAI_SetBossAggroRange(BossLeatherface, 0.0);
 	FAI_SetBossMoveInfo(BossLeatherface, MOVE_TYPE_SPRINT);
 	FAI_SetBossMeleeAttackInfo(BossLeatherface, 1.5, -1, false);
 	SetBossAtSpawn(BossLeatherface);

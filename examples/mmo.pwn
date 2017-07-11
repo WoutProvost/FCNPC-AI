@@ -56,6 +56,7 @@ public OnFilterScriptInit()
  	FAI_SetBossDisplayRange(BossBigSmoke, 100.0);
 	FAI_SetBossMoveInfo(BossBigSmoke, MOVE_TYPE_SPRINT, MOVE_SPEED_AUTO, true);
 	FAI_SetBossAllowNPCTargets(BossBigSmoke, false);
+	FAI_SetBossBehaviour(BossBigSmoke, FAI_BOSS_BEHAVIOUR_UNFRIENDLY);
 	SetBossAtSpawn(BossBigSmoke);
     SpellCarpetOfFire = FAI_CreateSpell("Carpet of Fire");
     SpellWallOfFire = FAI_CreateSpell("Wall of Fire");
@@ -83,7 +84,8 @@ public OnFilterScriptInit()
 		new name[MAX_PLAYER_NAME + 1];
 		format(name, sizeof(name), "BossBigSmokeAdd%d", add);
 		BossAdds[add] = FAI_CreateBoss(name);
-		FAI_SetBossAggroRange(BossAdds[add], 0.0);
+		FAI_SetBossAggroRange(BossAdds[add], 1000.0);
+		FAI_SetBossBehaviour(BossAdds[add], FAI_BOSS_BEHAVIOUR_FRIENDLY);
 		FAI_SetBossMoveInfo(BossAdds[add], MOVE_TYPE_AUTO, MOVE_SPEED_AUTO, true);
 		FAI_SetBossAllowNPCTargets(BossAdds[add], false);
 		new npcid = FAI_GetBossNPCID(BossAdds[add]);
@@ -207,7 +209,7 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 			- Next: boss gets damaged to 90%, we don't want to call make the boss yell again because he passed the same point
    */
 			new BossHealthPercent = FAI_GetBossCurrentHealthPercent(bossid);
-			if(BossHealthPercent < BossBigSmokeHealthState) {
+			if(BossHealthPercent < BossBigSmokeHealthState && FAI_GetBossBehaviour(bossid) != FAI_BOSS_BEHAVIOUR_FRIENDLY) {
 				BossBigSmokeHealthState = BossHealthPercent;
 				switch(BossBigSmokeHealthState) {
 					case 90: {BossYell(bossid, "Fry, motherfuckers", 35713); ExecuteSpell(bossid);}
@@ -352,7 +354,7 @@ public FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 				new npcid = FAI_GetBossNPCID(BossAdds[add]);
 				SetPlayerColor(npcid, 0xffffff00);
 				FCNPC_SetPosition(npcid, 1086.9752, 1074.7021, -50.0);
-				FAI_SetBossAggroRange(BossAdds[add], 0.0);
+				FAI_SetBossBehaviour(BossAdds[add], FAI_BOSS_BEHAVIOUR_FRIENDLY);
 			}
 		}
 		if(SpellRockOfLifeTarget != INVALID_PLAYER_ID) {
@@ -365,7 +367,7 @@ public FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 				new npcid = FAI_GetBossNPCID(bossid);
 				SetPlayerColor(npcid, 0xffffff00);
 				FCNPC_SetPosition(npcid, 1086.9752, 1074.7021, -50.0);
-				FAI_SetBossAggroRange(bossid, 0.0);
+				FAI_SetBossBehaviour(bossid, FAI_BOSS_BEHAVIOUR_FRIENDLY);
 			    break;
 			}
 		}
@@ -664,7 +666,7 @@ public FAI_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete)
 							FCNPC_SetInvulnerable(addplayerid, false);
 							FAI_SetBossMaxHealth(BossAdds[add], 100.0);
 							FAI_SetBossCurrentHealth(BossAdds[add], 100.0);
-							FAI_SetBossAggroRange(BossAdds[add], 1000.0);
+							FAI_SetBossBehaviour(BossAdds[add], FAI_BOSS_BEHAVIOUR_UNFRIENDLY);
 							SetPlayerColor(addplayerid, 0xb31a1eff);
 					    }
 			        }
