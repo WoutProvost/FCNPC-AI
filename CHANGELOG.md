@@ -1,6 +1,26 @@
 FCNPC A.I.
 ==========
 
+1.1.1
+-----
+
+- Added behaviour
+- Added billion suffix to FAI_SHORTEN_HEALTH
+- Added special distance value -1 to FAI_SetBossRangedAttackInfo and FAI_SetBossMeleeAttackInfo to keep the NPC in place when attacking
+- Renamed FAI_SHORTEN_HEALTH to FAI_SHORTEN_NUMBERS
+- Renamed distance parameter from FAI_GetBossRangedAttackInfo, FAI_SetBossRangedAttackInfo, FAI_GetBossMeleeAttackInfo and FAI_SetBossMeleeAttackInfo to range
+- Deleted spell and percent types
+- Deleted FAI_CreateFull... natives
+- Changed max health default to 100.0
+- Changed display range default to 0.0
+- Changed move type default to MOVE_TYPE_AUTO and changed move type default in FAI_SetBossMoveInfo to MOVE_TYPE_AUTO
+- Changed allow NPC targets default to true
+- Fixed unnecessary loop in FAI_DestroyAllSpells
+- Added an additional check to FAI_IsPlayerInDisplayRange and FAI_IsPlayerInAggroRange
+- Examples updated with above changes
+- Added SummonAdds spell to MMO example
+- Added reduce cast progress a bit when damaged to MMO example
+
 1.1.0
 -----
 
