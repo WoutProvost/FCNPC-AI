@@ -1454,7 +1454,7 @@ static FAI_GetClosestPlayerToTakeAggro(bossid) {
 }
 forward bool:FAI_IsPlayerInDisplayRange(playerid, bossid); //Silence 'used before declaration' warning
 stock bool:FAI_IsPlayerInDisplayRange(playerid, bossid) {
-	if(IsPlayerConnected(playerid) && FAI_IsValidBoss(bossid)) {
+	if(IsPlayerConnected(playerid) && FAI_IsValidBoss(bossid) && FAI_IsBossValidForPlayer(playerid, bossid)) {
 		new Float:bossX, Float:bossY, Float:bossZ;
 		FCNPC_GetPosition(FAI_Bosses[bossid][NPCID], bossX, bossY, bossZ);
 	    new Float:playerRange = GetPlayerDistanceFromPoint(playerid, bossX, bossY, bossZ);
@@ -1467,7 +1467,7 @@ stock bool:FAI_IsPlayerInDisplayRange(playerid, bossid) {
 }
 forward bool:FAI_IsPlayerInAggroRange(playerid, bossid); //Silence 'used before declaration' warning
 stock bool:FAI_IsPlayerInAggroRange(playerid, bossid) {
-	if(IsPlayerConnected(playerid) && FAI_IsValidBoss(bossid)) {
+	if(IsPlayerConnected(playerid) && FAI_IsValidBoss(bossid) && FAI_IsBossValidForPlayer(playerid, bossid)) {
 		new Float:playerX, Float:playerY, Float:playerZ;
         if(!IsPlayerNPC(playerid)) {
         	GetPlayerPos(playerid, playerX, playerY, playerZ);
