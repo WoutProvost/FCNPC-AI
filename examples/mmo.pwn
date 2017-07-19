@@ -185,6 +185,13 @@ public OnPlayerDisconnect(playerid, reason)
 	return 1;
 }
 
+public OnPlayerSpawn(playerid)
+{
+	//Preload used animation libraries
+	ApplyAnimation(playerid, "PARK", "null", 0.0, 0, 0, 0, 0, 0);
+	return 1;
+}
+
 public FCNPC_OnSpawn(npcid)
 {
 	BossYellSpawnMessage(npcid);

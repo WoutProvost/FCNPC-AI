@@ -81,6 +81,14 @@ public OnPlayerDisconnect(playerid, reason)
 	return 1;
 }
 
+public OnPlayerSpawn(playerid)
+{
+	//Preload used animation libraries
+	ApplyAnimation(playerid, "CHAINSAW", "null", 0.0, 0, 0, 0, 0, 0);
+	ApplyAnimation(playerid, "ped", "null", 0.0, 0, 0, 0, 0, 0);
+	return 1;
+}
+
 public FCNPC_OnReachDestination(npcid)
 {
 	if(FAI_GetBossIDFromNPCID(npcid) == BossLeatherface) {
