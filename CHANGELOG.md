@@ -29,11 +29,11 @@ FCNPC A.I.
 - Added WOW_GetBossIDFromNPCID which is an alias for WOW_GetBossIDFromPlayerID
 - Changed all aliases to macros, so that they don't call another pawn function
 - Execute OnFilterScriptExit, OnGameModeExit and OnPlayerDisconnect hooks after they are called in the user's script, so you can use functions of the include in those callbacks
-- Namechange to FCNPC A.I. in whole repo
+- Name change to FCNPC A.I. in whole repo
 - Changed prefix to FAI_ (also for the above mentioned functions)
-- Renamed source and include files to FAI.pwn and FAI.inc to be conform with the namechange
+- Renamed source and include files to FAI.pwn and FAI.inc to be conform with the name change
 - Updated example scripts by remove unnecessary destroy lines since the include does this automatically when the script exits
-- Updated example scripts by destroying and resetting everything under OnPlayerDisconnect instead of OnFilterScriptExit, to handle all disconnect situatons, including script exit
+- Updated example scripts by destroying and resetting everything under OnPlayerDisconnect instead of OnFilterScriptExit, to handle all disconnect situations, including script exit
 - Updated example scripts with changed prefix
 
 1.0.3
@@ -64,9 +64,9 @@ FCNPC A.I.
 - Added check to see if MapAndreas was already initialized and don't initialize again when it is
 - Added default values for the FAI_SetBoss...Info methods
 - Added extra checks to prevent unnecessary FCNPC_GoToPlayer/FCNPC_AimAtPlayer/FCNP_MeleeAttack calls
-- Added some extra checks FCNPC_IsSpawned checks
-- Changed default speed to be eqaul to -1.0 (see FCNPC 1.1.0)
-- Changed default ranged attack delay to be eqaul to -1 (see FCNPC 1.1.0)
+- Added some extra FCNPC_IsSpawned checks
+- Changed default speed to be equal to -1.0 (see FCNPC 1.1.0)
+- Changed default ranged attack delay to be equal to -1 (see FCNPC 1.1.0)
 - Fixed FAI_SpellToString spell name default color
 
 1.0.0
