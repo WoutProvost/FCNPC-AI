@@ -27,7 +27,7 @@ native FAI_SetBossCurrentHealth(bossid, Float:health, bool:keepHealthPercent = f
 native FAI_GetBossTarget(bossid);
 native FAI_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false);
 native FAI_GetBossMoveInfo(bossid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle);
-native FAI_SetBossMoveInfo(bossid, type = MOVE_TYPE_AUTO, Float:speed = MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true);
+native FAI_SetBossMoveInfo(bossid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true);
 native FAI_GetBossRangedAttackInfo(bossid, &Float:range, &delay, &bool:setAngle);
 native FAI_SetBossRangedAttackInfo(bossid, Float:range = 20.0, delay = -1, bool:setAngle = true);
 native FAI_GetBossMeleeAttackInfo(bossid, &Float:range, &delay, &bool:useFightStyle);
@@ -889,7 +889,7 @@ static FAI_ResetBossStats(bossid) {
 		FAI_Bosses[bossid][DISPLAY_IF_DEAD] = false;
 		FAI_Bosses[bossid][CUR_HEALTH] = 0.0;
 		FAI_Bosses[bossid][TARGET] = INVALID_PLAYER_ID;
-		FAI_Bosses[bossid][MOVE_TYPE] = MOVE_TYPE_AUTO;
+		FAI_Bosses[bossid][MOVE_TYPE] = FCNPC_MOVE_TYPE_AUTO;
 		FAI_Bosses[bossid][MOVE_SPEED] = 0.0;
 		FAI_Bosses[bossid][MOVE_USE_MAP_ANDREAS] = false;
 		FAI_Bosses[bossid][MOVE_RADIUS] = 0.0;
@@ -978,7 +978,7 @@ stock FAI_CreateBoss(name[]) {
 				FAI_SetBossDisplayIfDead(bossid, true);
 				FAI_SetBossCurrentHealth(bossid, -1.0, false);
 				FAI_SetBossTarget(bossid, INVALID_PLAYER_ID, false);
-				FAI_SetBossMoveInfo(bossid, MOVE_TYPE_AUTO, MOVE_SPEED_AUTO, false, 0.0, true);
+				FAI_SetBossMoveInfo(bossid, FCNPC_MOVE_TYPE_AUTO, FCNPC_MOVE_SPEED_AUTO, false, 0.0, true);
 				FAI_SetBossRangedAttackInfo(bossid, 20.0, -1, true);
 				FAI_SetBossMeleeAttackInfo(bossid, 1.0, -1, false);
 				FAI_SetBossAllowNPCTargets(bossid, true, false);
@@ -1282,7 +1282,7 @@ stock FAI_GetBossMoveInfo(bossid, &type, &Float:speed, &bool:useMapAndreas, &Flo
 	}
 	return 0;
 }
-stock FAI_SetBossMoveInfo(bossid, type = MOVE_TYPE_AUTO, Float:speed = MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true) {
+stock FAI_SetBossMoveInfo(bossid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true) {
 	if(FAI_IsValidBoss(bossid)) {
 	    FAI_Bosses[bossid][MOVE_TYPE] = type;
 	    FAI_Bosses[bossid][MOVE_SPEED] = speed;

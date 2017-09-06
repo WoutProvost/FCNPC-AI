@@ -54,7 +54,7 @@ public OnFilterScriptInit()
 	FAI_SetBossMapiconInfo(BossBigSmoke, 65, 8);
  	FAI_SetBossMaxHealth(BossBigSmoke, 5000.0);
  	FAI_SetBossDisplayRange(BossBigSmoke, 100.0);
-	FAI_SetBossMoveInfo(BossBigSmoke, MOVE_TYPE_SPRINT, MOVE_SPEED_AUTO, true);
+	FAI_SetBossMoveInfo(BossBigSmoke, FCNPC_MOVE_TYPE_SPRINT, FCNPC_MOVE_SPEED_AUTO, true);
 	FAI_SetBossAllowNPCTargets(BossBigSmoke, false);
 	FAI_SetBossBehaviour(BossBigSmoke, FAI_BOSS_BEHAVIOUR_UNFRIENDLY);
 	SetBossAtSpawn(BossBigSmoke);
@@ -86,7 +86,7 @@ public OnFilterScriptInit()
 		BossAdds[add] = FAI_CreateBoss(name);
 		FAI_SetBossAggroRange(BossAdds[add], 1000.0);
 		FAI_SetBossBehaviour(BossAdds[add], FAI_BOSS_BEHAVIOUR_FRIENDLY);
-		FAI_SetBossMoveInfo(BossAdds[add], MOVE_TYPE_AUTO, MOVE_SPEED_AUTO, true);
+		FAI_SetBossMoveInfo(BossAdds[add], FCNPC_MOVE_TYPE_AUTO, FCNPC_MOVE_SPEED_AUTO, true);
 		FAI_SetBossAllowNPCTargets(BossAdds[add], false);
 		new npcid = FAI_GetBossNPCID(BossAdds[add]);
 		SetPlayerColor(npcid, 0xffffff00);

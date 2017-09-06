@@ -37,7 +37,7 @@ public OnFilterScriptInit()
 {
 	BossLeatherface = FAI_CreateBoss("BossLeatherface");
 	FAI_SetBossMaxHealth(BossLeatherface, 2000.0);
-	FAI_SetBossMoveInfo(BossLeatherface, MOVE_TYPE_SPRINT);
+	FAI_SetBossMoveInfo(BossLeatherface, FCNPC_MOVE_TYPE_SPRINT);
 	FAI_SetBossMeleeAttackInfo(BossLeatherface, 1.5, -1, false);
 	SetBossAtSpawn(BossLeatherface);
 	PlayerInRangeTimer = SetTimer("CheckPlayerInRange", 100, true);
@@ -100,11 +100,11 @@ public FCNPC_OnReachDestination(npcid)
 			} else if(x <= -2818.0 && x >= -2820.0 && y <= -1515.0 && y >= -1517.0 && z <= 141.0 && z >= 139.0) {
 				FCNPC_ApplyAnimation(npcid, "CHAINSAW", "WEAPON_csaw", 4.1, 0, 1, 1, 0, 0);
 			} else if(x <= -2819.0 && x >= -2821.0 && y <= -1517.0 && y >= -1519.0 && z <= 141.0 && z >= 139.0) {
-				FCNPC_GoTo(npcid, -2822.3176, -1518.7068, 140.7656, MOVE_TYPE_WALK);
+				FCNPC_GoTo(npcid, -2822.3176, -1518.7068, 140.7656, FCNPC_MOVE_TYPE_WALK);
 			} else if(x <= -2816.0 && x >= -2818.0 && y <= -1523.0 && y >= -1525.0 && z <= 141.0 && z >= 139.0) {
 				FCNPC_ApplyAnimation(npcid, "CHAINSAW", "CSAW_G", 4.1, 0, 1, 1, 0, 0);
 			} else if(x <= -2810.0 && x >= -2812.0 && y <= -1523.0 && y >= -1525.0 && z <= 141.0 && z >= 139.0) {
-				FCNPC_GoTo(npcid, -2818.3503, -1530.7013, 140.8438, MOVE_TYPE_WALK);
+				FCNPC_GoTo(npcid, -2818.3503, -1530.7013, 140.8438, FCNPC_MOVE_TYPE_WALK);
 			}
 		}
 	}
@@ -364,28 +364,28 @@ public CheckPlayerInRange() {
 		    	IdleCount++;
 		    	switch(IdleCount) {
 		    	    case 10: {
-		    	        FCNPC_GoTo(bossplayerid, -2811.7888, -1528.6459, 140.8438, MOVE_TYPE_WALK);
+		    	        FCNPC_GoTo(bossplayerid, -2811.7888, -1528.6459, 140.8438, FCNPC_MOVE_TYPE_WALK);
 		    	    }
 		    	    case 100: {
-		    	        FCNPC_GoTo(bossplayerid, -2813.3208, -1517.8263, 140.8438, MOVE_TYPE_WALK);
+		    	        FCNPC_GoTo(bossplayerid, -2813.3208, -1517.8263, 140.8438, FCNPC_MOVE_TYPE_WALK);
 		    	    }
 		    	    case 200: {
-		    	        FCNPC_GoTo(bossplayerid, -2819.4717, -1516.2056, 140.8438, MOVE_TYPE_WALK);
+		    	        FCNPC_GoTo(bossplayerid, -2819.4717, -1516.2056, 140.8438, FCNPC_MOVE_TYPE_WALK);
 		    	    }
 		    	    case 280: {
-		    	        FCNPC_GoTo(bossplayerid, -2820.0303, -1518.5581, 140.8438, MOVE_TYPE_WALK);
+		    	        FCNPC_GoTo(bossplayerid, -2820.0303, -1518.5581, 140.8438, FCNPC_MOVE_TYPE_WALK);
 		    	    }
 		    	    case 340: {
-		    	        FCNPC_GoTo(bossplayerid, -2811.7930, -1518.4700, 140.8438, MOVE_TYPE_WALK);
+		    	        FCNPC_GoTo(bossplayerid, -2811.7930, -1518.4700, 140.8438, FCNPC_MOVE_TYPE_WALK);
 		    	    }
 		    	    case 440: {
-		    	        FCNPC_GoTo(bossplayerid, -2817.3579, -1524.5388, 140.8438, MOVE_TYPE_WALK);
+		    	        FCNPC_GoTo(bossplayerid, -2817.3579, -1524.5388, 140.8438, FCNPC_MOVE_TYPE_WALK);
 		    	    }
 		    	    case 520: {
-		    	        FCNPC_GoTo(bossplayerid, -2807.3572,- 1524.1216, 140.8438, MOVE_TYPE_WALK);
+		    	        FCNPC_GoTo(bossplayerid, -2807.3572,- 1524.1216, 140.8438, FCNPC_MOVE_TYPE_WALK);
 		    	    }
 		    	    case 610: {
-		    	        FCNPC_GoTo(bossplayerid, -2811.8003, -1524.0878, 140.8438, MOVE_TYPE_WALK);
+		    	        FCNPC_GoTo(bossplayerid, -2811.8003, -1524.0878, 140.8438, FCNPC_MOVE_TYPE_WALK);
 		    	    }
 		    	    case 730: {
 						IdleCount = 0;
