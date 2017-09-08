@@ -129,9 +129,6 @@ forward FAI_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete);
 #define FAI_INVALID_STRING              	" "
 #define FAI_INVALID_COLOR	              	-1
 #define FAI_INVALID_TIMER_ID            	-1
-#if !defined FAI_UPDATE_TIME
-	#define FAI_UPDATE_TIME    				50
-#endif
 #if !defined FAI_CAST_BAR_SHOW_EXTRA_TIME
 	#define FAI_CAST_BAR_SHOW_EXTRA_TIME    1000
 #endif
@@ -409,8 +406,7 @@ static FAI_InitScript() {
 	    }
 		FCNPC_InitMapAndreas(MapAndreas_GetAddress()); //MapAndreas
 	#endif
-	FCNPC_SetUpdateRate(50);
- 	FAI_UpdateTimer = SetTimer("FAI_Update", FAI_UPDATE_TIME, true);
+ 	FAI_UpdateTimer = SetTimer("FAI_Update", FCNPC_GetUpdateRate(), true);
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
 		FAI_PauseTickCount[playerid] = GetTickCount();
 		FAI_PlayerPaused[playerid] = false;
@@ -1597,10 +1593,10 @@ static FAI_IncreaseBossCastProgress(bossid) {
 		if(FAI_IsBossCasting(bossid)) {
 		    new spellid = FAI_Casting[bossid][SPELLID];
 			//Don't cast above castTime
-			if(FAI_Spells[spellid][CAST_TIME] - FAI_Casting[bossid][CAST_PROGRESS] <= FAI_UPDATE_TIME) {
-			    FAI_SetBossCastingProgress(bossid, FAI_Spells[spellid][CAST_TIME]); //We set the CAST_PROGRESS to CAST_TIME (say 500) instead of CAST_PROGRESS + FAI_UPDATE_TIME (say 490 + 49), because we want showextra to start exactly at 0 (say 500 - 500) and not something > 0 (say 490 - 500 + 49)
+			if(FAI_Spells[spellid][CAST_TIME] - FAI_Casting[bossid][CAST_PROGRESS] <= FCNPC_GetUpdateRate()) {
+			    FAI_SetBossCastingProgress(bossid, FAI_Spells[spellid][CAST_TIME]); //We set the CAST_PROGRESS to CAST_TIME (say 500) instead of CAST_PROGRESS + FCNPC_GetUpdateRate() (say 490 + 49), because we want showextra to start exactly at 0 (say 500 - 500) and not something > 0 (say 490 - 500 + 49)
 			} else {
-			    FAI_SetBossCastingProgress(bossid, FAI_Casting[bossid][CAST_PROGRESS] + FAI_UPDATE_TIME);
+			    FAI_SetBossCastingProgress(bossid, FAI_Casting[bossid][CAST_PROGRESS] + FCNPC_GetUpdateRate());
 			    //If the spell target becomes invalid, stop the cast
 				//Otherwise: start cast, spell target dies before cast on him ends, spell target respawns, spell will still be executed on him
 			    if(FAI_Casting[bossid][TARGETID] != INVALID_PLAYER_ID && !FAI_IsBossValidForPlayer(FAI_Casting[bossid][TARGETID], bossid)) {
@@ -1611,7 +1607,7 @@ static FAI_IncreaseBossCastProgress(bossid) {
 		}
 		//Keep showing the castbar for a small additional time after the cast is complete
 		else if(FAI_IsBossCastBarExtra(bossid)) {
-		    FAI_SetBossCastingExtraProgress(bossid, FAI_GetBossCastingExtraProgress(bossid) + FAI_UPDATE_TIME);
+		    FAI_SetBossCastingExtraProgress(bossid, FAI_GetBossCastingExtraProgress(bossid) + FCNPC_GetUpdateRate());
 		}
 	}
 }
