@@ -10,6 +10,8 @@
 
 #include <FAI>
 
+#include <streamer>
+
 #define INTERIOR_NORMAL					0
 #define VIRTUAL_WORLD_NORMAL			0
 #define ATTACHED_OBJECT_INDEX			0
