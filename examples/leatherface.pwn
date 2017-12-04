@@ -260,7 +260,7 @@ public SetBossAtSpawn(bossid) {
 
 stock StreamerUpdateForValidPlayers(bossid) {
 	for(new playerid = 0, maxplayerid = GetPlayerPoolSize(); playerid <= maxplayerid; playerid++) {
- 		if(FAI_IsBossValidForPlayer(playerid, bossid)) {
+		if(FAI_IsBossValidForPlayer(playerid, bossid)) {
 			Streamer_Update(playerid, STREAMER_TYPE_OBJECT);
 		}
 	}

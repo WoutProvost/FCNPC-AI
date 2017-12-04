@@ -178,7 +178,7 @@ enum FAI_ENUM_BOSS {
 	bool:DISPLAY_IF_DEAD,
 	Float:CUR_HEALTH, //Changes during the encounter
 	TARGET, //Changes at the beginning, at the end and during the encounter
- 	MOVE_TYPE,
+	MOVE_TYPE,
 	Float:MOVE_SPEED,
 	bool:MOVE_USE_MAP_ANDREAS,
 	Float:MOVE_RADIUS,
@@ -412,7 +412,7 @@ static FAI_InitScript() {
 		}
 		FCNPC_InitMapAndreas(MapAndreas_GetAddress()); //MapAndreas
 	#endif
- 	FAI_UpdateTimer = SetTimer("FAI_Update", FCNPC_GetUpdateRate(), true);
+	FAI_UpdateTimer = SetTimer("FAI_Update", FCNPC_GetUpdateRate(), true);
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
 		FAI_PauseTickCount[playerid] = GetTickCount();
 		FAI_PlayerPaused[playerid] = false;
@@ -420,12 +420,12 @@ static FAI_InitScript() {
 	FAI_PauseTimer = SetTimer("FAI_CheckPausedPlayers", 1000, 1);
 
 	//Boss
- 	FAI_InitAllBosses();
+	FAI_InitAllBosses();
 
 	//Spell
- 	FAI_InitAllSpells();
- 	
- 	//Casting
+	FAI_InitAllSpells();
+	
+	//Casting
 	FAI_InitAllBossesCasting();
 	
 	printf("---------------------");
@@ -437,7 +437,7 @@ static FAI_InitScript() {
 static FAI_ExitScript() {
 	//General
 	KillTimer(FAI_UpdateTimer);
- 	FAI_UpdateTimer = FAI_INVALID_TIMER_ID;
+	FAI_UpdateTimer = FAI_INVALID_TIMER_ID;
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
 		FAI_PauseTickCount[playerid] = GetTickCount();
 		FAI_PlayerPaused[playerid] = false;
@@ -445,14 +445,14 @@ static FAI_ExitScript() {
 	KillTimer(FAI_PauseTimer);
 	FAI_PauseTimer = FAI_INVALID_TIMER_ID;
 
- 	//Boss
+	//Boss
 	FAI_DestroyAllBosses();
 
 	//Spell
- 	FAI_DestroyAllSpells();
- 	
- 	//Casting
- 	FAI_InitAllBossesCasting();
+	FAI_DestroyAllSpells();
+	
+	//Casting
+	FAI_InitAllBossesCasting();
 }
 
 public OnPlayerDisconnect(playerid, reason) {
@@ -611,7 +611,7 @@ stock FAI_DamageBoss(bossid, damagerid, Float:amount) {
 		//2nd part of condition: if the npc is dead, this function can still be called before the OnDeath callback gets called (mainly when shot with fast guns: minigun, ...)
 		//3rd part of condition: damage not inflicted by players (falling, ...)
 		//4th part of condition: neccesary to reject invalid damage done: the NPC is visible and thus damagable in other interiors
-	 	if(FCNPC_IsSpawned(bossplayerid) && !FCNPC_IsDead(bossplayerid) && (damagerid == INVALID_PLAYER_ID || FAI_IsBossValidForPlayer(damagerid, bossid))) {
+		if(FCNPC_IsSpawned(bossplayerid) && !FCNPC_IsDead(bossplayerid) && (damagerid == INVALID_PLAYER_ID || FAI_IsBossValidForPlayer(damagerid, bossid))) {
 			//Only set target if the encounter has not yet started AND the behaviour is neutral or unfriendly
 			if(FAI_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && FAI_Bosses[bossid][BEHAVIOUR] != FAI_BOSS_BEHAVIOUR_FRIENDLY) {
 				//Set target to damagerid if no target yet (valid damagerid + no target yet check in setter)
@@ -627,7 +627,7 @@ stock FAI_DamageBoss(bossid, damagerid, Float:amount) {
 				//Return 1 to allow the dammage to be afflicted to npc, which will kill him in this case
 				return 1;
 			}
-	 	}
+		}
 	}
 	//Return 0 to prevent damage to be afflicted to npc, update CUR_HEALTH instead
 	return 0;
@@ -777,7 +777,7 @@ public FAI_CheckPausedPlayers() {
 			}
 			if(!PlayerInGame && !FAI_PlayerPaused[playerid]) {
 				FAI_PlayerPaused[playerid] = true;
-			} else if(PlayerInGame && FAI_PlayerPaused[playerid]){
+			} else if(PlayerInGame && FAI_PlayerPaused[playerid]) {
 				FAI_PlayerPaused[playerid] = false;
 			}
 		}
@@ -940,7 +940,7 @@ stock FAI_DestroyBoss(bossid) {
 static FAI_DestroyBossNoFCNPC_Destroy(bossid) {
 	if(FAI_IsValidBoss(bossid)) {
 		for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
- 			RemovePlayerMapIcon(playerid, FAI_Bosses[bossid][ICONID]);
+			RemovePlayerMapIcon(playerid, FAI_Bosses[bossid][ICONID]);
 		}
 		//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). FAI_SetBossTargetWithReason doesn't take care of this for various reasons.
 		if(FAI_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(bossid)) {
@@ -972,7 +972,7 @@ stock FAI_CreateBoss(name[]) {
 		if(FAI_Bosses[bossid][NPCID] == INVALID_PLAYER_ID) {
 			FAI_Bosses[bossid][NPCID] = FCNPC_Create(name);
 			if(FAI_Bosses[bossid][NPCID] != INVALID_PLAYER_ID) {
-		 		FAI_SetBossFullName(bossid, FAI_INVALID_STRING);
+				FAI_SetBossFullName(bossid, FAI_INVALID_STRING);
 				FAI_SetBossMapiconInfo(bossid, FAI_INVALID_ICON_ID, 23, 0xff0000ff, MAPICON_LOCAL);
 				FAI_SetBossMaxHealth(bossid, 100.0, false);
 				FAI_SetBossDisplayRange(bossid, 0.0);
@@ -1011,7 +1011,7 @@ stock FAI_SetBossFullName(bossid, name[]) {
 			FAI_strcpy(FAI_Bosses[bossid][FULL_NAME], playerName, FAI_MAX_BOSS_FULL_NAME + 1);
 		}
 		//If the user did provide a valid fullName, use that one
- 		else {
+		else {
 			FAI_strcpy(FAI_Bosses[bossid][FULL_NAME], name, FAI_MAX_BOSS_FULL_NAME + 1);
 		}
 		TextDrawSetString(FAI_Bosses[bossid][TEXTDRAW][3], FAI_Bosses[bossid][FULL_NAME]);
@@ -1034,7 +1034,7 @@ stock FAI_SetBossMapiconInfo(bossid, iconid = FAI_INVALID_ICON_ID, iconMarker = 
 	if(FAI_IsValidBoss(bossid)) {
 		if(iconid == FAI_INVALID_ICON_ID) {
 			for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
-	 			RemovePlayerMapIcon(playerid, FAI_Bosses[bossid][ICONID]);
+				RemovePlayerMapIcon(playerid, FAI_Bosses[bossid][ICONID]);
 			}
 		}
 		FAI_Bosses[bossid][ICONID] = iconid;
@@ -1212,15 +1212,15 @@ Reason:
 - 3: target aggro (valid new target, invalid new target)
 - 4: explicit set (valid new target, invalid new target, checkForAggroRange)
 */
-//Invalid boss			 							=> nothing
-//Not connected new target 							=> nothing
+//Invalid boss										=> nothing
+//Not connected new target							=> nothing
 //Old target same as new target						=> nothing
 //CheckForAggroRange and new target not in range	=> nothing
 //CheckIfStreamedIn and new target not streamed in	=> nothing
-//CheckIfValid and new target not valid			 	=> nothing
+//CheckIfValid and new target not valid				=> nothing
 //Reason is bossDamaged and old target is valid		=> nothing
-//New valid target, no old target 		=> set target, new target get aggro, start encounter
-//New valid target, with old target 	=> old target lose aggro, set target, new target get aggro
+//New valid target, no old target		=> set target, new target get aggro, start encounter
+//New valid target, with old target		=> old target lose aggro, set target, new target get aggro
 //New invalid target, no old target		=> set target
 //New invalid target, with old target	=> old target lose aggro, set target, stop encounter
 static FAI_SetBossTargetWithReason(bossid, newtargetid, reason, bool:checkForAggroRange = false) {
@@ -1592,7 +1592,7 @@ static FAI_UpdateBossCastDisplay(bossid) {
 			format(string, sizeof(string), "%s/%ss", string, FAI_DisplayReadableFloat(castTime / 1000, 2, 2));
 		}
 		TextDrawSetString(FAI_Bosses[bossid][TEXTDRAW][7], string);
- 	}
+	}
 }
 static FAI_IncreaseBossCastProgress(bossid) {
 	if(FAI_IsValidBoss(bossid)) {
@@ -1621,7 +1621,7 @@ stock bool:FAI_BossHasMeleeWeapons(bossid) {
 	if(FAI_IsValidBoss(bossid)) {
 		new weaponid = FCNPC_GetWeapon(FAI_GetBossNPCID(bossid));
 		if(weaponid >= 0 && weaponid <= 15) {
-	 		return true;
+			return true;
 		}
 	}
 	return false;
@@ -1686,7 +1686,7 @@ static FAI_BossAttackAim(bossid, targetid) {
 		new bossplayerid = FAI_GetBossNPCID(bossid);
 		new bool:isMelee = FAI_BossHasMeleeWeapons(bossid);
 		if(FCNPC_IsMoving(bossplayerid)) {
- 			FCNPC_Stop(bossplayerid);
+			FCNPC_Stop(bossplayerid);
 		}
 		if(!isMelee) {
 			if(FCNPC_IsAttacking(bossplayerid)) { //In case the npc switched weapons
@@ -1740,7 +1740,7 @@ static FAI_BossStopAttack(bossid) {
 stock bool:FAI_IsEncounterStarted(bossid) {
 	if(FAI_IsValidBoss(bossid)) {
 		if(FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
-	 		return true;
+			return true;
 		}
 	}
 	return false;
@@ -1963,13 +1963,13 @@ stock bool:FAI_GetSpellCastBarInverted(spellid) {
 }
 /*
 Invertprogressmade:
-- casttime 500, progress 450, extraprogress 0, is not inverted 	=> bar remains in position and will move to left, progress becomes 50, extraprogress stays 0, further increases
-- casttime 500, progress 450, extraprogress 0, is inverted 		=> bar remains in position and will move to right, progress becomes 50, extraprogress stays 0, further increases
-- showextra													 => bar remains in position, progress inverts, extraprogress doesn't change, further increases
+- casttime 500, progress 450, extraprogress 0, is not inverted	=> bar remains in position and will move to left, progress becomes 50, extraprogress stays 0, further increases
+- casttime 500, progress 450, extraprogress 0, is inverted		=> bar remains in position and will move to right, progress becomes 50, extraprogress stays 0, further increases
+- showextra														=> bar remains in position, progress inverts, extraprogress doesn't change, further increases
 Dont invertprogressmade:
-- casttime 500, progress 450, extraprogress 0, is not inverted 	=> bar inverts from big to small and will move to left, progress stays 450, extraprogress stays 0, further increases
-- casttime 500, progress 450, extraprogress 0, is inverted 		=> bar inverts from small to big and will move to right, progress stays 450, extraprogress stays 0, further increases
-- showextra													 => bar inverts, progress doesn't change, extraprogress doesn't change, further increases
+- casttime 500, progress 450, extraprogress 0, is not inverted	=> bar inverts from big to small and will move to left, progress stays 450, extraprogress stays 0, further increases
+- casttime 500, progress 450, extraprogress 0, is inverted		=> bar inverts from small to big and will move to right, progress stays 450, extraprogress stays 0, further increases
+- showextra														=> bar inverts, progress doesn't change, extraprogress doesn't change, further increases
 In other words: all values will always be positive, but the representation on the textdraw is adapted. When showextra is true, progress or extraprogress never changes, to keep showextra a consistent time.
 */
 stock FAI_SetSpellCastBarInverted(spellid, bool:inverted, bool:invertProgressMade = false) {
@@ -1997,13 +1997,13 @@ stock bool:FAI_GetSpellCastTimeInverted(spellid) {
 }
 /*
 Invertprogressmade:
-- casttime 500, progress 450, extraprogress 0, is not inverted 	=> time remains equal and will decrease, progress becomes 50, extraprogress stays 0, further increases
-- casttime 500, progress 450, extraprogress 0, is inverted 		=> time remains equal and will increase, progress becomes 50, extraprogress stays 0, further increases
-- showextra													 => time remains equal, progress inverts, extraprogress doesn't change, further increases
+- casttime 500, progress 450, extraprogress 0, is not inverted	=> time remains equal and will decrease, progress becomes 50, extraprogress stays 0, further increases
+- casttime 500, progress 450, extraprogress 0, is inverted		=> time remains equal and will increase, progress becomes 50, extraprogress stays 0, further increases
+- showextra														=> time remains equal, progress inverts, extraprogress doesn't change, further increases
 Dont invertprogressmade:
-- casttime 500, progress 450, extraprogress 0, is not inverted 	=> time inverts from big to small and will decrease, progress stays 450, extraprogress stays 0, further increases
-- casttime 500, progress 450, extraprogress 0, is inverted 		=> bar inverts from small to big and will increase, progress stays 450, extraprogress stays 0, further increases
-- showextra													 => time inverts, progress doesn't change, extraprogress doesn't change, further increases
+- casttime 500, progress 450, extraprogress 0, is not inverted	=> time inverts from big to small and will decrease, progress stays 450, extraprogress stays 0, further increases
+- casttime 500, progress 450, extraprogress 0, is inverted		=> bar inverts from small to big and will increase, progress stays 450, extraprogress stays 0, further increases
+- showextra														=> time inverts, progress doesn't change, extraprogress doesn't change, further increases
 In other words: all values will always be positive, but the representation on the textdraw is adapted. When showextra is true, progress or extraprogress never changes, to keep showextra a consistent time.
 */
 stock FAI_SetSpellCastTimeInverted(spellid, bool:inverted, bool:invertProgressMade = false) {
@@ -2202,7 +2202,7 @@ stock FAI_StartBossCastingSpell(bossid, spellid, targetid = INVALID_PLAYER_ID) {
 		FAI_Casting[bossid][CAST_PROGRESS] = 0;
 		FAI_Casting[bossid][TARGETID] = targetid;
 		CallRemoteFunction("FAI_OnBossStartCasting", "ddd", bossid, spellid, targetid);
-		 //Immediately end cast if instant
+		//Immediately end cast if instant
 		if(FAI_Spells[spellid][CAST_TIME] == 0) {
 			FAI_BossCastProgressComplete(bossid, spellid);
 			FAI_InitBossCasting(bossid);

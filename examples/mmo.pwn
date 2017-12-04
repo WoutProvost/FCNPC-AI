@@ -50,8 +50,8 @@ public OnFilterScriptInit()
 	BossBigSmoke = FAI_CreateBoss("BossBigSmoke");
 	FAI_SetBossFullName(BossBigSmoke, "Melvin \"Big Smoke\" Harris");
 	FAI_SetBossMapiconInfo(BossBigSmoke, 65, 8);
- 	FAI_SetBossMaxHealth(BossBigSmoke, 5000.0);
- 	FAI_SetBossDisplayRange(BossBigSmoke, 100.0);
+	FAI_SetBossMaxHealth(BossBigSmoke, 5000.0);
+	FAI_SetBossDisplayRange(BossBigSmoke, 100.0);
 	FAI_SetBossMoveInfo(BossBigSmoke, FCNPC_MOVE_TYPE_SPRINT, FCNPC_MOVE_SPEED_AUTO, true);
 	FAI_SetBossAllowNPCTargets(BossBigSmoke, false);
 	FAI_SetBossBehaviour(BossBigSmoke, FAI_BOSS_BEHAVIOUR_UNFRIENDLY);
@@ -381,13 +381,13 @@ public FAI_OnBossStartCasting(bossid, spellid, targetid)
 					//For positions under bridges, ..., should be replaced with a ColAndreas implementation for better results
 					//With MapAndreas: problem with small height changes
 					//if(bossZ < markZ) {
-				 	//	markZ = bossZ - 0.76;
-				 	//}
+					//	markZ = bossZ - 0.76;
+					//}
 				#endif
-			 	DestroyDynamicObject(GroundMarks[groundMark]); //If for some reason the previous groundMark wasn't destroyed
-			 	GroundMarks[groundMark] = CreateDynamicObject(354, markX, markY, markZ - 2.0, 0.0, 0.0, 0.0, bossWorld, bossInterior); //markZ - 2.0 to lower the object below ground a bit, because the flare object that is used is very bright
+				DestroyDynamicObject(GroundMarks[groundMark]); //If for some reason the previous groundMark wasn't destroyed
+				GroundMarks[groundMark] = CreateDynamicObject(354, markX, markY, markZ - 2.0, 0.0, 0.0, 0.0, bossWorld, bossInterior); //markZ - 2.0 to lower the object below ground a bit, because the flare object that is used is very bright
 				DestroyDynamicObject(Bombs[groundMark]); //If for some reason the previous bomb wasn't destroyed
-			 	Bombs[groundMark] = CreateDynamicObject(1636, markX, markY, markZ + bombHeight, 270.0, 0.0, 0.0, bossWorld, bossInterior); //markZ + bombHeight to create the bomb 50.0 meters above the groundMark; rX = 270.0 to make the bomb point to the ground
+				Bombs[groundMark] = CreateDynamicObject(1636, markX, markY, markZ + bombHeight, 270.0, 0.0, 0.0, bossWorld, bossInterior); //markZ + bombHeight to create the bomb 50.0 meters above the groundMark; rX = 270.0 to make the bomb point to the ground
 				MoveDynamicObject(Bombs[groundMark], markX, markY, markZ, bombHeight/((spellCastTime)/1000)); //Move the bomb at a speed so that it will touch the ground when the boss finishes the cast
 				StreamerUpdateForValidPlayers(bossid); //Make the streamer perform an update for every player that is in the same interior and world as the boss, so the objects will also appear to them if they are not moving
 			}
@@ -405,9 +405,9 @@ public FAI_OnBossStartCasting(bossid, spellid, targetid)
 				#if FAI_USE_MAP_ANDREAS == true
 					MapAndreas_FindZ_For2DCoord(markX, markY, markZ);
 				#endif
-			 	DestroyDynamicObject(GroundMarks[groundMark]);
-			 	GroundMarks[groundMark] = CreateDynamicObject(354, markX, markY, markZ - 2.0, 0.0, 0.0, 0.0, bossWorld, bossInterior);
-		 		StreamerUpdateForValidPlayers(bossid);
+				DestroyDynamicObject(GroundMarks[groundMark]);
+				GroundMarks[groundMark] = CreateDynamicObject(354, markX, markY, markZ - 2.0, 0.0, 0.0, 0.0, bossWorld, bossInterior);
+				StreamerUpdateForValidPlayers(bossid);
 			}
 		}
 		if(spellid == SpellMarkOfDeath) {
@@ -419,10 +419,10 @@ public FAI_OnBossStartCasting(bossid, spellid, targetid)
 				#endif
 				DestroyDynamicObject(BossTargetNotMovingObject);
 				BossTargetNotMovingObject = CreateDynamicObject(354, playerX, playerY, playerZ - 2.0, 0.0, 0.0, 0.0, FCNPC_GetVirtualWorld(bossplayerid), FCNPC_GetInterior(bossplayerid));
-		 		StreamerUpdateForValidPlayers(bossid);
+				StreamerUpdateForValidPlayers(bossid);
 				KillTimer(BossTargetNotMovingTimer);
 				BossTargetNotMovingTimer = SetTimerEx("SpellMarkOfDeathExplosion", 1000, false, "d", bossid); //Different timer to avoid conflict with other spells
-			 	SendTargetidStartCastMessage(targetid, bossid, spellid);
+				SendTargetidStartCastMessage(targetid, bossid, spellid);
 			}
 		}
 		if(spellid == SpellNoPlaceIsSafe) {
@@ -431,10 +431,10 @@ public FAI_OnBossStartCasting(bossid, spellid, targetid)
 			ExplosionTimer = SetTimerEx("SpellNoPlaceIsSafeExplosion", 50, true, "dd", bossid, spellid);
 		}
 		if(spellid == SpellFlightOfTheBumblebee) {
-			 SendTargetidStartCastMessage(targetid, bossid, spellid);
+			SendTargetidStartCastMessage(targetid, bossid, spellid);
 		}
 		if(spellid == SpellRockOfLife) {
-			 SendTargetidStartCastMessage(targetid, bossid, spellid);
+			SendTargetidStartCastMessage(targetid, bossid, spellid);
 		}
 		if(spellid == SpellSummonAdds) {
 			new currentAddCount = 0;
@@ -516,12 +516,12 @@ public FAI_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete)
 					TogglePlayerControllable(targetid, 0);
 					DestroyDynamicObject(GroundMarks[0]);
 					GroundMarks[0] = CreateDynamicObject(749, playerX, playerY, playerZ - 2.0, 0.0, 0.0, 0.0, FCNPC_GetVirtualWorld(bossplayerid), FCNPC_GetInterior(bossplayerid));
-			 		StreamerUpdateForValidPlayers(bossid);
+					StreamerUpdateForValidPlayers(bossid);
 					camX = playerX + (radius * floatcos(angle + 90, degrees));
 					camY = playerY + (radius * floatsin(angle + 90, degrees));
-				 	SetPlayerCameraPos(targetid, camX, camY, playerZ + 10.0);
-				 	SetPlayerCameraLookAt(targetid, playerX, playerY, playerZ);
-				 	SpellRockOfLifeTarget = targetid;
+					SetPlayerCameraPos(targetid, camX, camY, playerZ + 10.0);
+					SetPlayerCameraLookAt(targetid, playerX, playerY, playerZ);
+					SpellRockOfLifeTarget = targetid;
 					KillTimer(ExplosionTimer);
 					ExplosionTimer = SetTimerEx("SpellRockOfLifeEnd", 2000, false, "d", targetid);
 				}
@@ -749,7 +749,7 @@ stock BossYellSpawnMessage(npcid) {
 
 stock CreateExplosionForValidPlayers(bossid, Float:markX, Float:markY, Float:markZ) {
 	for(new playerid = 0, maxplayerid = GetPlayerPoolSize(); playerid <= maxplayerid; playerid++) {
- 		if(FAI_IsBossValidForPlayer(playerid, bossid)) {
+		if(FAI_IsBossValidForPlayer(playerid, bossid)) {
 			CreateExplosionForPlayer(playerid, markX, markY, markZ + 2.0, 11, 1.0); //markZ + 2.0 because we lowered the object below ground a bit
 		}
 	}
@@ -758,7 +758,7 @@ stock CreateExplosionForValidPlayers(bossid, Float:markX, Float:markY, Float:mar
 
 stock StreamerUpdateForValidPlayers(bossid) {
 	for(new playerid = 0, maxplayerid = GetPlayerPoolSize(); playerid <= maxplayerid; playerid++) {
- 		if(FAI_IsBossValidForPlayer(playerid, bossid)) {
+		if(FAI_IsBossValidForPlayer(playerid, bossid)) {
 			Streamer_Update(playerid, STREAMER_TYPE_OBJECT);
 		}
 	}
@@ -834,7 +834,7 @@ forward WallOfFireExplosion(bossid);
 public WallOfFireExplosion(bossid) {
 	new Float:markX, Float:markY, Float:markZ;
 	GetDynamicObjectPos(GroundMarks[ExplosionCount], markX, markY, markZ);
- 	DestroyDynamicObject(GroundMarks[ExplosionCount]);
+	DestroyDynamicObject(GroundMarks[ExplosionCount]);
 	GroundMarks[ExplosionCount] = INVALID_OBJECT_ID;
 	CreateExplosionForValidPlayers(bossid, markX, markY, markZ);
 	ExplosionCount--;
