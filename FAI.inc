@@ -21,17 +21,17 @@ native FAI_SetBossFullName(bossid, name[]);
 native FAI_GetBossMapiconInfo(bossid, &iconid, &iconMarker, &iconColor, &iconStyle);
 native FAI_SetBossMapiconInfo(bossid, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL);
 native FAI_GetBossMaxHealth(bossid, &Float:health);
-native FAI_SetBossMaxHealth(bossid, Float:health, bool:keepHealthPercent = false);
+native FAI_SetBossMaxHealth(bossid, Float:health);
 native FAI_GetBossDisplayRange(bossid, &Float:range);
 native FAI_SetBossDisplayRange(bossid, Float:range);
 native FAI_GetBossAggroRange(bossid, &Float:range);
-native FAI_SetBossAggroRange(bossid, Float:range, bool:checkForTarget = false);
+native FAI_SetBossAggroRange(bossid, Float:range);
 native FAI_GetBossDisplayIfDead(bossid);
 native FAI_SetBossDisplayIfDead(bossid, bool:displayIfDead);
 native FAI_GetBossCurrentHealth(bossid, &Float:health);
-native FAI_SetBossCurrentHealth(bossid, Float:health, bool:keepHealthPercent = false);
+native FAI_SetBossCurrentHealth(bossid, Float:health);
 native FAI_GetBossTarget(bossid);
-native FAI_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false);
+native FAI_SetBossTarget(bossid, playerid);
 native FAI_GetBossMoveInfo(bossid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle);
 native FAI_SetBossMoveInfo(bossid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true);
 native FAI_GetBossRangedAttackInfo(bossid, &Float:range, &delay, &bool:setAngle);
@@ -39,9 +39,9 @@ native FAI_SetBossRangedAttackInfo(bossid, Float:range = 20.0, delay = -1, bool:
 native FAI_GetBossMeleeAttackInfo(bossid, &Float:range, &delay, &bool:useFightStyle);
 native FAI_SetBossMeleeAttackInfo(bossid, Float:range = 1.0, delay = -1, bool:useFightStyle = false);
 native FAI_GetBossAllowNPCTargets(bossid);
-native FAI_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarget = false);
+native FAI_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets);
 native FAI_GetBossBehaviour(bossid);
-native FAI_SetBossBehaviour(bossid, behaviour, bool:checkForTarget = false);
+native FAI_SetBossBehaviour(bossid, behaviour);
 native FAI_DestroyBoss(bossid);
 native FAI_DestroyAllBosses();
 native bool:FAI_IsValidBoss(bossid);
@@ -1053,15 +1053,7 @@ stock FAI_GetBossMaxHealth(bossid, &Float:health) {
 	}
 	return 0;
 }
-/*
-Keeppercent:
-- max 500, cur 450 => max 400, cur becomes 360
-- max 500, cur 450 => max 600, cur becomes 540
-Dont keeppercent:
-- max 500, cur 450 => max 400, cur becomes 400 which is max
-- max 500, cur 450 => max 600, cur stays 450
-*/
-stock FAI_SetBossMaxHealth(bossid, Float:health, bool:keepHealthPercent = false) {
+stock FAI_SetBossMaxHealth(bossid, Float:health) {
 	if(FAI_IsValidBoss(bossid)) {
 		if(health <= 0.0) {
 			if(!FCNPC_IsDead(FAI_Bosses[bossid][NPCID])) {
@@ -1069,12 +1061,8 @@ stock FAI_SetBossMaxHealth(bossid, Float:health, bool:keepHealthPercent = false)
 			}
 			health = 0.0;
 		}
-		if(!keepHealthPercent) {
-			if(FAI_Bosses[bossid][CUR_HEALTH] > health) {
-				FAI_Bosses[bossid][CUR_HEALTH] = health;
-			}
-		} else {
-			FAI_Bosses[bossid][CUR_HEALTH] = float(FAI_GetBossCurrentHealthPercent(bossid)) / 100 * health;
+		if(FAI_Bosses[bossid][CUR_HEALTH] > health) {
+			FAI_Bosses[bossid][CUR_HEALTH] = health;
 		}
 		FAI_Bosses[bossid][MAX_HEALTH] = health;
 		FAI_UpdateBossHealthDisplay(bossid);
@@ -1107,27 +1095,12 @@ stock FAI_GetBossAggroRange(bossid, &Float:range) {
 	}
 	return 0;
 }
-/*
-Checkfortarget:
-- range 25.0, has target	=> range 10.0, target in new range, nothing
-- range 25.0, has target	=> range 10.0, target not in new range, target loses aggro
-- range 25.0, no target		=> range 10.0, nothing
-Dont checkfortarget:
-- range 25.0, has target	=> range 10.0, target keeps aggro
-- range 25.0, no target		=> range 10.0, nothing
-*/
-stock FAI_SetBossAggroRange(bossid, Float:range, bool:checkForTarget = false) {
+stock FAI_SetBossAggroRange(bossid, Float:range) {
 	if(FAI_IsValidBoss(bossid)) {
 		if(range < 0.0) {
 			range = 0.0;
 		}
 		FAI_Bosses[bossid][RANGE_AGGRO] = range;
-		if(checkForTarget) {
-			if(!FAI_IsPlayerInAggroRange(FAI_Bosses[bossid][TARGET], bossid)) {
-				//Reset target
-				FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
-			}
-		}
 		return 1;
 	}
 	return 0;
@@ -1153,15 +1126,7 @@ stock FAI_GetBossCurrentHealth(bossid, &Float:health) {
 	}
 	return 0;
 }
-/*
-Keeppercent:
-- max 500, cur 450 => cur 400, max becomes 444
-- max 500, cur 450 => cur 600, max becomes 666
-Dont keeppercent:
-- max 500, cur 450 => cur 400, max stays 500
-- max 500, cur 450 => cur 600, max becomes 600 which is cur
-*/
-stock FAI_SetBossCurrentHealth(bossid, Float:health, bool:keepHealthPercent = false) {
+stock FAI_SetBossCurrentHealth(bossid, Float:health) {
 	if(FAI_IsValidBoss(bossid)) {
 		if(health < 0.0) {
 			health = FAI_Bosses[bossid][MAX_HEALTH];
@@ -1170,12 +1135,8 @@ stock FAI_SetBossCurrentHealth(bossid, Float:health, bool:keepHealthPercent = fa
 				FCNPC_Kill(FAI_Bosses[bossid][NPCID]);
 			}
 		}
-		if(!keepHealthPercent) {
-			if(FAI_Bosses[bossid][MAX_HEALTH] < health) {
-				FAI_Bosses[bossid][MAX_HEALTH] = health;
-			}
-		} else {
-			FAI_Bosses[bossid][MAX_HEALTH] *= health / FAI_Bosses[bossid][CUR_HEALTH];
+		if(FAI_Bosses[bossid][MAX_HEALTH] < health) {
+			FAI_Bosses[bossid][MAX_HEALTH] = health;
 		}
 		FAI_Bosses[bossid][CUR_HEALTH] = health;
 		FAI_UpdateBossHealthDisplay(bossid);
@@ -1189,20 +1150,10 @@ stock FAI_GetBossTarget(bossid) {
 	}
 	return -1;
 }
-/*
-Checkforaggrorange:
-- range 25.0, has target	=> new target, new target in range, switch target
-- range 25.0, has target	=> new target, new target not in range, old target stays
-- range 25.0, no target		=> new target, new target in range, make target
-- range 25.0, no target		=> new target, new target not in range, nothing
-Dont checkforaggrorange:
-- range 25.0, has targe		=> new target, switch target
-- range 25.0, no target		=> new target, make target
-*/
-stock FAI_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false) {
+stock FAI_SetBossTarget(bossid, playerid) {
 	//Set target to playerid (valid playerid check in setter)
 	//FAI_IsValidBoss in FAI_SetBossTargetWithReason
-	return FAI_SetBossTargetWithReason(bossid, playerid, 4, checkForAggroRange);
+	return FAI_SetBossTargetWithReason(bossid, playerid, 4);
 }
 /*
 Reason:
@@ -1210,12 +1161,11 @@ Reason:
 - 1: bossDamaged (valid new target, invalid new target)
 - 2: bossDeath (invalid new target)
 - 3: target aggro (valid new target, invalid new target)
-- 4: explicit set (valid new target, invalid new target, checkForAggroRange)
+- 4: explicit set (valid new target, invalid new target)
 */
 //Invalid boss										=> nothing
 //Not connected new target							=> nothing
 //Old target same as new target						=> nothing
-//CheckForAggroRange and new target not in range	=> nothing
 //CheckIfStreamedIn and new target not streamed in	=> nothing
 //CheckIfValid and new target not valid				=> nothing
 //Reason is bossDamaged and old target is valid		=> nothing
@@ -1223,7 +1173,7 @@ Reason:
 //New valid target, with old target		=> old target lose aggro, set target, new target get aggro
 //New invalid target, no old target		=> set target
 //New invalid target, with old target	=> old target lose aggro, set target, stop encounter
-static FAI_SetBossTargetWithReason(bossid, newtargetid, reason, bool:checkForAggroRange = false) {
+static FAI_SetBossTargetWithReason(bossid, newtargetid, reason) {
 	if(FAI_IsValidBoss(bossid)) {
 		new oldtargetid = FAI_Bosses[bossid][TARGET];
 		if(oldtargetid != newtargetid) {
@@ -1238,9 +1188,9 @@ static FAI_SetBossTargetWithReason(bossid, newtargetid, reason, bool:checkForAgg
 				}
 			}
 			new bool:newTargetInRange = true;
-			if(checkForAggroRange && !FAI_IsPlayerInAggroRange(newtargetid, bossid)) {
+			/*if(!FAI_IsPlayerInAggroRange(newtargetid, bossid)) {
 				newTargetInRange = false;
-			}
+			}*/
 			if(newTargetValid && newTargetStreamedIn && newTargetInRange) {
 				if(oldtargetid != INVALID_PLAYER_ID) {
 					CallRemoteFunction("FAI_OnPlayerLoseAggro", "dd", oldtargetid, bossid);
@@ -1346,15 +1296,9 @@ stock FAI_GetBossAllowNPCTargets(bossid) {
 	}
 	return -1;
 }
-stock FAI_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets, bool:checkForTarget = false) {
+stock FAI_SetBossAllowNPCTargets(bossid, bool:allowNPCTargets) {
 	if(FAI_IsValidBoss(bossid)) {
 		FAI_Bosses[bossid][ALLOW_NPC_TARGETS] = allowNPCTargets;
-		if(checkForTarget) {
-			if(!allowNPCTargets && FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID && IsPlayerNPC(FAI_Bosses[bossid][TARGET])) {
-				//Reset target
-				FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
-			}
-		}
 		return 1;
 	}
 	return 0;
@@ -1365,16 +1309,10 @@ stock FAI_GetBossBehaviour(bossid) {
 	}
 	return -1;
 }
-stock FAI_SetBossBehaviour(bossid, behaviour, bool:checkForTarget = false) {
+stock FAI_SetBossBehaviour(bossid, behaviour) {
 	if(FAI_IsValidBoss(bossid)) {
 		if(behaviour == FAI_BOSS_BEHAVIOUR_FRIENDLY || behaviour == FAI_BOSS_BEHAVIOUR_NEUTRAL || behaviour == FAI_BOSS_BEHAVIOUR_UNFRIENDLY) {
 			FAI_Bosses[bossid][BEHAVIOUR] = behaviour;
-			if(checkForTarget) {
-				if(behaviour == FAI_BOSS_BEHAVIOUR_FRIENDLY && FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
-					//Reset target
-					FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
-				}
-			}
 			return 1;
 		}
 	}
