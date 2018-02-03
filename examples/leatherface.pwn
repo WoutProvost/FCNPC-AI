@@ -44,8 +44,8 @@ public OnFilterScriptInit()
 
 public OnFilterScriptExit()
 {
-	//The include will automatically destroy the spells and bosses when the script exits
-	//When a boss gets destroyed, OnPlayerDisconnect will be called, so we can safely put everything that should be destroyed along with the boss there
+	//The include will automatically destroy the spells and NPCs when the script exits
+	//When an NPC gets destroyed, OnPlayerDisconnect will be called, so we can safely put everything that should be destroyed along with the NPC there
 	return 1;
 }
 #endif
@@ -54,7 +54,7 @@ public OnPlayerDisconnect(playerid, reason)
 {
 	if(playerid != INVALID_PLAYER_ID) {
 		if(playerid == BossLeatherface) {
-			//FAI_DestroyBoss(BossLeatherface); //We don't need to do this, since the boss is already disconnecting
+			//FAI_DestroyBoss(BossLeatherface); //We don't need to do this, since the NPC is already disconnecting
 			BossLeatherface = INVALID_PLAYER_ID;
 			KillTimer(PlayerInRangeTimer);
 			PlayerInRangeTimer = FAI_INVALID_TIMER_ID;
@@ -107,21 +107,21 @@ public FCNPC_OnReachDestination(npcid)
 	return 1;
 }
 
-public FAI_OnBossEncounterStart(bossid, bool:reasonShot, firstTarget)
+public FAI_OnBossEncounterStart(npcid, bool:reasonShot, firstTarget)
 {
-	if(bossid == BossLeatherface) {
+	if(npcid == BossLeatherface) {
 		IdleCount = -1;
 	}
 	return 1;
 }
 
-public FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
+public FAI_OnBossEncounterStop(npcid, bool:reasonDeath, lastTarget)
 {
-	if(bossid == BossLeatherface) {
+	if(npcid == BossLeatherface) {
 		if(!reasonDeath) {
-			SetBossAtSpawn(bossid);
+			SetBossAtSpawn(npcid);
 		} else {
-			//Respawn the boss somewhere between 5 and 10 minutes (both included)
+			//Respawn the NPC somewhere between 5 and 10 minutes (both included)
 			new randomMinutes = random(6) + 5;
 			DeathCount = randomMinutes * 60 * 10;
 			for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
@@ -218,47 +218,47 @@ stock DestroyBossObjects() {
 	}
 }
 
-forward SetBossAtSpawn(bossid);
-public SetBossAtSpawn(bossid) {
-	if(bossid == BossLeatherface) {
-		SetPlayerColor(bossid, 0xff000000); //Alpha values = 00 because we don't want an additional playericon on the map
-		if(!FCNPC_IsSpawned(bossid)) {
-			FCNPC_Spawn(bossid, 168, -2820.2534, -1530.3491, 140.8438);
+forward SetBossAtSpawn(npcid);
+public SetBossAtSpawn(npcid) {
+	if(npcid == BossLeatherface) {
+		SetPlayerColor(npcid, 0xff000000); //Alpha values = 00 because we don't want an additional playericon on the map
+		if(!FCNPC_IsSpawned(npcid)) {
+			FCNPC_Spawn(npcid, 168, -2820.2534, -1530.3491, 140.8438);
 		} else {
-			if(FCNPC_IsDead(bossid)) {
-				FCNPC_Respawn(bossid);
+			if(FCNPC_IsDead(npcid)) {
+				FCNPC_Respawn(npcid);
 			}
-			FCNPC_SetSkin(bossid, 168);
-			FCNPC_SetPosition(bossid, -2820.2534, -1530.3491, 140.8438);
+			FCNPC_SetSkin(npcid, 168);
+			FCNPC_SetPosition(npcid, -2820.2534, -1530.3491, 140.8438);
 		}
-		FCNPC_SetAngle(bossid, 324.4991);
-		FCNPC_SetInterior(bossid, INTERIOR_NORMAL);
-		FCNPC_SetVirtualWorld(bossid, VIRTUAL_WORLD_NORMAL);
-		FCNPC_SetWeapon(bossid, WEAPON_CHAINSAW);
-		FCNPC_SetHealth(bossid, 100.0);
-		FCNPC_SetArmour(bossid, 0.0);
-		FCNPC_SetInvulnerable(bossid, false);
+		FCNPC_SetAngle(npcid, 324.4991);
+		FCNPC_SetInterior(npcid, INTERIOR_NORMAL);
+		FCNPC_SetVirtualWorld(npcid, VIRTUAL_WORLD_NORMAL);
+		FCNPC_SetWeapon(npcid, WEAPON_CHAINSAW);
+		FCNPC_SetHealth(npcid, 100.0);
+		FCNPC_SetArmour(npcid, 0.0);
+		FCNPC_SetInvulnerable(npcid, false);
 		new Float:maxHealth;
-		FAI_GetBossMaxHealth(bossid, maxHealth);
-		FAI_SetBossCurrentHealth(bossid, maxHealth);
-		if(IsPlayerAttachedObjectSlotUsed(bossid, ATTACHED_OBJECT_INDEX)) {
-			RemovePlayerAttachedObject(bossid, ATTACHED_OBJECT_INDEX);
+		FAI_GetBossMaxHealth(npcid, maxHealth);
+		FAI_SetBossCurrentHealth(npcid, maxHealth);
+		if(IsPlayerAttachedObjectSlotUsed(npcid, ATTACHED_OBJECT_INDEX)) {
+			RemovePlayerAttachedObject(npcid, ATTACHED_OBJECT_INDEX);
 		}
-		SetPlayerAttachedObject(bossid, ATTACHED_OBJECT_INDEX, 19036, 2, 0.086, 0.043, -0.007, 86.100196, 91.500007, 0.0, 1.0, 1.0, 1.0);
+		SetPlayerAttachedObject(npcid, ATTACHED_OBJECT_INDEX, 19036, 2, 0.086, 0.043, -0.007, 86.100196, 91.500007, 0.0, 1.0, 1.0, 1.0);
 		IdleCount = 0;
 		DeathCount = -1;
 		AnimationApplied = false;
 		//Recreate objects, some objects can change positions and roll away
 		DestroyBossObjects();
 		CreateBossObjects();
-		StreamerUpdateForValidPlayers(bossid);
+		StreamerUpdateForValidPlayers(npcid);
 	}
 	return 1;
 }
 
-stock StreamerUpdateForValidPlayers(bossid) {
+stock StreamerUpdateForValidPlayers(npcid) {
 	for(new playerid = 0, maxplayerid = GetPlayerPoolSize(); playerid <= maxplayerid; playerid++) {
-		if(FAI_IsBossValidForPlayer(playerid, bossid)) {
+		if(FAI_IsBossValidForPlayer(playerid, npcid)) {
 			Streamer_Update(playerid, STREAMER_TYPE_OBJECT);
 		}
 	}
