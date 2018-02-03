@@ -8,11 +8,11 @@
 
 #define FILTERSCRIPT
 
-#define FAI_USE_MAP_ANDREAS				true //Redefinition before #include <FAI>
-
+#include <a_samp>
+#include <MapAndreas>						//Inlcude MapAndreas before FCNPC and FAI
+#include <FCNPC>
 #define FAI_DECIMAL_MARK				',' //Redefinition before #include <FAI>
 #include <FAI>
-
 #include <streamer>
 
 #define INTERIOR_NORMAL					0
@@ -47,6 +47,13 @@ new SpellRockOfLifeTarget = INVALID_PLAYER_ID;
 #if defined FILTERSCRIPT
 public OnFilterScriptInit()
 {
+	//MapAndreas
+	new MapAndreasAddress = MapAndreas_GetAddress();
+	if(MapAndreasAddress == 0) {
+		MapAndreas_Init(MAP_ANDREAS_MODE_FULL);
+	}
+	FCNPC_InitMapAndreas(MapAndreasAddress);
+
 	BossBigSmoke = FAI_Create("BossBigSmoke");
 	FAI_SetFullName(BossBigSmoke, "Melvin \"Big Smoke\" Harris");
 	FAI_SetMapiconInfo(BossBigSmoke, 65, 8);
@@ -278,9 +285,7 @@ public FAI_OnEncounterStop(npcid, bool:reasonDeath, lastTarget)
 				angle = RandomFloatGivenInteger(360);
 				cashX = bossX + (radius * floatcos(angle + 90, degrees));
 				cashY = bossY + (radius * floatsin(angle + 90, degrees));
-				#if FAI_USE_MAP_ANDREAS == true
-					MapAndreas_FindZ_For2DCoord(cashX, cashY, cashZ);
-				#endif
+				MapAndreas_FindZ_For2DCoord(cashX, cashY, cashZ);
 				DestroyDynamicPickup(RewardPickups[rewardPickup]);
 				RewardPickups[rewardPickup] = CreateDynamicPickup(1212, 19, cashX, cashY, cashZ + 0.1, bossWorld, bossInterior);
 			}
@@ -369,14 +374,12 @@ public FAI_OnStartCasting(npcid, spellid, targetid)
 				angle = RandomFloatGivenInteger(360);
 				markX = bossX + (radius * floatcos(angle + 90, degrees));
 				markY = bossY + (radius * floatsin(angle + 90, degrees));
-				#if FAI_USE_MAP_ANDREAS == true
-					MapAndreas_FindZ_For2DCoord(markX, markY, markZ);
-					//For positions under bridges, ..., should be replaced with a ColAndreas implementation for better results
-					//With MapAndreas: problem with small height changes
-					//if(bossZ < markZ) {
-					//	markZ = bossZ - 0.76;
-					//}
-				#endif
+				MapAndreas_FindZ_For2DCoord(markX, markY, markZ);
+				//For positions under bridges, ..., should be replaced with a ColAndreas implementation for better results
+				//With MapAndreas: problem with small height changes
+				//if(bossZ < markZ) {
+				//	markZ = bossZ - 0.76;
+				//}
 				DestroyDynamicObject(GroundMarks[groundMark]); //If for some reason the previous groundMark wasn't destroyed
 				GroundMarks[groundMark] = CreateDynamicObject(354, markX, markY, markZ - 2.0, 0.0, 0.0, 0.0, bossWorld, bossInterior); //markZ - 2.0 to lower the object below ground a bit, because the flare object that is used is very bright
 				DestroyDynamicObject(Bombs[groundMark]); //If for some reason the previous bomb wasn't destroyed
@@ -395,9 +398,7 @@ public FAI_OnStartCasting(npcid, spellid, targetid)
 				radius = 40.0 - 40.0 / 20 * groundMark;
 				markX = bossX + (radius * floatcos(bossA + 90, degrees));
 				markY = bossY + (radius * floatsin(bossA + 90, degrees));
-				#if FAI_USE_MAP_ANDREAS == true
-					MapAndreas_FindZ_For2DCoord(markX, markY, markZ);
-				#endif
+				MapAndreas_FindZ_For2DCoord(markX, markY, markZ);
 				DestroyDynamicObject(GroundMarks[groundMark]);
 				GroundMarks[groundMark] = CreateDynamicObject(354, markX, markY, markZ - 2.0, 0.0, 0.0, 0.0, bossWorld, bossInterior);
 				StreamerUpdateForValidPlayers(npcid);
@@ -407,9 +408,7 @@ public FAI_OnStartCasting(npcid, spellid, targetid)
 			if(targetid != INVALID_PLAYER_ID) {
 				new Float:playerX, Float:playerY, Float:playerZ;
 				GetPlayerPos(targetid, playerX, playerY, playerZ);
-				#if FAI_USE_MAP_ANDREAS == true
-					MapAndreas_FindZ_For2DCoord(playerX, playerY, playerZ);
-				#endif
+				MapAndreas_FindZ_For2DCoord(playerX, playerY, playerZ);
 				DestroyDynamicObject(BossTargetNotMovingObject);
 				BossTargetNotMovingObject = CreateDynamicObject(354, playerX, playerY, playerZ - 2.0, 0.0, 0.0, 0.0, FCNPC_GetVirtualWorld(npcid), FCNPC_GetInterior(npcid));
 				StreamerUpdateForValidPlayers(npcid);
@@ -539,9 +538,7 @@ public FAI_OnStopCasting(npcid, spellid, targetid, bool:castComplete)
 							angle = RandomFloatGivenInteger(360);
 							addX = BSX + (50.0 * floatcos(angle + 90, degrees));
 							addY = BSY + (50.0 * floatsin(angle + 90, degrees));
-							#if FAI_USE_MAP_ANDREAS == true
-								MapAndreas_FindZ_For2DCoord(addX, addY, addZ);
-							#endif
+							MapAndreas_FindZ_For2DCoord(addX, addY, addZ);
 							new randomSkin = random(3) + 102;
 							new randomWeapon = random(2);
 							if(!FCNPC_IsSpawned(BossAdds[add])) {
@@ -840,9 +837,7 @@ public SpellNoPlaceIsSafeExplosion(npcid, spell) {
 	angle = RandomFloatGivenInteger(360);
 	markX = bossX + (radius * floatcos(angle + 90, degrees));
 	markY = bossY + (radius * floatsin(angle + 90, degrees));
-	#if FAI_USE_MAP_ANDREAS == true
-		MapAndreas_FindZ_For2DCoord(markX, markY, markZ);
-	#endif
+	MapAndreas_FindZ_For2DCoord(markX, markY, markZ);
 	CreateExplosionForValidPlayers(npcid, markX, markY, markZ - 2.0);
 	ExplosionCount++;
 	if(ExplosionCount == sizeof(Bombs)) {

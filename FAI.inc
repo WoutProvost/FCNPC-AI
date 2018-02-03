@@ -114,19 +114,7 @@ forward FAI_OnStartCasting(npcid, spellid, targetid);
 forward FAI_OnStopCasting(npcid, spellid, targetid, bool:castComplete);
 
 //General
-//Include guards are already built into pawn, so no need to check
-#include <a_samp>
 #define FAI_VERSION							"1.1.1"
-#if !defined FAI_USE_MAP_ANDREAS
-	#define FAI_USE_MAP_ANDREAS				false
-#endif
-#if FAI_USE_MAP_ANDREAS == true
-	#include <MapAndreas>
-#endif
-#if !defined FAI_MAP_ANDREAS_MODE
-	#define FAI_MAP_ANDREAS_MODE			MAP_ANDREAS_MODE_FULL
-#endif
-#include <FCNPC>
 #if !defined INVALID_STRING
 	#define INVALID_STRING					" "
 #endif
@@ -406,13 +394,6 @@ static FAI_RemoveUnnecessaryDecimals(Float:amount, maxDecimals = 6, minDecimals 
 #endif
 static FAI_InitScript() {
 	//General
-	#if FAI_USE_MAP_ANDREAS == true
-		new MapAndreasAddress = MapAndreas_GetAddress(); //Don't init MapAndreas when it was already initialized
-		if(MapAndreasAddress == 0) {
-			MapAndreas_Init(FAI_MAP_ANDREAS_MODE); //MapAndreas
-		}
-		FCNPC_InitMapAndreas(MapAndreas_GetAddress()); //MapAndreas
-	#endif
 	FAI_UpdateTimer = SetTimer("FAI_Update", FCNPC_GetUpdateRate(), true);
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
 		FAI_PauseTickCount[playerid] = GetTickCount();
@@ -1614,11 +1595,7 @@ static FAI_AttackMove(npcid, targetid) {
 			FCNPC_StopAttack(npcid);
 		}
 		if(!FCNPC_IsMovingAtPlayer(npcid, targetid)) { //So we don't move again when we were already moving to that same player. If moving at another player, this will execute
-			#if FAI_USE_MAP_ANDREAS == true
-				FCNPC_GoToPlayer(npcid, targetid, FAI_NPCs[npcid][MOVE_TYPE], FAI_NPCs[npcid][MOVE_SPEED], FAI_NPCs[npcid][MOVE_USE_MAP_ANDREAS], FAI_NPCs[npcid][MOVE_RADIUS], FAI_NPCs[npcid][MOVE_SET_ANGLE]);
-			#else
-				FCNPC_GoToPlayer(npcid, targetid, FAI_NPCs[npcid][MOVE_TYPE], FAI_NPCs[npcid][MOVE_SPEED], false, FAI_NPCs[npcid][MOVE_RADIUS], FAI_NPCs[npcid][MOVE_SET_ANGLE]);
-			#endif
+			FCNPC_GoToPlayer(npcid, targetid, FAI_NPCs[npcid][MOVE_TYPE], FAI_NPCs[npcid][MOVE_SPEED], FAI_NPCs[npcid][MOVE_USE_MAP_ANDREAS], FAI_NPCs[npcid][MOVE_RADIUS], FAI_NPCs[npcid][MOVE_SET_ANGLE]);
 		}
 	}
 }

@@ -8,8 +8,10 @@
 
 #define FILTERSCRIPT
 
+#include <a_samp>
+//#include <MapAndreas>						//Inlcude MapAndreas before FCNPC and FAI (however, MapAndreas is not used in this script)
+#include <FCNPC>
 #include <FAI>
-
 #include <streamer>
 
 #define INTERIOR_NORMAL					0
