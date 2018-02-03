@@ -130,8 +130,8 @@ forward FAI_OnStopCasting(npcid, spellid, targetid, bool:castComplete);
 #if !defined FAI_DECIMAL_MARK
 	#define FAI_DECIMAL_MARK				'.'
 #endif
-#if !defined FAI_SHORTEN_NUMBERS
-	#define FAI_SHORTEN_NUMBERS				false
+#if !defined FAI_FORMAT_HUMAN_READABLE
+	#define FAI_FORMAT_HUMAN_READABLE		false
 #endif
 #if !defined isnull
 	#define isnull(%1) ((!(%1[0])) || (((%1[0]) == '\1') && (!(%1[1]))))
@@ -1408,10 +1408,10 @@ static FAI_UpdateHealthDisplay(npcid) {
 			}
 		}
 		new string[14 + 1];
-		format(string, sizeof(string), "%d%", FAI_GetCurrentHealthPercent(npcid));
+		format(string, sizeof(string), "%d%%", FAI_GetCurrentHealthPercent(npcid));
 		TextDrawSetString(FAI_NPCs[npcid][TEXTDRAW][1], string);
 		new healthInteger = floatround(FAI_NPCs[npcid][CUR_HEALTH], floatround_ceil); //Ceil so 0.3 still displays as 1 instead of 0
-		#if FAI_SHORTEN_NUMBERS == false
+		#if FAI_FORMAT_HUMAN_READABLE == false
 			TextDrawSetString(FAI_NPCs[npcid][TEXTDRAW][2], FAI_DisplayReadableInteger(healthInteger));
 		#else
 			if(float(healthInteger) / 1000 / 1000 / 1000 >= 1) {
