@@ -1672,7 +1672,6 @@ stock FAI_DestroySpell(spellid) {
 stock FAI_CreateSpell(name[]) {
 	for(new spellid = 0; spellid < FAI_MAX_SPELLS; spellid++) {
 		if(strempty(FAI_Spells[spellid][NAME])) {
-			strcpy(FAI_Spells[spellid][NAME], FAI_MAX_SPELL_NAME + 1, name);
 			FAI_SetSpellName(spellid, name);
 			FAI_SetSpellCastTime(spellid, 2000, false);
 			FAI_SetSpellAmount(spellid, 0.0);
@@ -1697,7 +1696,7 @@ stock FAI_GetSpellName(spellid, name[], len) {
 	return -1;
 }
 stock FAI_SetSpellName(spellid, name[]) {
-	if(FAI_IsValidSpell(spellid)) {
+	if(FAI_IsValidSpell(spellid) && !strempty(name)) {
 		strcpy(FAI_Spells[spellid][NAME], FAI_MAX_SPELL_NAME + 1, name);
 		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
 			if(FCNPC_IsValid(npcid) && (FAI_IsCastingSpell(npcid, spellid) || FAI_IsCastBarExtraForSpell(npcid, spellid))) {
