@@ -15,43 +15,43 @@
 //FAKE NATIVES
 /*
 //NPC
-native FAI_CreateBoss(name[]);
-native FAI_GetBossFullName(npcid, name[], len);
-native FAI_SetBossFullName(npcid, name[]);
-native FAI_GetBossMapiconInfo(npcid, &iconid, &iconMarker, &iconColor, &iconStyle);
-native FAI_SetBossMapiconInfo(npcid, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL);
-native FAI_GetBossMaxHealth(npcid, &Float:health);
-native FAI_SetBossMaxHealth(npcid, Float:health);
-native FAI_GetBossDisplayRange(npcid, &Float:range);
-native FAI_SetBossDisplayRange(npcid, Float:range);
-native FAI_GetBossAggroRange(npcid, &Float:range);
-native FAI_SetBossAggroRange(npcid, Float:range);
-native FAI_GetBossDisplayIfDead(npcid);
-native FAI_SetBossDisplayIfDead(npcid, bool:displayIfDead);
-native FAI_GetBossCurrentHealth(npcid, &Float:health);
-native FAI_SetBossCurrentHealth(npcid, Float:health);
-native FAI_GetBossTarget(npcid);
-native FAI_SetBossTarget(npcid, playerid);
-native FAI_GetBossMoveInfo(npcid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle);
-native FAI_SetBossMoveInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true);
-native FAI_GetBossRangedAttackInfo(npcid, &Float:range, &delay, &bool:setAngle);
-native FAI_SetBossRangedAttackInfo(npcid, Float:range = 20.0, delay = -1, bool:setAngle = true);
-native FAI_GetBossMeleeAttackInfo(npcid, &Float:range, &delay, &bool:useFightStyle);
-native FAI_SetBossMeleeAttackInfo(npcid, Float:range = 1.0, delay = -1, bool:useFightStyle = false);
-native FAI_GetBossAllowNPCTargets(npcid);
-native FAI_SetBossAllowNPCTargets(npcid, bool:allowNPCTargets);
-native FAI_GetBossBehaviour(npcid);
-native FAI_SetBossBehaviour(npcid, behaviour);
-native FAI_DestroyBoss(npcid);
-native FAI_DestroyAllBosses();
-native bool:FAI_IsBossValidForPlayer(playerid, npcid);
+native FAI_Create(name[]);
+native FAI_GetFullName(npcid, name[], len);
+native FAI_SetFullName(npcid, name[]);
+native FAI_GetMapiconInfo(npcid, &iconid, &iconMarker, &iconColor, &iconStyle);
+native FAI_SetMapiconInfo(npcid, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL);
+native FAI_GetMaxHealth(npcid, &Float:health);
+native FAI_SetMaxHealth(npcid, Float:health);
+native FAI_GetDisplayRange(npcid, &Float:range);
+native FAI_SetDisplayRange(npcid, Float:range);
+native FAI_GetAggroRange(npcid, &Float:range);
+native FAI_SetAggroRange(npcid, Float:range);
+native FAI_GetDisplayIfDead(npcid);
+native FAI_SetDisplayIfDead(npcid, bool:displayIfDead);
+native FAI_GetCurrentHealth(npcid, &Float:health);
+native FAI_SetCurrentHealth(npcid, Float:health);
+native FAI_GetTarget(npcid);
+native FAI_SetTarget(npcid, playerid);
+native FAI_GetMoveInfo(npcid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle);
+native FAI_SetMoveInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true);
+native FAI_GetRangedAttackInfo(npcid, &Float:range, &delay, &bool:setAngle);
+native FAI_SetRangedAttackInfo(npcid, Float:range = 20.0, delay = -1, bool:setAngle = true);
+native FAI_GetMeleeAttackInfo(npcid, &Float:range, &delay, &bool:useFightStyle);
+native FAI_SetMeleeAttackInfo(npcid, Float:range = 1.0, delay = -1, bool:useFightStyle = false);
+native FAI_GetAllowNPCTargets(npcid);
+native FAI_SetAllowNPCTargets(npcid, bool:allowNPCTargets);
+native FAI_GetBehaviour(npcid);
+native FAI_SetBehaviour(npcid, behaviour);
+native FAI_Destroy(npcid);
+native FAI_DestroyAll();
+native bool:FAI_IsValidForPlayer(playerid, npcid);
 native bool:FAI_IsPlayerInDisplayRange(playerid, npcid);
 native bool:FAI_IsPlayerInAggroRange(playerid, npcid);
-native bool:FAI_BossHasMeleeWeapons(npcid);
-native Text:FAI_GetBossTextDraw(npcid, textdraw);
-native FAI_GetBossCurrentHealthPercent(npcid);
-native FAI_DamageBoss(npcid, damagerid, Float:amount);
-native FAI_HealBoss(npcid, healerid, Float:amount);
+native bool:FAI_HasMeleeWeapons(npcid);
+native Text:FAI_GetTextDraw(npcid, textdraw);
+native FAI_GetCurrentHealthPercent(npcid);
+native FAI_Damage(npcid, damagerid, Float:amount);
+native FAI_Heal(npcid, healerid, Float:amount);
 native bool:FAI_IsEncounterStarted(npcid);
 native FAI_StopEncounter(npcid);
 
@@ -83,35 +83,35 @@ native bool:FAI_IsValidSpell(spellid);
 native FAI_SpellToString(spellid, string[], len, bool:allowDefaultColors = true);
 
 //Casting
-native FAI_StartBossCastingSpell(npcid, spellid, targetid = INVALID_PLAYER_ID);
-native FAI_GetBossCastingSpell(npcid);
-native FAI_SetBossCastingSpell(npcid, spellid, bool:keepCastPercent = false);
-native FAI_GetBossCastingProgress(npcid);
-native FAI_SetBossCastingProgress(npcid, progress);
-native FAI_GetBossCastingTarget(npcid);
-native FAI_SetBossCastingTarget(npcid, targetid);
-native FAI_GetBossCastingExtraProgress(npcid);
-native FAI_SetBossCastingExtraProgress(npcid, progress);
-native FAI_StopBossCasting(npcid);
-native FAI_StopBossCastingSpell(npcid, spellid);
-native FAI_StopAllBossesCasting();
-native FAI_StopAllBossesCastingSpell(spellid);
-native bool:FAI_IsBossCasting(npcid);
-native bool:FAI_IsBossCastingSpell(npcid, spellid);
-native bool:FAI_IsBossCastBarExtra(npcid);
-native bool:FAI_IsBossCastBarExtraForSpell(npcid, spellid);
+native FAI_StartCastingSpell(npcid, spellid, targetid = INVALID_PLAYER_ID);
+native FAI_GetCastingSpell(npcid);
+native FAI_SetCastingSpell(npcid, spellid, bool:keepCastPercent = false);
+native FAI_GetCastingProgress(npcid);
+native FAI_SetCastingProgress(npcid, progress);
+native FAI_GetCastingTarget(npcid);
+native FAI_SetCastingTarget(npcid, targetid);
+native FAI_GetCastingExtraProgress(npcid);
+native FAI_SetCastingExtraProgress(npcid, progress);
+native FAI_StopCasting(npcid);
+native FAI_StopCastingSpell(npcid, spellid);
+native FAI_StopAllCasting();
+native FAI_StopAllCastingSpell(spellid);
+native bool:FAI_IsCasting(npcid);
+native bool:FAI_IsCastingSpell(npcid, spellid);
+native bool:FAI_IsCastBarExtra(npcid);
+native bool:FAI_IsCastBarExtraForSpell(npcid, spellid);
 */
 
 //CALLBACKS
 //NPC
-forward FAI_OnBossEncounterStart(npcid, bool:reasonShot, firstTarget);
-forward FAI_OnBossEncounterStop(npcid, bool:reasonDeath, lastTarget);
+forward FAI_OnEncounterStart(npcid, bool:reasonShot, firstTarget);
+forward FAI_OnEncounterStop(npcid, bool:reasonDeath, lastTarget);
 forward FAI_OnPlayerGetAggro(playerid, npcid);
 forward FAI_OnPlayerLoseAggro(playerid, npcid);
 
 //Casting
-forward FAI_OnBossStartCasting(npcid, spellid, targetid);
-forward FAI_OnBossStopCasting(npcid, spellid, targetid, bool:castComplete);
+forward FAI_OnStartCasting(npcid, spellid, targetid);
+forward FAI_OnStopCasting(npcid, spellid, targetid, bool:castComplete);
 
 //General
 //Include guards are already built into pawn, so no need to check
@@ -146,19 +146,19 @@ static bool:FAI_PlayerPaused[MAX_PLAYERS] = {false,...};
 static FAI_PauseTimer = FAI_INVALID_TIMER_ID;
 
 //NPC
-#if !defined FAI_MAX_BOSS_FULL_NAME
-	#define FAI_MAX_BOSS_FULL_NAME			50
+#if !defined FAI_MAX_FULL_NAME
+	#define FAI_MAX_FULL_NAME				50
 #endif
 #define FAI_INVALID_ICON_ID					-1
-#define FAI_MAX_BOSS_TEXTDRAWS				8
+#define FAI_MAX_TEXTDRAWS					8
 enum {
-	FAI_BOSS_BEHAVIOUR_FRIENDLY,
-	FAI_BOSS_BEHAVIOUR_NEUTRAL,
-	FAI_BOSS_BEHAVIOUR_UNFRIENDLY
+	FAI_BEHAVIOUR_FRIENDLY,
+	FAI_BEHAVIOUR_NEUTRAL,
+	FAI_BEHAVIOUR_UNFRIENDLY
 }
-enum FAI_ENUM_BOSS {
+enum FAI_ENUM_NPC {
 	//Can be set by the user
-	FULL_NAME[FAI_MAX_BOSS_FULL_NAME + 1],
+	FULL_NAME[FAI_MAX_FULL_NAME + 1],
 	ICONID,
 	ICON_MARKER,
 	ICON_COLOR,
@@ -185,12 +185,12 @@ enum FAI_ENUM_BOSS {
 	THREAT[MAX_PLAYERS],
 	//Cannot be set by the user
 	NPCID,
-	Text:TEXTDRAW[FAI_MAX_BOSS_TEXTDRAWS]
+	Text:TEXTDRAW[FAI_MAX_TEXTDRAWS]
 }
-static FAI_Bosses[MAX_PLAYERS][FAI_ENUM_BOSS];
-static Text:FAI_BossBlackHealth = Text:INVALID_TEXT_DRAW;
-static Text:FAI_BossDarkRed = Text:INVALID_TEXT_DRAW;
-static Text:FAI_BossBlackCast = Text:INVALID_TEXT_DRAW;
+static FAI_NPCs[MAX_PLAYERS][FAI_ENUM_NPC];
+static Text:FAI_BlackHealth = Text:INVALID_TEXT_DRAW;
+static Text:FAI_DarkRed = Text:INVALID_TEXT_DRAW;
+static Text:FAI_BlackCast = Text:INVALID_TEXT_DRAW;
 
 //Spell
 #if !defined FAI_MAX_SPELLS
@@ -411,13 +411,13 @@ static FAI_InitScript() {
 	FAI_PauseTimer = SetTimer("FAI_CheckPausedPlayers", 1000, 1);
 
 	//NPC
-	FAI_InitAllBosses();
+	FAI_InitAll();
 
 	//Spell
 	FAI_InitAllSpells();
 	
 	//Casting
-	FAI_InitAllBossesCasting();
+	FAI_InitAllCasting();
 	
 	printf("---------------------");
 	printf("  FCNPC A.I. loaded  ");
@@ -437,13 +437,13 @@ static FAI_ExitScript() {
 	FAI_PauseTimer = FAI_INVALID_TIMER_ID;
 
 	//NPC
-	FAI_DestroyAllBosses();
+	FAI_DestroyAll();
 
 	//Spell
 	FAI_DestroyAllSpells();
 	
 	//Casting
-	FAI_InitAllBossesCasting();
+	FAI_InitAllCasting();
 }
 
 public OnPlayerDisconnect(playerid, reason) {
@@ -451,7 +451,7 @@ public OnPlayerDisconnect(playerid, reason) {
 		FAI_OnPlayerDisconnect(playerid, reason);
 	#endif
 	if(FCNPC_IsValid(playerid)) {
-		FAI_DestroyBossNoFCNPC_Destroy(playerid); //Call after
+		FAI_DestroyNoFCNPC_Destroy(playerid); //Call after
 	}
 	return 1;
 }
@@ -487,14 +487,14 @@ public OnPlayerRequestClass(playerid, classid)
 {
 	//ForceClassSelection doesn't call a state change and thus PLAYER_STATE_WASTED isn't set
 	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-		TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][0]);
-		TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][1]);
-		TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][2]);
-		TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][3]);
-		TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][4]);
-		TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][5]);
-		TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][6]);
-		TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][7]);
+		TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][0]);
+		TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][1]);
+		TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][2]);
+		TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][3]);
+		TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][4]);
+		TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][5]);
+		TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][6]);
+		TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][7]);
 	}
 	#if defined FAI_OnPlayerRequestClass
 		FAI_OnPlayerRequestClass(playerid, classid);
@@ -548,15 +548,15 @@ public OnPlayerUpdate(playerid)
 public FCNPC_OnRespawn(npcid)
 {
 	if(FCNPC_IsValid(npcid)) {
-		if(FAI_Bosses[npcid][CUR_HEALTH] != 0) {
-			//In case the NPC is casting when the encounter hasn't started yet (can happen by using FAI_StartBossCastingSpell). FAI_SetBossTargetWithReason doesn't take care of this for various reasons.
-			if(FAI_Bosses[npcid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(npcid)) {
-				FAI_StopBossCasting(npcid);
+		if(FAI_NPCs[npcid][CUR_HEALTH] != 0) {
+			//In case the NPC is casting when the encounter hasn't started yet (can happen by using FAI_StartCastingSpell). FAI_SetTargetWithReason doesn't take care of this for various reasons.
+			if(FAI_NPCs[npcid][TARGET] == INVALID_PLAYER_ID && FAI_IsCasting(npcid)) {
+				FAI_StopCasting(npcid);
 			}
 			//Reset target & threat for all players
-			FAI_SetBossTargetWithReason(npcid, INVALID_PLAYER_ID, 0);
+			FAI_SetTargetWithReason(npcid, INVALID_PLAYER_ID, 0);
 		} else {
-			FAI_SetBossCurrentHealth(npcid, FAI_Bosses[npcid][MAX_HEALTH]);
+			FAI_SetCurrentHealth(npcid, FAI_NPCs[npcid][MAX_HEALTH]);
 		}
 	}
 	#if defined FAI_FCNPC_OnRespawn
@@ -577,7 +577,7 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 {
 	new ret = 1;
 	if(FCNPC_IsValid(npcid)) {
-		ret = FAI_DamageBoss(npcid, damagerid, health_loss);
+		ret = FAI_Damage(npcid, damagerid, health_loss);
 	}
 	#if defined FAI_FCNPC_OnTakeDamage
 		FAI_FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss);
@@ -593,24 +593,24 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 #if defined FAI_FCNPC_OnTakeDamage
 	forward FAI_FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss);
 #endif
-stock FAI_DamageBoss(npcid, damagerid, Float:amount) {
+stock FAI_Damage(npcid, damagerid, Float:amount) {
 	if(FCNPC_IsValid(npcid) && (IsPlayerConnected(damagerid) || damagerid == INVALID_PLAYER_ID)) {
 		//2nd part of condition: if the npc is dead, this function can still be called before the OnDeath callback gets called (mainly when shot with fast guns: minigun, ...)
 		//3rd part of condition: damage not inflicted by players (falling, ...)
 		//4th part of condition: neccesary to reject invalid damage done: the NPC is visible and thus damagable in other interiors
-		if(FCNPC_IsSpawned(npcid) && !FCNPC_IsDead(npcid) && (damagerid == INVALID_PLAYER_ID || FAI_IsBossValidForPlayer(damagerid, npcid))) {
+		if(FCNPC_IsSpawned(npcid) && !FCNPC_IsDead(npcid) && (damagerid == INVALID_PLAYER_ID || FAI_IsValidForPlayer(damagerid, npcid))) {
 			//Only set target if the encounter has not yet started AND the behaviour is neutral or unfriendly
-			if(FAI_Bosses[npcid][TARGET] == INVALID_PLAYER_ID && FAI_Bosses[npcid][BEHAVIOUR] != FAI_BOSS_BEHAVIOUR_FRIENDLY) {
+			if(FAI_NPCs[npcid][TARGET] == INVALID_PLAYER_ID && FAI_NPCs[npcid][BEHAVIOUR] != FAI_BEHAVIOUR_FRIENDLY) {
 				//Set target to damagerid if no target yet (valid damagerid + no target yet check in setter)
-				FAI_SetBossTargetWithReason(npcid, damagerid, 1);
+				FAI_SetTargetWithReason(npcid, damagerid, 1);
 			}
 			//Dont damage below 0
-			if(FAI_Bosses[npcid][CUR_HEALTH] > amount) {
-				FAI_SetBossCurrentHealth(npcid, FAI_Bosses[npcid][CUR_HEALTH] - amount);
+			if(FAI_NPCs[npcid][CUR_HEALTH] > amount) {
+				FAI_SetCurrentHealth(npcid, FAI_NPCs[npcid][CUR_HEALTH] - amount);
 			} else {
 				//Make the damager that makes the last shot, kill the NPC
-				FCNPC_SetHealth(npcid, FAI_Bosses[npcid][CUR_HEALTH]);
-				//FAI_SetBossCurrentHealth(npcid, 0); //Happens in FCNPC_OnDeath
+				FCNPC_SetHealth(npcid, FAI_NPCs[npcid][CUR_HEALTH]);
+				//FAI_SetCurrentHealth(npcid, 0); //Happens in FCNPC_OnDeath
 				//Return 1 to allow the dammage to be afflicted to npc, which will kill him in this case
 				return 1;
 			}
@@ -619,15 +619,15 @@ stock FAI_DamageBoss(npcid, damagerid, Float:amount) {
 	//Return 0 to prevent damage to be afflicted to npc, update CUR_HEALTH instead
 	return 0;
 }
-stock FAI_HealBoss(npcid, healerid, Float:amount) {
+stock FAI_Heal(npcid, healerid, Float:amount) {
 	if(FCNPC_IsValid(npcid) && (IsPlayerConnected(healerid) || healerid == INVALID_PLAYER_ID)) {
 		if(FCNPC_IsSpawned(npcid) && !FCNPC_IsDead(npcid)) {
 			//Don't heal above MAX_HEALTH
-			if(FAI_Bosses[npcid][MAX_HEALTH] - FAI_Bosses[npcid][CUR_HEALTH] <= amount) {
-				FAI_SetBossCurrentHealth(npcid, FAI_Bosses[npcid][MAX_HEALTH]);
+			if(FAI_NPCs[npcid][MAX_HEALTH] - FAI_NPCs[npcid][CUR_HEALTH] <= amount) {
+				FAI_SetCurrentHealth(npcid, FAI_NPCs[npcid][MAX_HEALTH]);
 				return 1;
 			} else {
-				FAI_SetBossCurrentHealth(npcid, FAI_Bosses[npcid][CUR_HEALTH] + amount);
+				FAI_SetCurrentHealth(npcid, FAI_NPCs[npcid][CUR_HEALTH] + amount);
 			}
 		}
 	}
@@ -636,14 +636,14 @@ stock FAI_HealBoss(npcid, healerid, Float:amount) {
 public FCNPC_OnDeath(npcid, killerid, weaponid)
 {
 	if(FCNPC_IsValid(npcid)) {
-		//In case the NPC is casting when the encounter hasn't started yet (can happen by using FAI_StartBossCastingSpell). FAI_SetBossTargetWithReason doesn't take care of this for various reasons.
-		if(FAI_Bosses[npcid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(npcid)) {
-			FAI_StopBossCasting(npcid);
+		//In case the NPC is casting when the encounter hasn't started yet (can happen by using FAI_StartCastingSpell). FAI_SetTargetWithReason doesn't take care of this for various reasons.
+		if(FAI_NPCs[npcid][TARGET] == INVALID_PLAYER_ID && FAI_IsCasting(npcid)) {
+			FAI_StopCasting(npcid);
 		}
 		//Reset target & threat for all players
-		FAI_SetBossTargetWithReason(npcid, INVALID_PLAYER_ID, 2);
+		FAI_SetTargetWithReason(npcid, INVALID_PLAYER_ID, 2);
 		//If the NPC was killed with FCNPC_Kill or FCNPC_SetHealth with value <= 0.0, not by taking damage
-		FAI_SetBossCurrentHealth(npcid, 0);
+		FAI_SetCurrentHealth(npcid, 0);
 	}
 	#if defined FAI_FCNPC_OnDeath
 		FAI_FCNPC_OnDeath(npcid, killerid, weaponid);
@@ -667,63 +667,63 @@ public FAI_Update() {
 	for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
 		//Last part of condition: we don't need to display things to an npc
 		if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid)) {
-			new closestBoss = FAI_GetClosestBossToDisplay(playerid);
+			new closestNPC = FAI_GetClosestToDisplay(playerid);
 			//Hide the textdraws all NPCs share if no NPC is in range for a player
-			if(!FCNPC_IsValid(closestBoss)) {
-				TextDrawHideForPlayer(playerid, FAI_BossBlackHealth);
-				TextDrawHideForPlayer(playerid, FAI_BossDarkRed);
-				TextDrawHideForPlayer(playerid, FAI_BossBlackCast);
+			if(!FCNPC_IsValid(closestNPC)) {
+				TextDrawHideForPlayer(playerid, FAI_BlackHealth);
+				TextDrawHideForPlayer(playerid, FAI_DarkRed);
+				TextDrawHideForPlayer(playerid, FAI_BlackCast);
 			}
 			//Show the textdraws all NPCs share if an NPC is in range for a player
 			else {
-				TextDrawShowForPlayer(playerid, FAI_BossBlackHealth);
-				TextDrawShowForPlayer(playerid, FAI_BossDarkRed);
-				if(FAI_IsBossCasting(closestBoss) || FAI_IsBossCastBarExtra(closestBoss)) {
-					TextDrawShowForPlayer(playerid, FAI_BossBlackCast);
+				TextDrawShowForPlayer(playerid, FAI_BlackHealth);
+				TextDrawShowForPlayer(playerid, FAI_DarkRed);
+				if(FAI_IsCasting(closestNPC) || FAI_IsCastBarExtra(closestNPC)) {
+					TextDrawShowForPlayer(playerid, FAI_BlackCast);
 				} else {
-					TextDrawHideForPlayer(playerid, FAI_BossBlackCast);
+					TextDrawHideForPlayer(playerid, FAI_BlackCast);
 				}
 			}
 			for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
 				//Show the mapicon if the NPC is valid for a player
-				if(FAI_IsBossValidForPlayer(playerid, npcid) && FAI_Bosses[npcid][ICONID] != FAI_INVALID_ICON_ID) {
-					new Float:bossX, Float:bossY, Float:bossZ;
-					FCNPC_GetPosition(FAI_Bosses[npcid][NPCID], bossX, bossY, bossZ);
-					SetPlayerMapIcon(playerid, FAI_Bosses[npcid][ICONID], bossX, bossY, bossZ, FAI_Bosses[npcid][ICON_MARKER], FAI_Bosses[npcid][ICON_COLOR], FAI_Bosses[npcid][ICON_STYLE]);
+				if(FAI_IsValidForPlayer(playerid, npcid) && FAI_NPCs[npcid][ICONID] != FAI_INVALID_ICON_ID) {
+					new Float:npcX, Float:npcY, Float:npcZ;
+					FCNPC_GetPosition(FAI_NPCs[npcid][NPCID], npcX, npcY, npcZ);
+					SetPlayerMapIcon(playerid, FAI_NPCs[npcid][ICONID], npcX, npcY, npcZ, FAI_NPCs[npcid][ICON_MARKER], FAI_NPCs[npcid][ICON_COLOR], FAI_NPCs[npcid][ICON_STYLE]);
 				}
 				//Hide the mapicon if the NPC is invalid for a player
 				else {
-					RemovePlayerMapIcon(playerid, FAI_Bosses[npcid][ICONID]);
+					RemovePlayerMapIcon(playerid, FAI_NPCs[npcid][ICONID]);
 				}
 				//Show the textdraws specific to an NPC if he is the closest NPC for a player
-				if(npcid == closestBoss) {
-					TextDrawShowForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][0]);
-					TextDrawShowForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][1]);
-					TextDrawShowForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][2]);
-					TextDrawShowForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][3]);
-					if(FAI_IsBossCasting(npcid) || FAI_IsBossCastBarExtra(npcid)) {
-						TextDrawShowForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][4]);
-						TextDrawShowForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][5]);
-						TextDrawShowForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][6]);
-						TextDrawShowForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][7]);
+				if(npcid == closestNPC) {
+					TextDrawShowForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][0]);
+					TextDrawShowForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][1]);
+					TextDrawShowForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][2]);
+					TextDrawShowForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][3]);
+					if(FAI_IsCasting(npcid) || FAI_IsCastBarExtra(npcid)) {
+						TextDrawShowForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][4]);
+						TextDrawShowForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][5]);
+						TextDrawShowForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][6]);
+						TextDrawShowForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][7]);
 					} else {
-						TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][4]);
-						TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][5]);
-						TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][6]);
-						TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][7]);
+						TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][4]);
+						TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][5]);
+						TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][6]);
+						TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][7]);
 					}
 				}
 				//Hide the textdraws specific to an NPC if he is not the closest NPC for a player
 				//Otherwise if multiple NPCs are in range, their textdraws will be put on top of eachother, which is ugly and we don't want of course
 				else {
-					TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][0]);
-					TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][1]);
-					TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][2]);
-					TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][3]);
-					TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][4]);
-					TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][5]);
-					TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][6]);
-					TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][7]);
+					TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][0]);
+					TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][1]);
+					TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][2]);
+					TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][3]);
+					TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][4]);
+					TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][5]);
+					TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][6]);
+					TextDrawHideForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][7]);
 				}
 			}
 		}
@@ -731,20 +731,20 @@ public FAI_Update() {
 	
 	//Update NPC
 	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-		if(FCNPC_IsValid(npcid) && FCNPC_IsSpawned(FAI_Bosses[npcid][NPCID]) && !FCNPC_IsDead(FAI_Bosses[npcid][NPCID])) {
+		if(FCNPC_IsValid(npcid) && FCNPC_IsSpawned(FAI_NPCs[npcid][NPCID]) && !FCNPC_IsDead(FAI_NPCs[npcid][NPCID])) {
 			//Update casting bar
-			FAI_IncreaseBossCastProgress(npcid);
+			FAI_IncreaseCastProgress(npcid);
 			//Get new target if no target, or if old target invalid, or if the NPC is not streamed in anymore for his old target
-			if(!FAI_IsBossValidForPlayer(FAI_Bosses[npcid][TARGET], npcid) || !IsPlayerStreamedIn(FAI_Bosses[npcid][NPCID], FAI_Bosses[npcid][TARGET])) {
+			if(!FAI_IsValidForPlayer(FAI_NPCs[npcid][TARGET], npcid) || !IsPlayerStreamedIn(FAI_NPCs[npcid][NPCID], FAI_NPCs[npcid][TARGET])) {
 				//Only set target if the encounter has already started OR if the behaviour is unfriendly
-				if(FAI_Bosses[npcid][TARGET] != INVALID_PLAYER_ID || FAI_Bosses[npcid][BEHAVIOUR] == FAI_BOSS_BEHAVIOUR_UNFRIENDLY) {
+				if(FAI_NPCs[npcid][TARGET] != INVALID_PLAYER_ID || FAI_NPCs[npcid][BEHAVIOUR] == FAI_BEHAVIOUR_UNFRIENDLY) {
 					//Set target to closestPlayerid (valid closestPlayerid check in setter)
-					FAI_SetBossTargetWithReason(npcid, FAI_GetClosestPlayerToTakeAggro(npcid), 3);
+					FAI_SetTargetWithReason(npcid, FAI_GetClosestPlayerToTakeAggro(npcid), 3);
 				}
 			}
 			//Attack target (which can be set above) if target known
-			if(FAI_Bosses[npcid][TARGET] != INVALID_PLAYER_ID) {
-				FAI_BossAttackTarget(npcid, FAI_Bosses[npcid][TARGET]);
+			if(FAI_NPCs[npcid][TARGET] != INVALID_PLAYER_ID) {
+				FAI_AttackTarget(npcid, FAI_NPCs[npcid][TARGET]);
 			}
 		}
 	}
@@ -781,188 +781,188 @@ static FAI_GetTickCountDiff(oldInteger, newInteger) {
 }
 
 //NPC
-static FAI_InitAllBosses() {
-	FAI_BossBlackHealth = TextDrawCreate(169.0, 429, "_");
-	TextDrawUseBox(FAI_BossBlackHealth, 1);
-	TextDrawBoxColor(FAI_BossBlackHealth, 0x000000ff);
-	TextDrawLetterSize(FAI_BossBlackHealth, 0.0, 0.7);
-	TextDrawTextSize(FAI_BossBlackHealth, 471.0, 0.0);
-	FAI_BossDarkRed = TextDrawCreate(170.0, 430.0, "_");
-	TextDrawUseBox(FAI_BossDarkRed, 1);
-	TextDrawBoxColor(FAI_BossDarkRed, 0x5A0C0EFF);
-	TextDrawLetterSize(FAI_BossDarkRed, 0.0, 0.5);
-	TextDrawTextSize(FAI_BossDarkRed, 470.0, 0.0);
-	FAI_BossBlackCast = TextDrawCreate(169.0, 439, "_");
-	TextDrawUseBox(FAI_BossBlackCast, 1);
-	TextDrawBoxColor(FAI_BossBlackCast, 0x000000ff);
-	TextDrawLetterSize(FAI_BossBlackCast, 0.0, 0.7);
-	TextDrawTextSize(FAI_BossBlackCast, 471.0, 0.0);
+static FAI_InitAll() {
+	FAI_BlackHealth = TextDrawCreate(169.0, 429, "_");
+	TextDrawUseBox(FAI_BlackHealth, 1);
+	TextDrawBoxColor(FAI_BlackHealth, 0x000000ff);
+	TextDrawLetterSize(FAI_BlackHealth, 0.0, 0.7);
+	TextDrawTextSize(FAI_BlackHealth, 471.0, 0.0);
+	FAI_DarkRed = TextDrawCreate(170.0, 430.0, "_");
+	TextDrawUseBox(FAI_DarkRed, 1);
+	TextDrawBoxColor(FAI_DarkRed, 0x5A0C0EFF);
+	TextDrawLetterSize(FAI_DarkRed, 0.0, 0.5);
+	TextDrawTextSize(FAI_DarkRed, 470.0, 0.0);
+	FAI_BlackCast = TextDrawCreate(169.0, 439, "_");
+	TextDrawUseBox(FAI_BlackCast, 1);
+	TextDrawBoxColor(FAI_BlackCast, 0x000000ff);
+	TextDrawLetterSize(FAI_BlackCast, 0.0, 0.7);
+	TextDrawTextSize(FAI_BlackCast, 471.0, 0.0);
 	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-		FAI_InitBoss(npcid);
+		FAI_Init(npcid);
 	}
 }
-static FAI_InitBoss(npcid) {
+static FAI_Init(npcid) {
 	//Don't use FCNPC_IsValid(npcid)
 	if(npcid >= 0 && npcid < MAX_PLAYERS) {
-		FAI_Bosses[npcid][TEXTDRAW][0] = TextDrawCreate(170.0, 430.0, "_");
-		TextDrawUseBox(FAI_Bosses[npcid][TEXTDRAW][0], 1);
-		TextDrawBoxColor(FAI_Bosses[npcid][TEXTDRAW][0], 0xB4191DFF);
-		TextDrawTextSize(FAI_Bosses[npcid][TEXTDRAW][0], 470.0, 0.0);
-		TextDrawLetterSize(FAI_Bosses[npcid][TEXTDRAW][0], 0.0, 0.5);
-		FAI_Bosses[npcid][TEXTDRAW][1] = TextDrawCreate(170.0, 429.0, "_");
-		TextDrawFont(FAI_Bosses[npcid][TEXTDRAW][1], 1);
-		TextDrawAlignment(FAI_Bosses[npcid][TEXTDRAW][1], 1);
-		TextDrawSetProportional(FAI_Bosses[npcid][TEXTDRAW][1], 1);
-		TextDrawColor(FAI_Bosses[npcid][TEXTDRAW][1], 0xffffffff);
-		TextDrawSetShadow(FAI_Bosses[npcid][TEXTDRAW][1], 0);
-		TextDrawSetOutline(FAI_Bosses[npcid][TEXTDRAW][1], 1);
-		TextDrawLetterSize(FAI_Bosses[npcid][TEXTDRAW][1], 0.2, 0.7);
-		FAI_Bosses[npcid][TEXTDRAW][2] = TextDrawCreate(470.0, 429.0, "_");
-		TextDrawFont(FAI_Bosses[npcid][TEXTDRAW][2], 1);
-		TextDrawAlignment(FAI_Bosses[npcid][TEXTDRAW][2], 3);
-		TextDrawSetProportional(FAI_Bosses[npcid][TEXTDRAW][2], 1);
-		TextDrawColor(FAI_Bosses[npcid][TEXTDRAW][2], 0xffffffff);
-		TextDrawSetShadow(FAI_Bosses[npcid][TEXTDRAW][2], 0);
-		TextDrawSetOutline(FAI_Bosses[npcid][TEXTDRAW][2], 1);
-		TextDrawLetterSize(FAI_Bosses[npcid][TEXTDRAW][2], 0.2, 0.7);
-		FAI_Bosses[npcid][TEXTDRAW][3] = TextDrawCreate(169.0, 415, "_");
-		TextDrawFont(FAI_Bosses[npcid][TEXTDRAW][3], 0);
-		TextDrawAlignment(FAI_Bosses[npcid][TEXTDRAW][3], 1);
-		TextDrawSetProportional(FAI_Bosses[npcid][TEXTDRAW][3], 1);
-		TextDrawColor(FAI_Bosses[npcid][TEXTDRAW][3], 0xffffffff);
-		TextDrawSetShadow(FAI_Bosses[npcid][TEXTDRAW][3], 0);
-		TextDrawSetOutline(FAI_Bosses[npcid][TEXTDRAW][3], 1);
-		TextDrawLetterSize(FAI_Bosses[npcid][TEXTDRAW][3], 0.3, 1.0);
-		FAI_Bosses[npcid][TEXTDRAW][4] = TextDrawCreate(170.0, 440.0, "_");
-		TextDrawUseBox(FAI_Bosses[npcid][TEXTDRAW][4], 1);
-		TextDrawBoxColor(FAI_Bosses[npcid][TEXTDRAW][4], 0x645005ff);
-		TextDrawTextSize(FAI_Bosses[npcid][TEXTDRAW][4], 470.0, 0.0);
-		TextDrawLetterSize(FAI_Bosses[npcid][TEXTDRAW][4], 0.0, 0.5);
-		FAI_Bosses[npcid][TEXTDRAW][5] = TextDrawCreate(170.0, 440.0, "_");
-		TextDrawUseBox(FAI_Bosses[npcid][TEXTDRAW][5], 1);
-		TextDrawBoxColor(FAI_Bosses[npcid][TEXTDRAW][5], 0xB4820AFF);
-		TextDrawTextSize(FAI_Bosses[npcid][TEXTDRAW][5], 470.0, 0.0);
-		TextDrawLetterSize(FAI_Bosses[npcid][TEXTDRAW][5], 0.0, 0.5);
-		FAI_Bosses[npcid][TEXTDRAW][6] = TextDrawCreate(170.0, 439.0, "_");
-		TextDrawFont(FAI_Bosses[npcid][TEXTDRAW][6], 1);
-		TextDrawAlignment(FAI_Bosses[npcid][TEXTDRAW][6], 1);
-		TextDrawSetProportional(FAI_Bosses[npcid][TEXTDRAW][6], 1);
-		TextDrawColor(FAI_Bosses[npcid][TEXTDRAW][6], 0xffffffff);
-		TextDrawSetShadow(FAI_Bosses[npcid][TEXTDRAW][6], 0);
-		TextDrawSetOutline(FAI_Bosses[npcid][TEXTDRAW][6], 1);
-		TextDrawLetterSize(FAI_Bosses[npcid][TEXTDRAW][6], 0.2, 0.7);
-		FAI_Bosses[npcid][TEXTDRAW][7] = TextDrawCreate(470.0, 439.0, "_");
-		TextDrawFont(FAI_Bosses[npcid][TEXTDRAW][7], 1);
-		TextDrawAlignment(FAI_Bosses[npcid][TEXTDRAW][7], 3);
-		TextDrawSetProportional(FAI_Bosses[npcid][TEXTDRAW][7], 1);
-		TextDrawColor(FAI_Bosses[npcid][TEXTDRAW][7], 0xffffffff);
-		TextDrawSetShadow(FAI_Bosses[npcid][TEXTDRAW][7], 0);
-		TextDrawSetOutline(FAI_Bosses[npcid][TEXTDRAW][7], 1);
-		TextDrawLetterSize(FAI_Bosses[npcid][TEXTDRAW][7], 0.2, 0.7);
-		FAI_ResetBossStats(npcid);
+		FAI_NPCs[npcid][TEXTDRAW][0] = TextDrawCreate(170.0, 430.0, "_");
+		TextDrawUseBox(FAI_NPCs[npcid][TEXTDRAW][0], 1);
+		TextDrawBoxColor(FAI_NPCs[npcid][TEXTDRAW][0], 0xB4191DFF);
+		TextDrawTextSize(FAI_NPCs[npcid][TEXTDRAW][0], 470.0, 0.0);
+		TextDrawLetterSize(FAI_NPCs[npcid][TEXTDRAW][0], 0.0, 0.5);
+		FAI_NPCs[npcid][TEXTDRAW][1] = TextDrawCreate(170.0, 429.0, "_");
+		TextDrawFont(FAI_NPCs[npcid][TEXTDRAW][1], 1);
+		TextDrawAlignment(FAI_NPCs[npcid][TEXTDRAW][1], 1);
+		TextDrawSetProportional(FAI_NPCs[npcid][TEXTDRAW][1], 1);
+		TextDrawColor(FAI_NPCs[npcid][TEXTDRAW][1], 0xffffffff);
+		TextDrawSetShadow(FAI_NPCs[npcid][TEXTDRAW][1], 0);
+		TextDrawSetOutline(FAI_NPCs[npcid][TEXTDRAW][1], 1);
+		TextDrawLetterSize(FAI_NPCs[npcid][TEXTDRAW][1], 0.2, 0.7);
+		FAI_NPCs[npcid][TEXTDRAW][2] = TextDrawCreate(470.0, 429.0, "_");
+		TextDrawFont(FAI_NPCs[npcid][TEXTDRAW][2], 1);
+		TextDrawAlignment(FAI_NPCs[npcid][TEXTDRAW][2], 3);
+		TextDrawSetProportional(FAI_NPCs[npcid][TEXTDRAW][2], 1);
+		TextDrawColor(FAI_NPCs[npcid][TEXTDRAW][2], 0xffffffff);
+		TextDrawSetShadow(FAI_NPCs[npcid][TEXTDRAW][2], 0);
+		TextDrawSetOutline(FAI_NPCs[npcid][TEXTDRAW][2], 1);
+		TextDrawLetterSize(FAI_NPCs[npcid][TEXTDRAW][2], 0.2, 0.7);
+		FAI_NPCs[npcid][TEXTDRAW][3] = TextDrawCreate(169.0, 415, "_");
+		TextDrawFont(FAI_NPCs[npcid][TEXTDRAW][3], 0);
+		TextDrawAlignment(FAI_NPCs[npcid][TEXTDRAW][3], 1);
+		TextDrawSetProportional(FAI_NPCs[npcid][TEXTDRAW][3], 1);
+		TextDrawColor(FAI_NPCs[npcid][TEXTDRAW][3], 0xffffffff);
+		TextDrawSetShadow(FAI_NPCs[npcid][TEXTDRAW][3], 0);
+		TextDrawSetOutline(FAI_NPCs[npcid][TEXTDRAW][3], 1);
+		TextDrawLetterSize(FAI_NPCs[npcid][TEXTDRAW][3], 0.3, 1.0);
+		FAI_NPCs[npcid][TEXTDRAW][4] = TextDrawCreate(170.0, 440.0, "_");
+		TextDrawUseBox(FAI_NPCs[npcid][TEXTDRAW][4], 1);
+		TextDrawBoxColor(FAI_NPCs[npcid][TEXTDRAW][4], 0x645005ff);
+		TextDrawTextSize(FAI_NPCs[npcid][TEXTDRAW][4], 470.0, 0.0);
+		TextDrawLetterSize(FAI_NPCs[npcid][TEXTDRAW][4], 0.0, 0.5);
+		FAI_NPCs[npcid][TEXTDRAW][5] = TextDrawCreate(170.0, 440.0, "_");
+		TextDrawUseBox(FAI_NPCs[npcid][TEXTDRAW][5], 1);
+		TextDrawBoxColor(FAI_NPCs[npcid][TEXTDRAW][5], 0xB4820AFF);
+		TextDrawTextSize(FAI_NPCs[npcid][TEXTDRAW][5], 470.0, 0.0);
+		TextDrawLetterSize(FAI_NPCs[npcid][TEXTDRAW][5], 0.0, 0.5);
+		FAI_NPCs[npcid][TEXTDRAW][6] = TextDrawCreate(170.0, 439.0, "_");
+		TextDrawFont(FAI_NPCs[npcid][TEXTDRAW][6], 1);
+		TextDrawAlignment(FAI_NPCs[npcid][TEXTDRAW][6], 1);
+		TextDrawSetProportional(FAI_NPCs[npcid][TEXTDRAW][6], 1);
+		TextDrawColor(FAI_NPCs[npcid][TEXTDRAW][6], 0xffffffff);
+		TextDrawSetShadow(FAI_NPCs[npcid][TEXTDRAW][6], 0);
+		TextDrawSetOutline(FAI_NPCs[npcid][TEXTDRAW][6], 1);
+		TextDrawLetterSize(FAI_NPCs[npcid][TEXTDRAW][6], 0.2, 0.7);
+		FAI_NPCs[npcid][TEXTDRAW][7] = TextDrawCreate(470.0, 439.0, "_");
+		TextDrawFont(FAI_NPCs[npcid][TEXTDRAW][7], 1);
+		TextDrawAlignment(FAI_NPCs[npcid][TEXTDRAW][7], 3);
+		TextDrawSetProportional(FAI_NPCs[npcid][TEXTDRAW][7], 1);
+		TextDrawColor(FAI_NPCs[npcid][TEXTDRAW][7], 0xffffffff);
+		TextDrawSetShadow(FAI_NPCs[npcid][TEXTDRAW][7], 0);
+		TextDrawSetOutline(FAI_NPCs[npcid][TEXTDRAW][7], 1);
+		TextDrawLetterSize(FAI_NPCs[npcid][TEXTDRAW][7], 0.2, 0.7);
+		FAI_ResetStats(npcid);
 	}
 }
-static FAI_ResetBossStats(npcid) {
+static FAI_ResetStats(npcid) {
 	//Don't use FCNPC_IsValid(npcid)
 	if(npcid >= 0 && npcid < MAX_PLAYERS) {
-		FAI_strcpy(FAI_Bosses[npcid][FULL_NAME], FAI_INVALID_STRING, FAI_MAX_BOSS_FULL_NAME + 1);
-		FAI_Bosses[npcid][ICONID] = FAI_INVALID_ICON_ID;
-		FAI_Bosses[npcid][ICON_MARKER] = 0;
-		FAI_Bosses[npcid][ICON_COLOR] = FAI_INVALID_COLOR;
-		FAI_Bosses[npcid][ICON_STYLE] = MAPICON_LOCAL;
-		FAI_Bosses[npcid][MAX_HEALTH] = 0.0;
-		FAI_Bosses[npcid][RANGE_DISPLAY] = 0.0;
-		FAI_Bosses[npcid][RANGE_AGGRO] = 0.0;
-		FAI_Bosses[npcid][DISPLAY_IF_DEAD] = false;
-		FAI_Bosses[npcid][CUR_HEALTH] = 0.0;
-		FAI_Bosses[npcid][TARGET] = INVALID_PLAYER_ID;
-		FAI_Bosses[npcid][MOVE_TYPE] = FCNPC_MOVE_TYPE_AUTO;
-		FAI_Bosses[npcid][MOVE_SPEED] = 0.0;
-		FAI_Bosses[npcid][MOVE_USE_MAP_ANDREAS] = false;
-		FAI_Bosses[npcid][MOVE_RADIUS] = 0.0;
-		FAI_Bosses[npcid][MOVE_SET_ANGLE] = false;
-		FAI_Bosses[npcid][RANGED_ATTACK_RANGE] = 0.0;
-		FAI_Bosses[npcid][RANGED_ATTACK_DELAY] = 0;
-		FAI_Bosses[npcid][RANGED_ATTACK_SET_ANGLE] = false;
-		FAI_Bosses[npcid][MELEE_ATTACK_RANGE] = 0.0;
-		FAI_Bosses[npcid][MELEE_ATTACK_DELAY] = 0;
-		FAI_Bosses[npcid][MELEE_ATTACK_USE_FIGHT_STYLE] = false;
-		FAI_Bosses[npcid][ALLOW_NPC_TARGETS] = false;
-		FAI_Bosses[npcid][BEHAVIOUR] = FAI_BOSS_BEHAVIOUR_NEUTRAL;
+		FAI_strcpy(FAI_NPCs[npcid][FULL_NAME], FAI_INVALID_STRING, FAI_MAX_FULL_NAME + 1);
+		FAI_NPCs[npcid][ICONID] = FAI_INVALID_ICON_ID;
+		FAI_NPCs[npcid][ICON_MARKER] = 0;
+		FAI_NPCs[npcid][ICON_COLOR] = FAI_INVALID_COLOR;
+		FAI_NPCs[npcid][ICON_STYLE] = MAPICON_LOCAL;
+		FAI_NPCs[npcid][MAX_HEALTH] = 0.0;
+		FAI_NPCs[npcid][RANGE_DISPLAY] = 0.0;
+		FAI_NPCs[npcid][RANGE_AGGRO] = 0.0;
+		FAI_NPCs[npcid][DISPLAY_IF_DEAD] = false;
+		FAI_NPCs[npcid][CUR_HEALTH] = 0.0;
+		FAI_NPCs[npcid][TARGET] = INVALID_PLAYER_ID;
+		FAI_NPCs[npcid][MOVE_TYPE] = FCNPC_MOVE_TYPE_AUTO;
+		FAI_NPCs[npcid][MOVE_SPEED] = 0.0;
+		FAI_NPCs[npcid][MOVE_USE_MAP_ANDREAS] = false;
+		FAI_NPCs[npcid][MOVE_RADIUS] = 0.0;
+		FAI_NPCs[npcid][MOVE_SET_ANGLE] = false;
+		FAI_NPCs[npcid][RANGED_ATTACK_RANGE] = 0.0;
+		FAI_NPCs[npcid][RANGED_ATTACK_DELAY] = 0;
+		FAI_NPCs[npcid][RANGED_ATTACK_SET_ANGLE] = false;
+		FAI_NPCs[npcid][MELEE_ATTACK_RANGE] = 0.0;
+		FAI_NPCs[npcid][MELEE_ATTACK_DELAY] = 0;
+		FAI_NPCs[npcid][MELEE_ATTACK_USE_FIGHT_STYLE] = false;
+		FAI_NPCs[npcid][ALLOW_NPC_TARGETS] = false;
+		FAI_NPCs[npcid][BEHAVIOUR] = FAI_BEHAVIOUR_NEUTRAL;
 		for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
-			FAI_Bosses[npcid][THREAT][playerid] = 0;
+			FAI_NPCs[npcid][THREAT][playerid] = 0;
 		}
-		FAI_Bosses[npcid][NPCID] = INVALID_PLAYER_ID;
+		FAI_NPCs[npcid][NPCID] = INVALID_PLAYER_ID;
 	}
 }
-stock FAI_DestroyAllBosses() {
-	TextDrawDestroy(FAI_BossBlackHealth);
-	TextDrawDestroy(FAI_BossDarkRed);
-	TextDrawDestroy(FAI_BossBlackCast);
-	FAI_BossBlackHealth = Text:INVALID_TEXT_DRAW;
-	FAI_BossDarkRed = Text:INVALID_TEXT_DRAW;
-	FAI_BossBlackCast = Text:INVALID_TEXT_DRAW;
+stock FAI_DestroyAll() {
+	TextDrawDestroy(FAI_BlackHealth);
+	TextDrawDestroy(FAI_DarkRed);
+	TextDrawDestroy(FAI_BlackCast);
+	FAI_BlackHealth = Text:INVALID_TEXT_DRAW;
+	FAI_DarkRed = Text:INVALID_TEXT_DRAW;
+	FAI_BlackCast = Text:INVALID_TEXT_DRAW;
 	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-		FAI_DestroyBoss(npcid);
+		FAI_Destroy(npcid);
 	}
 	return 1;
 }
-stock FAI_DestroyBoss(npcid) {
+stock FAI_Destroy(npcid) {
 	if(FCNPC_IsValid(npcid)) {
-		FCNPC_Destroy(FAI_Bosses[npcid][NPCID]);
-		//FAI_DestroyBossNoFCNPC_Destroy will be called by OnPlayerDisconnect
+		FCNPC_Destroy(FAI_NPCs[npcid][NPCID]);
+		//FAI_DestroyNoFCNPC_Destroy will be called by OnPlayerDisconnect
 		return 1;
 	}
 	return 0;
 }
-static FAI_DestroyBossNoFCNPC_Destroy(npcid) {
+static FAI_DestroyNoFCNPC_Destroy(npcid) {
 	if(FCNPC_IsValid(npcid)) {
 		for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
-			RemovePlayerMapIcon(playerid, FAI_Bosses[npcid][ICONID]);
+			RemovePlayerMapIcon(playerid, FAI_NPCs[npcid][ICONID]);
 		}
-		//In case the NPC is casting when the encounter hasn't started yet (can happen by using FAI_StartBossCastingSpell). FAI_SetBossTargetWithReason doesn't take care of this for various reasons.
-		if(FAI_Bosses[npcid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(npcid)) {
-			FAI_StopBossCasting(npcid);
+		//In case the NPC is casting when the encounter hasn't started yet (can happen by using FAI_StartCastingSpell). FAI_SetTargetWithReason doesn't take care of this for various reasons.
+		if(FAI_NPCs[npcid][TARGET] == INVALID_PLAYER_ID && FAI_IsCasting(npcid)) {
+			FAI_StopCasting(npcid);
 		}
 		//Reset target & threat for all players
-		FAI_SetBossTargetWithReason(npcid, INVALID_PLAYER_ID, 0); //FAI_Casting gets reset in here, so we don't need to reset it manually again
-		TextDrawDestroy(FAI_Bosses[npcid][TEXTDRAW][0]);
-		TextDrawDestroy(FAI_Bosses[npcid][TEXTDRAW][1]);
-		TextDrawDestroy(FAI_Bosses[npcid][TEXTDRAW][2]);
-		TextDrawDestroy(FAI_Bosses[npcid][TEXTDRAW][3]);
-		TextDrawDestroy(FAI_Bosses[npcid][TEXTDRAW][4]);
-		TextDrawDestroy(FAI_Bosses[npcid][TEXTDRAW][5]);
-		TextDrawDestroy(FAI_Bosses[npcid][TEXTDRAW][6]);
-		TextDrawDestroy(FAI_Bosses[npcid][TEXTDRAW][7]);
-		FAI_Bosses[npcid][TEXTDRAW][0] = Text:INVALID_TEXT_DRAW;
-		FAI_Bosses[npcid][TEXTDRAW][1] = Text:INVALID_TEXT_DRAW;
-		FAI_Bosses[npcid][TEXTDRAW][2] = Text:INVALID_TEXT_DRAW;
-		FAI_Bosses[npcid][TEXTDRAW][3] = Text:INVALID_TEXT_DRAW;
-		FAI_Bosses[npcid][TEXTDRAW][4] = Text:INVALID_TEXT_DRAW;
-		FAI_Bosses[npcid][TEXTDRAW][5] = Text:INVALID_TEXT_DRAW;
-		FAI_Bosses[npcid][TEXTDRAW][6] = Text:INVALID_TEXT_DRAW;
-		FAI_Bosses[npcid][TEXTDRAW][7] = Text:INVALID_TEXT_DRAW;
-		FAI_ResetBossStats(npcid);
+		FAI_SetTargetWithReason(npcid, INVALID_PLAYER_ID, 0); //FAI_Casting gets reset in here, so we don't need to reset it manually again
+		TextDrawDestroy(FAI_NPCs[npcid][TEXTDRAW][0]);
+		TextDrawDestroy(FAI_NPCs[npcid][TEXTDRAW][1]);
+		TextDrawDestroy(FAI_NPCs[npcid][TEXTDRAW][2]);
+		TextDrawDestroy(FAI_NPCs[npcid][TEXTDRAW][3]);
+		TextDrawDestroy(FAI_NPCs[npcid][TEXTDRAW][4]);
+		TextDrawDestroy(FAI_NPCs[npcid][TEXTDRAW][5]);
+		TextDrawDestroy(FAI_NPCs[npcid][TEXTDRAW][6]);
+		TextDrawDestroy(FAI_NPCs[npcid][TEXTDRAW][7]);
+		FAI_NPCs[npcid][TEXTDRAW][0] = Text:INVALID_TEXT_DRAW;
+		FAI_NPCs[npcid][TEXTDRAW][1] = Text:INVALID_TEXT_DRAW;
+		FAI_NPCs[npcid][TEXTDRAW][2] = Text:INVALID_TEXT_DRAW;
+		FAI_NPCs[npcid][TEXTDRAW][3] = Text:INVALID_TEXT_DRAW;
+		FAI_NPCs[npcid][TEXTDRAW][4] = Text:INVALID_TEXT_DRAW;
+		FAI_NPCs[npcid][TEXTDRAW][5] = Text:INVALID_TEXT_DRAW;
+		FAI_NPCs[npcid][TEXTDRAW][6] = Text:INVALID_TEXT_DRAW;
+		FAI_NPCs[npcid][TEXTDRAW][7] = Text:INVALID_TEXT_DRAW;
+		FAI_ResetStats(npcid);
 	}
 }
-stock FAI_CreateBoss(name[]) {
+stock FAI_Create(name[]) {
 	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-		if(FAI_Bosses[npcid][NPCID] == INVALID_PLAYER_ID) {
-			FAI_Bosses[npcid][NPCID] = FCNPC_Create(name);
-			if(FAI_Bosses[npcid][NPCID] != INVALID_PLAYER_ID) {
-				FAI_SetBossFullName(npcid, FAI_INVALID_STRING);
-				FAI_SetBossMapiconInfo(npcid, FAI_INVALID_ICON_ID, 23, 0xff0000ff, MAPICON_LOCAL);
-				FAI_SetBossMaxHealth(npcid, 100.0);
-				FAI_SetBossDisplayRange(npcid, 0.0);
-				FAI_SetBossAggroRange(npcid, 20.0);
-				FAI_SetBossDisplayIfDead(npcid, true);
-				FAI_SetBossCurrentHealth(npcid, -1.0);
-				FAI_SetBossTarget(npcid, INVALID_PLAYER_ID);
-				FAI_SetBossMoveInfo(npcid, FCNPC_MOVE_TYPE_AUTO, FCNPC_MOVE_SPEED_AUTO, false, 0.0, true);
-				FAI_SetBossRangedAttackInfo(npcid, 20.0, -1, true);
-				FAI_SetBossMeleeAttackInfo(npcid, 1.0, -1, false);
-				FAI_SetBossAllowNPCTargets(npcid, true);
-				FAI_SetBossBehaviour(npcid, FAI_BOSS_BEHAVIOUR_NEUTRAL);
+		if(FAI_NPCs[npcid][NPCID] == INVALID_PLAYER_ID) {
+			FAI_NPCs[npcid][NPCID] = FCNPC_Create(name);
+			if(FAI_NPCs[npcid][NPCID] != INVALID_PLAYER_ID) {
+				FAI_SetFullName(npcid, FAI_INVALID_STRING);
+				FAI_SetMapiconInfo(npcid, FAI_INVALID_ICON_ID, 23, 0xff0000ff, MAPICON_LOCAL);
+				FAI_SetMaxHealth(npcid, 100.0);
+				FAI_SetDisplayRange(npcid, 0.0);
+				FAI_SetAggroRange(npcid, 20.0);
+				FAI_SetDisplayIfDead(npcid, true);
+				FAI_SetCurrentHealth(npcid, -1.0);
+				FAI_SetTarget(npcid, INVALID_PLAYER_ID);
+				FAI_SetMoveInfo(npcid, FCNPC_MOVE_TYPE_AUTO, FCNPC_MOVE_SPEED_AUTO, false, 0.0, true);
+				FAI_SetRangedAttackInfo(npcid, 20.0, -1, true);
+				FAI_SetMeleeAttackInfo(npcid, 1.0, -1, false);
+				FAI_SetAllowNPCTargets(npcid, true);
+				FAI_SetBehaviour(npcid, FAI_BEHAVIOUR_NEUTRAL);
 				return npcid;
 			} else {
 				//FCNPC_Create failed
@@ -973,171 +973,171 @@ stock FAI_CreateBoss(name[]) {
 	//Max amount of NPCs reached
 	return INVALID_PLAYER_ID;
 }
-stock FAI_GetBossFullName(npcid, name[], len) {
+stock FAI_GetFullName(npcid, name[], len) {
 	if(FCNPC_IsValid(npcid)) {
-		FAI_strcpy(name, FAI_Bosses[npcid][FULL_NAME], len);
+		FAI_strcpy(name, FAI_NPCs[npcid][FULL_NAME], len);
 		return strlen(name);
 	}
 	return -1;
 }
-stock FAI_SetBossFullName(npcid, name[]) {
+stock FAI_SetFullName(npcid, name[]) {
 	if(FCNPC_IsValid(npcid)) {
 		//If the user didn't provide a valid fullName, use the playerName
 		if(!FAI_isnull(name) && !strcmp(name, FAI_INVALID_STRING, true)) {
 			new playerName[MAX_PLAYER_NAME + 1];
-			GetPlayerName(FAI_Bosses[npcid][NPCID], playerName, sizeof(playerName));
-			FAI_strcpy(FAI_Bosses[npcid][FULL_NAME], playerName, FAI_MAX_BOSS_FULL_NAME + 1);
+			GetPlayerName(FAI_NPCs[npcid][NPCID], playerName, sizeof(playerName));
+			FAI_strcpy(FAI_NPCs[npcid][FULL_NAME], playerName, FAI_MAX_FULL_NAME + 1);
 		}
 		//If the user did provide a valid fullName, use that one
 		else {
-			FAI_strcpy(FAI_Bosses[npcid][FULL_NAME], name, FAI_MAX_BOSS_FULL_NAME + 1);
+			FAI_strcpy(FAI_NPCs[npcid][FULL_NAME], name, FAI_MAX_FULL_NAME + 1);
 		}
-		TextDrawSetString(FAI_Bosses[npcid][TEXTDRAW][3], FAI_Bosses[npcid][FULL_NAME]);
+		TextDrawSetString(FAI_NPCs[npcid][TEXTDRAW][3], FAI_NPCs[npcid][FULL_NAME]);
 		//FullName textdraw updates automatically
 		return 1;
 	}
 	return 0;
 }
-stock FAI_GetBossMapiconInfo(npcid, &iconid, &iconMarker, &iconColor, &iconStyle) {
+stock FAI_GetMapiconInfo(npcid, &iconid, &iconMarker, &iconColor, &iconStyle) {
 	if(FCNPC_IsValid(npcid)) {
-		iconid = FAI_Bosses[npcid][ICONID];
-		iconMarker = FAI_Bosses[npcid][ICON_MARKER];
-		iconColor = FAI_Bosses[npcid][ICON_COLOR];
-		iconStyle = FAI_Bosses[npcid][ICON_STYLE];
+		iconid = FAI_NPCs[npcid][ICONID];
+		iconMarker = FAI_NPCs[npcid][ICON_MARKER];
+		iconColor = FAI_NPCs[npcid][ICON_COLOR];
+		iconStyle = FAI_NPCs[npcid][ICON_STYLE];
 		return 1;
 	}
 	return 0;
 }
-stock FAI_SetBossMapiconInfo(npcid, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL) {
+stock FAI_SetMapiconInfo(npcid, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL) {
 	if(FCNPC_IsValid(npcid)) {
 		if(iconid == FAI_INVALID_ICON_ID) {
 			for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
-				RemovePlayerMapIcon(playerid, FAI_Bosses[npcid][ICONID]);
+				RemovePlayerMapIcon(playerid, FAI_NPCs[npcid][ICONID]);
 			}
 		}
-		FAI_Bosses[npcid][ICONID] = iconid;
+		FAI_NPCs[npcid][ICONID] = iconid;
 		//Icon settings below, update automatically (see FAI_Update)
-		FAI_Bosses[npcid][ICON_MARKER] = iconMarker;
-		FAI_Bosses[npcid][ICON_COLOR] = iconColor;
-		FAI_Bosses[npcid][ICON_STYLE] = iconStyle;
+		FAI_NPCs[npcid][ICON_MARKER] = iconMarker;
+		FAI_NPCs[npcid][ICON_COLOR] = iconColor;
+		FAI_NPCs[npcid][ICON_STYLE] = iconStyle;
 		return 1;
 	}
 	return 0;
 }
-stock FAI_GetBossMaxHealth(npcid, &Float:health) {
+stock FAI_GetMaxHealth(npcid, &Float:health) {
 	if(FCNPC_IsValid(npcid)) {
-		health = FAI_Bosses[npcid][MAX_HEALTH];
+		health = FAI_NPCs[npcid][MAX_HEALTH];
 		return 1;
 	}
 	return 0;
 }
-stock FAI_SetBossMaxHealth(npcid, Float:health) {
+stock FAI_SetMaxHealth(npcid, Float:health) {
 	if(FCNPC_IsValid(npcid)) {
 		if(health <= 0.0) {
-			if(!FCNPC_IsDead(FAI_Bosses[npcid][NPCID])) {
-				FCNPC_Kill(FAI_Bosses[npcid][NPCID]);
+			if(!FCNPC_IsDead(FAI_NPCs[npcid][NPCID])) {
+				FCNPC_Kill(FAI_NPCs[npcid][NPCID]);
 			}
 			health = 0.0;
 		}
-		if(FAI_Bosses[npcid][CUR_HEALTH] > health) {
-			FAI_Bosses[npcid][CUR_HEALTH] = health;
+		if(FAI_NPCs[npcid][CUR_HEALTH] > health) {
+			FAI_NPCs[npcid][CUR_HEALTH] = health;
 		}
-		FAI_Bosses[npcid][MAX_HEALTH] = health;
-		FAI_UpdateBossHealthDisplay(npcid);
+		FAI_NPCs[npcid][MAX_HEALTH] = health;
+		FAI_UpdateHealthDisplay(npcid);
 		return 1;
 	}
 	return 0;
 }
-stock FAI_GetBossDisplayRange(npcid, &Float:range) {
+stock FAI_GetDisplayRange(npcid, &Float:range) {
 	if(FCNPC_IsValid(npcid)) {
-		range = FAI_Bosses[npcid][RANGE_DISPLAY];
+		range = FAI_NPCs[npcid][RANGE_DISPLAY];
 		return 1;
 	}
 	return 0;
 }
-stock FAI_SetBossDisplayRange(npcid, Float:range) {
+stock FAI_SetDisplayRange(npcid, Float:range) {
 	if(FCNPC_IsValid(npcid)) {
 		if(range < 0.0) {
 			range = 0.0;
 		}
-		FAI_Bosses[npcid][RANGE_DISPLAY] = range;
+		FAI_NPCs[npcid][RANGE_DISPLAY] = range;
 		//Textdraws update automatically (see FAI_Update)
 		return 1;
 	}
 	return 0;
 }
-stock FAI_GetBossAggroRange(npcid, &Float:range) {
+stock FAI_GetAggroRange(npcid, &Float:range) {
 	if(FCNPC_IsValid(npcid)) {
-		range = FAI_Bosses[npcid][RANGE_AGGRO];
+		range = FAI_NPCs[npcid][RANGE_AGGRO];
 		return 1;
 	}
 	return 0;
 }
-stock FAI_SetBossAggroRange(npcid, Float:range) {
+stock FAI_SetAggroRange(npcid, Float:range) {
 	if(FCNPC_IsValid(npcid)) {
 		if(range < 0.0) {
 			range = 0.0;
 		}
-		FAI_Bosses[npcid][RANGE_AGGRO] = range;
+		FAI_NPCs[npcid][RANGE_AGGRO] = range;
 		return 1;
 	}
 	return 0;
 }
-stock FAI_GetBossDisplayIfDead(npcid) {
+stock FAI_GetDisplayIfDead(npcid) {
 	if(FCNPC_IsValid(npcid)) {
-		return FAI_Bosses[npcid][DISPLAY_IF_DEAD];
+		return FAI_NPCs[npcid][DISPLAY_IF_DEAD];
 	}
 	return -1;
 }
-stock FAI_SetBossDisplayIfDead(npcid, bool:displayIfDead) {
+stock FAI_SetDisplayIfDead(npcid, bool:displayIfDead) {
 	if(FCNPC_IsValid(npcid)) {
-		FAI_Bosses[npcid][DISPLAY_IF_DEAD] = displayIfDead;
+		FAI_NPCs[npcid][DISPLAY_IF_DEAD] = displayIfDead;
 		//Textdraws update automatically (see FAI_Update)
 		return 1;
 	}
 	return 0;
 }
-stock FAI_GetBossCurrentHealth(npcid, &Float:health) {
+stock FAI_GetCurrentHealth(npcid, &Float:health) {
 	if(FCNPC_IsValid(npcid)) {
-		health = FAI_Bosses[npcid][CUR_HEALTH];
+		health = FAI_NPCs[npcid][CUR_HEALTH];
 		return 1;
 	}
 	return 0;
 }
-stock FAI_SetBossCurrentHealth(npcid, Float:health) {
+stock FAI_SetCurrentHealth(npcid, Float:health) {
 	if(FCNPC_IsValid(npcid)) {
 		if(health < 0.0) {
-			health = FAI_Bosses[npcid][MAX_HEALTH];
+			health = FAI_NPCs[npcid][MAX_HEALTH];
 		} else if(health == 0.0) {
-			if(!FCNPC_IsDead(FAI_Bosses[npcid][NPCID])) {
-				FCNPC_Kill(FAI_Bosses[npcid][NPCID]);
+			if(!FCNPC_IsDead(FAI_NPCs[npcid][NPCID])) {
+				FCNPC_Kill(FAI_NPCs[npcid][NPCID]);
 			}
 		}
-		if(FAI_Bosses[npcid][MAX_HEALTH] < health) {
-			FAI_Bosses[npcid][MAX_HEALTH] = health;
+		if(FAI_NPCs[npcid][MAX_HEALTH] < health) {
+			FAI_NPCs[npcid][MAX_HEALTH] = health;
 		}
-		FAI_Bosses[npcid][CUR_HEALTH] = health;
-		FAI_UpdateBossHealthDisplay(npcid);
+		FAI_NPCs[npcid][CUR_HEALTH] = health;
+		FAI_UpdateHealthDisplay(npcid);
 		return 1;
 	}
 	return 0;
 }
-stock FAI_GetBossTarget(npcid) {
+stock FAI_GetTarget(npcid) {
 	if(FCNPC_IsValid(npcid)) {
-		return FAI_Bosses[npcid][TARGET];
+		return FAI_NPCs[npcid][TARGET];
 	}
 	return -1;
 }
-stock FAI_SetBossTarget(npcid, playerid) {
+stock FAI_SetTarget(npcid, playerid) {
 	//Set target to playerid (valid playerid check in setter)
-	//FCNPC_IsValid in FAI_SetBossTargetWithReason
-	return FAI_SetBossTargetWithReason(npcid, playerid, 4);
+	//FCNPC_IsValid in FAI_SetTargetWithReason
+	return FAI_SetTargetWithReason(npcid, playerid, 4);
 }
 /*
 Reason:
 - 0: reset (invalid new target)
-- 1: bossDamaged (valid new target, invalid new target)
-- 2: bossDeath (invalid new target)
+- 1: npcDamaged (valid new target, invalid new target)
+- 2: npcDeath (invalid new target)
 - 3: target aggro (valid new target, invalid new target)
 - 4: explicit set (valid new target, invalid new target)
 */
@@ -1146,22 +1146,22 @@ Reason:
 //Old target same as new target						=> nothing
 //CheckIfStreamedIn and new target not streamed in	=> nothing
 //CheckIfValid and new target not valid				=> nothing
-//Reason is bossDamaged and old target is valid		=> nothing
+//Reason is npcDamaged and old target is valid		=> nothing
 //New valid target, no old target		=> set target, new target get aggro, start encounter
 //New valid target, with old target		=> old target lose aggro, set target, new target get aggro
 //New invalid target, no old target		=> set target
 //New invalid target, with old target	=> old target lose aggro, set target, stop encounter
-static FAI_SetBossTargetWithReason(npcid, newtargetid, reason) {
+static FAI_SetTargetWithReason(npcid, newtargetid, reason) {
 	if(FCNPC_IsValid(npcid)) {
-		new oldtargetid = FAI_Bosses[npcid][TARGET];
+		new oldtargetid = FAI_NPCs[npcid][TARGET];
 		if(oldtargetid != newtargetid) {
 			new bool:newTargetValid = true;
 			new bool:newTargetStreamedIn = true;
 			if(newtargetid != INVALID_PLAYER_ID) {
-				if(!FAI_IsBossValidForPlayer(newtargetid, npcid)) {
+				if(!FAI_IsValidForPlayer(newtargetid, npcid)) {
 					newTargetValid = false;
 				}
-				if(!IsPlayerStreamedIn(FAI_Bosses[npcid][NPCID], newtargetid)) {
+				if(!IsPlayerStreamedIn(FAI_NPCs[npcid][NPCID], newtargetid)) {
 					newTargetStreamedIn = false;
 				}
 			}
@@ -1173,7 +1173,7 @@ static FAI_SetBossTargetWithReason(npcid, newtargetid, reason) {
 				if(oldtargetid != INVALID_PLAYER_ID) {
 					CallRemoteFunction("FAI_OnPlayerLoseAggro", "dd", oldtargetid, npcid);
 				}
-				FAI_Bosses[npcid][TARGET] = newtargetid;
+				FAI_NPCs[npcid][TARGET] = newtargetid;
 				if(newtargetid != INVALID_PLAYER_ID) {
 					CallRemoteFunction("FAI_OnPlayerGetAggro", "dd", newtargetid, npcid);
 					if(oldtargetid == INVALID_PLAYER_ID) {
@@ -1181,7 +1181,7 @@ static FAI_SetBossTargetWithReason(npcid, newtargetid, reason) {
 						if(reason == 1) {
 							reasonShot = true;
 						}
-						CallRemoteFunction("FAI_OnBossEncounterStart", "dbd", npcid, reasonShot, newtargetid);
+						CallRemoteFunction("FAI_OnEncounterStart", "dbd", npcid, reasonShot, newtargetid);
 					}
 				} else {
 					if(oldtargetid != INVALID_PLAYER_ID) {
@@ -1189,10 +1189,10 @@ static FAI_SetBossTargetWithReason(npcid, newtargetid, reason) {
 						if(reason == 2) {
 							reasonDeath = true;
 						}
-						FAI_BossStopAttack(npcid);
-						FAI_StopBossCasting(npcid);
+						FAI_StopAttack(npcid);
+						FAI_StopCasting(npcid);
 						//Reset threat
-						CallRemoteFunction("FAI_OnBossEncounterStop", "dbd", npcid, reasonDeath, oldtargetid);
+						CallRemoteFunction("FAI_OnEncounterStop", "dbd", npcid, reasonDeath, oldtargetid);
 					}
 				}
 				return 1;
@@ -1201,128 +1201,128 @@ static FAI_SetBossTargetWithReason(npcid, newtargetid, reason) {
 	}
 	return 0;
 }
-stock FAI_GetBossMoveInfo(npcid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle) {
+stock FAI_GetMoveInfo(npcid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle) {
 	if(FCNPC_IsValid(npcid)) {
-		type = FAI_Bosses[npcid][MOVE_TYPE];
-		speed = FAI_Bosses[npcid][MOVE_SPEED];
-		useMapAndreas = FAI_Bosses[npcid][MOVE_USE_MAP_ANDREAS];
-		radius = FAI_Bosses[npcid][MOVE_RADIUS];
-		setAngle = FAI_Bosses[npcid][MOVE_SET_ANGLE];
+		type = FAI_NPCs[npcid][MOVE_TYPE];
+		speed = FAI_NPCs[npcid][MOVE_SPEED];
+		useMapAndreas = FAI_NPCs[npcid][MOVE_USE_MAP_ANDREAS];
+		radius = FAI_NPCs[npcid][MOVE_RADIUS];
+		setAngle = FAI_NPCs[npcid][MOVE_SET_ANGLE];
 		return 1;
 	}
 	return 0;
 }
-stock FAI_SetBossMoveInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true) {
+stock FAI_SetMoveInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true) {
 	if(FCNPC_IsValid(npcid)) {
-		FAI_Bosses[npcid][MOVE_TYPE] = type;
-		FAI_Bosses[npcid][MOVE_SPEED] = speed;
-		FAI_Bosses[npcid][MOVE_USE_MAP_ANDREAS] = useMapAndreas;
-		FAI_Bosses[npcid][MOVE_RADIUS] = radius;
-		FAI_Bosses[npcid][MOVE_SET_ANGLE] = setAngle;
-		if(FAI_Bosses[npcid][TARGET] != INVALID_PLAYER_ID) {
-			FAI_BossAttackTarget(npcid, FAI_Bosses[npcid][TARGET]);
+		FAI_NPCs[npcid][MOVE_TYPE] = type;
+		FAI_NPCs[npcid][MOVE_SPEED] = speed;
+		FAI_NPCs[npcid][MOVE_USE_MAP_ANDREAS] = useMapAndreas;
+		FAI_NPCs[npcid][MOVE_RADIUS] = radius;
+		FAI_NPCs[npcid][MOVE_SET_ANGLE] = setAngle;
+		if(FAI_NPCs[npcid][TARGET] != INVALID_PLAYER_ID) {
+			FAI_AttackTarget(npcid, FAI_NPCs[npcid][TARGET]);
 		}
 		return 1;
 	}
 	return 0;
 }
-stock FAI_GetBossRangedAttackInfo(npcid, &Float:range, &delay, &bool:setAngle) {
+stock FAI_GetRangedAttackInfo(npcid, &Float:range, &delay, &bool:setAngle) {
 	if(FCNPC_IsValid(npcid)) {
-		range = FAI_Bosses[npcid][RANGED_ATTACK_RANGE];
-		delay = FAI_Bosses[npcid][RANGED_ATTACK_DELAY];
-		setAngle = FAI_Bosses[npcid][RANGED_ATTACK_SET_ANGLE];
+		range = FAI_NPCs[npcid][RANGED_ATTACK_RANGE];
+		delay = FAI_NPCs[npcid][RANGED_ATTACK_DELAY];
+		setAngle = FAI_NPCs[npcid][RANGED_ATTACK_SET_ANGLE];
 		return 1;
 	}
 	return 0;
 }
-stock FAI_SetBossRangedAttackInfo(npcid, Float:range = 20.0, delay = -1, bool:setAngle = true) {
+stock FAI_SetRangedAttackInfo(npcid, Float:range = 20.0, delay = -1, bool:setAngle = true) {
 	if(FCNPC_IsValid(npcid)) {
-		FAI_Bosses[npcid][RANGED_ATTACK_RANGE] = range;
-		FAI_Bosses[npcid][RANGED_ATTACK_DELAY] = delay;
-		FAI_Bosses[npcid][RANGED_ATTACK_SET_ANGLE] = setAngle;
-		if(FAI_Bosses[npcid][TARGET] != INVALID_PLAYER_ID) {
-			FAI_BossAttackTarget(npcid, FAI_Bosses[npcid][TARGET]);
+		FAI_NPCs[npcid][RANGED_ATTACK_RANGE] = range;
+		FAI_NPCs[npcid][RANGED_ATTACK_DELAY] = delay;
+		FAI_NPCs[npcid][RANGED_ATTACK_SET_ANGLE] = setAngle;
+		if(FAI_NPCs[npcid][TARGET] != INVALID_PLAYER_ID) {
+			FAI_AttackTarget(npcid, FAI_NPCs[npcid][TARGET]);
 		}
 		return 1;
 	}
 	return 0;
 }
-stock FAI_GetBossMeleeAttackInfo(npcid, &Float:range, &delay, &bool:useFightStyle) {
+stock FAI_GetMeleeAttackInfo(npcid, &Float:range, &delay, &bool:useFightStyle) {
 	if(FCNPC_IsValid(npcid)) {
-		range = FAI_Bosses[npcid][MELEE_ATTACK_RANGE];
-		delay = FAI_Bosses[npcid][MELEE_ATTACK_DELAY];
-		useFightStyle = FAI_Bosses[npcid][MELEE_ATTACK_USE_FIGHT_STYLE];
+		range = FAI_NPCs[npcid][MELEE_ATTACK_RANGE];
+		delay = FAI_NPCs[npcid][MELEE_ATTACK_DELAY];
+		useFightStyle = FAI_NPCs[npcid][MELEE_ATTACK_USE_FIGHT_STYLE];
 		return 1;
 	}
 	return 0;
 }
-stock FAI_SetBossMeleeAttackInfo(npcid, Float:range = 1.0, delay = -1, bool:useFightStyle = false) {
+stock FAI_SetMeleeAttackInfo(npcid, Float:range = 1.0, delay = -1, bool:useFightStyle = false) {
 	if(FCNPC_IsValid(npcid)) {
-		FAI_Bosses[npcid][MELEE_ATTACK_RANGE] = range;
-		FAI_Bosses[npcid][MELEE_ATTACK_DELAY] = delay;
-		FAI_Bosses[npcid][MELEE_ATTACK_USE_FIGHT_STYLE] = useFightStyle;
-		if(FAI_Bosses[npcid][TARGET] != INVALID_PLAYER_ID) {
-			FAI_BossAttackTarget(npcid, FAI_Bosses[npcid][TARGET]);
+		FAI_NPCs[npcid][MELEE_ATTACK_RANGE] = range;
+		FAI_NPCs[npcid][MELEE_ATTACK_DELAY] = delay;
+		FAI_NPCs[npcid][MELEE_ATTACK_USE_FIGHT_STYLE] = useFightStyle;
+		if(FAI_NPCs[npcid][TARGET] != INVALID_PLAYER_ID) {
+			FAI_AttackTarget(npcid, FAI_NPCs[npcid][TARGET]);
 		}
 		return 1;
 	}
 	return 0;
 }
-stock FAI_GetBossAllowNPCTargets(npcid) {
+stock FAI_GetAllowNPCTargets(npcid) {
 	if(FCNPC_IsValid(npcid)) {
-		return FAI_Bosses[npcid][ALLOW_NPC_TARGETS];
+		return FAI_NPCs[npcid][ALLOW_NPC_TARGETS];
 	}
 	return -1;
 }
-stock FAI_SetBossAllowNPCTargets(npcid, bool:allowNPCTargets) {
+stock FAI_SetAllowNPCTargets(npcid, bool:allowNPCTargets) {
 	if(FCNPC_IsValid(npcid)) {
-		FAI_Bosses[npcid][ALLOW_NPC_TARGETS] = allowNPCTargets;
+		FAI_NPCs[npcid][ALLOW_NPC_TARGETS] = allowNPCTargets;
 		return 1;
 	}
 	return 0;
 }
-stock FAI_GetBossBehaviour(npcid) {
+stock FAI_GetBehaviour(npcid) {
 	if(FCNPC_IsValid(npcid)) {
-		return FAI_Bosses[npcid][BEHAVIOUR];
+		return FAI_NPCs[npcid][BEHAVIOUR];
 	}
 	return -1;
 }
-stock FAI_SetBossBehaviour(npcid, behaviour) {
+stock FAI_SetBehaviour(npcid, behaviour) {
 	if(FCNPC_IsValid(npcid)) {
-		if(behaviour == FAI_BOSS_BEHAVIOUR_FRIENDLY || behaviour == FAI_BOSS_BEHAVIOUR_NEUTRAL || behaviour == FAI_BOSS_BEHAVIOUR_UNFRIENDLY) {
-			FAI_Bosses[npcid][BEHAVIOUR] = behaviour;
+		if(behaviour == FAI_BEHAVIOUR_FRIENDLY || behaviour == FAI_BEHAVIOUR_NEUTRAL || behaviour == FAI_BEHAVIOUR_UNFRIENDLY) {
+			FAI_NPCs[npcid][BEHAVIOUR] = behaviour;
 			return 1;
 		}
 	}
 	return 0;
 }
-stock Text:FAI_GetBossTextDraw(npcid, textdraw) {
-	if(FCNPC_IsValid(npcid) && textdraw >= 0 && textdraw < FAI_MAX_BOSS_TEXTDRAWS) {
-		return FAI_Bosses[npcid][TEXTDRAW][textdraw];
+stock Text:FAI_GetTextDraw(npcid, textdraw) {
+	if(FCNPC_IsValid(npcid) && textdraw >= 0 && textdraw < FAI_MAX_TEXTDRAWS) {
+		return FAI_NPCs[npcid][TEXTDRAW][textdraw];
 	}
 	return Text:INVALID_TEXT_DRAW;
 }
-stock FAI_GetBossCurrentHealthPercent(npcid) {
+stock FAI_GetCurrentHealthPercent(npcid) {
 	if(FCNPC_IsValid(npcid)) {
-		return floatround(FAI_Bosses[npcid][CUR_HEALTH] / FAI_Bosses[npcid][MAX_HEALTH] * 100, floatround_ceil);
+		return floatround(FAI_NPCs[npcid][CUR_HEALTH] / FAI_NPCs[npcid][MAX_HEALTH] * 100, floatround_ceil);
 	}
 	return -1;
 }
-forward bool:FAI_IsBossValidForPlayer(playerid, npcid); //Silence 'used before declaration' warning
-stock bool:FAI_IsBossValidForPlayer(playerid, npcid) {
+forward bool:FAI_IsValidForPlayer(playerid, npcid); //Silence 'used before declaration' warning
+stock bool:FAI_IsValidForPlayer(playerid, npcid) {
 	if(IsPlayerConnected(playerid) && FCNPC_IsValid(npcid)) {
 		new playerState = GetPlayerState(playerid);
-		if(npcid != playerid && FCNPC_IsSpawned(npcid) && (!FCNPC_IsDead(npcid) || FAI_Bosses[npcid][DISPLAY_IF_DEAD])) {
-			new bossInterior = FCNPC_GetInterior(npcid);
-			new bossWorld = FCNPC_GetVirtualWorld(npcid);
+		if(npcid != playerid && FCNPC_IsSpawned(npcid) && (!FCNPC_IsDead(npcid) || FAI_NPCs[npcid][DISPLAY_IF_DEAD])) {
+			new npcInterior = FCNPC_GetInterior(npcid);
+			new npcWorld = FCNPC_GetVirtualWorld(npcid);
 			if(!IsPlayerNPC(playerid)) {
-				if(GetPlayerInterior(playerid) == bossInterior && GetPlayerVirtualWorld(playerid) == bossWorld && playerState != PLAYER_STATE_NONE && playerState != PLAYER_STATE_WASTED
+				if(GetPlayerInterior(playerid) == npcInterior && GetPlayerVirtualWorld(playerid) == npcWorld && playerState != PLAYER_STATE_NONE && playerState != PLAYER_STATE_WASTED
 				&& playerState != PLAYER_STATE_SPAWNED && playerState != PLAYER_STATE_SPECTATING && !FAI_PlayerPaused[playerid]) {
 					return true;
 				}
 			} else {
 				//FCNPC_IsValid ==> only support FCNPC bots, no normal bots
-				if(FCNPC_IsValid(playerid) && FCNPC_GetInterior(playerid) == bossInterior && FCNPC_GetVirtualWorld(playerid) == bossWorld && FCNPC_IsSpawned(playerid) && !FCNPC_IsDead(playerid)) {
+				if(FCNPC_IsValid(playerid) && FCNPC_GetInterior(playerid) == npcInterior && FCNPC_GetVirtualWorld(playerid) == npcWorld && FCNPC_IsSpawned(playerid) && !FCNPC_IsDead(playerid)) {
 					return true;
 				}
 			}
@@ -1330,42 +1330,42 @@ stock bool:FAI_IsBossValidForPlayer(playerid, npcid) {
 	}
 	return false;
 }
-static FAI_GetClosestBossToDisplay(playerid) {
-	new closestBoss = INVALID_PLAYER_ID;
-	new Float:closestBossRange = 0.0;
+static FAI_GetClosestToDisplay(playerid) {
+	new closestNPC = INVALID_PLAYER_ID;
+	new Float:closestNPCRange = 0.0;
 	if(IsPlayerConnected(playerid)) {
-		new Float:bossX, Float:bossY, Float:bossZ;
+		new Float:npcX, Float:npcY, Float:npcZ;
 		new Float:playerRange;
 		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-			if(FAI_IsBossValidForPlayer(playerid, npcid)) {
-				FCNPC_GetPosition(FAI_Bosses[npcid][NPCID], bossX, bossY, bossZ);
-				playerRange = GetPlayerDistanceFromPoint(playerid, bossX, bossY, bossZ);
+			if(FAI_IsValidForPlayer(playerid, npcid)) {
+				FCNPC_GetPosition(FAI_NPCs[npcid][NPCID], npcX, npcY, npcZ);
+				playerRange = GetPlayerDistanceFromPoint(playerid, npcX, npcY, npcZ);
 				//Don't display if display range is <= 0
-				if(FAI_IsPlayerInDisplayRange(playerid, npcid) && (!FCNPC_IsValid(closestBoss) || playerRange < closestBossRange)) {
-					closestBossRange = playerRange;
-					closestBoss = npcid;
+				if(FAI_IsPlayerInDisplayRange(playerid, npcid) && (!FCNPC_IsValid(closestNPC) || playerRange < closestNPCRange)) {
+					closestNPCRange = playerRange;
+					closestNPC = npcid;
 				}
 			}
 		}
 	}
-	return closestBoss;
+	return closestNPC;
 }
 static FAI_GetClosestPlayerToTakeAggro(npcid) {
 	new closestPlayer = INVALID_PLAYER_ID;
 	new Float:closestPlayerRange = 0.0;
 	if(FCNPC_IsValid(npcid)) {
 		new Float:playerX, Float:playerY, Float:playerZ;
-		new Float:bossRange;
+		new Float:npcRange;
 		for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
-			if(FAI_IsBossValidForPlayer(playerid, npcid) && (!IsPlayerNPC(playerid) || FAI_Bosses[npcid][ALLOW_NPC_TARGETS])) {
+			if(FAI_IsValidForPlayer(playerid, npcid) && (!IsPlayerNPC(playerid) || FAI_NPCs[npcid][ALLOW_NPC_TARGETS])) {
 				if(!IsPlayerNPC(playerid)) {
 					GetPlayerPos(playerid, playerX, playerY, playerZ);
 				} else {
 					FCNPC_GetPosition(playerid, playerX, playerY, playerZ);
 				}
-				bossRange = GetPlayerDistanceFromPoint(FAI_Bosses[npcid][NPCID], playerX, playerY, playerZ);
-				if(FAI_IsPlayerInAggroRange(playerid, npcid) && (closestPlayer == INVALID_PLAYER_ID || bossRange < closestPlayerRange)) {
-					closestPlayerRange = bossRange;
+				npcRange = GetPlayerDistanceFromPoint(FAI_NPCs[npcid][NPCID], playerX, playerY, playerZ);
+				if(FAI_IsPlayerInAggroRange(playerid, npcid) && (closestPlayer == INVALID_PLAYER_ID || npcRange < closestPlayerRange)) {
+					closestPlayerRange = npcRange;
 					closestPlayer = playerid;
 				}
 			}
@@ -1375,12 +1375,12 @@ static FAI_GetClosestPlayerToTakeAggro(npcid) {
 }
 forward bool:FAI_IsPlayerInDisplayRange(playerid, npcid); //Silence 'used before declaration' warning
 stock bool:FAI_IsPlayerInDisplayRange(playerid, npcid) {
-	if(IsPlayerConnected(playerid) && FCNPC_IsValid(npcid) && FAI_IsBossValidForPlayer(playerid, npcid)) {
-		new Float:bossX, Float:bossY, Float:bossZ;
-		FCNPC_GetPosition(FAI_Bosses[npcid][NPCID], bossX, bossY, bossZ);
-		new Float:playerRange = GetPlayerDistanceFromPoint(playerid, bossX, bossY, bossZ);
+	if(IsPlayerConnected(playerid) && FCNPC_IsValid(npcid) && FAI_IsValidForPlayer(playerid, npcid)) {
+		new Float:npcX, Float:npcY, Float:npcZ;
+		FCNPC_GetPosition(FAI_NPCs[npcid][NPCID], npcX, npcY, npcZ);
+		new Float:playerRange = GetPlayerDistanceFromPoint(playerid, npcX, npcY, npcZ);
 		//Don't display if display range is <= 0
-		if(FAI_Bosses[npcid][RANGE_DISPLAY] > 0.0 && playerRange <= FAI_Bosses[npcid][RANGE_DISPLAY]) {
+		if(FAI_NPCs[npcid][RANGE_DISPLAY] > 0.0 && playerRange <= FAI_NPCs[npcid][RANGE_DISPLAY]) {
 			return true;
 		}
 	}
@@ -1388,40 +1388,40 @@ stock bool:FAI_IsPlayerInDisplayRange(playerid, npcid) {
 }
 forward bool:FAI_IsPlayerInAggroRange(playerid, npcid); //Silence 'used before declaration' warning
 stock bool:FAI_IsPlayerInAggroRange(playerid, npcid) {
-	if(IsPlayerConnected(playerid) && FCNPC_IsValid(npcid) && FAI_IsBossValidForPlayer(playerid, npcid)) {
+	if(IsPlayerConnected(playerid) && FCNPC_IsValid(npcid) && FAI_IsValidForPlayer(playerid, npcid)) {
 		new Float:playerX, Float:playerY, Float:playerZ;
 		if(!IsPlayerNPC(playerid)) {
 			GetPlayerPos(playerid, playerX, playerY, playerZ);
 		} else {
 			FCNPC_GetPosition(playerid, playerX, playerY, playerZ);
 		}
-		new Float:bossRange = GetPlayerDistanceFromPoint(FAI_Bosses[npcid][NPCID], playerX, playerY, playerZ);
+		new Float:npcRange = GetPlayerDistanceFromPoint(FAI_NPCs[npcid][NPCID], playerX, playerY, playerZ);
 		//Don't aggro if aggro range is <= 0.0
-		if(FAI_Bosses[npcid][RANGE_AGGRO] > 0.0 && bossRange <= FAI_Bosses[npcid][RANGE_AGGRO]) {
+		if(FAI_NPCs[npcid][RANGE_AGGRO] > 0.0 && npcRange <= FAI_NPCs[npcid][RANGE_AGGRO]) {
 			return true;
 		}
 	}
 	return false;
 }
-static FAI_UpdateBossHealthDisplay(npcid) {
+static FAI_UpdateHealthDisplay(npcid) {
 	if(FCNPC_IsValid(npcid)) {
-		TextDrawTextSize(FAI_Bosses[npcid][TEXTDRAW][0], (470.0 - 167.3) * FAI_Bosses[npcid][CUR_HEALTH] / FAI_Bosses[npcid][MAX_HEALTH] + 167.3, 0.0);
+		TextDrawTextSize(FAI_NPCs[npcid][TEXTDRAW][0], (470.0 - 167.3) * FAI_NPCs[npcid][CUR_HEALTH] / FAI_NPCs[npcid][MAX_HEALTH] + 167.3, 0.0);
 		for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
 			//Only update the textdraw for a player if he is seeing the textdraw of the NPC
 			//Last part of condition: we don't need to display things to an npc
 			if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid)) {
-				new closestBoss = FAI_GetClosestBossToDisplay(playerid);
-				if(FCNPC_IsValid(closestBoss) && npcid == closestBoss) {
-					TextDrawShowForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][0]);
+				new closestNPC = FAI_GetClosestToDisplay(playerid);
+				if(FCNPC_IsValid(closestNPC) && npcid == closestNPC) {
+					TextDrawShowForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][0]);
 				}
 			}
 		}
 		new string[14 + 1];
-		format(string, sizeof(string), "%d%", FAI_GetBossCurrentHealthPercent(npcid));
-		TextDrawSetString(FAI_Bosses[npcid][TEXTDRAW][1], string);
-		new healthInteger = floatround(FAI_Bosses[npcid][CUR_HEALTH], floatround_ceil); //Ceil so 0.3 still displays as 1 instead of 0
+		format(string, sizeof(string), "%d%", FAI_GetCurrentHealthPercent(npcid));
+		TextDrawSetString(FAI_NPCs[npcid][TEXTDRAW][1], string);
+		new healthInteger = floatround(FAI_NPCs[npcid][CUR_HEALTH], floatround_ceil); //Ceil so 0.3 still displays as 1 instead of 0
 		#if FAI_SHORTEN_NUMBERS == false
-			TextDrawSetString(FAI_Bosses[npcid][TEXTDRAW][2], FAI_DisplayReadableInteger(healthInteger));
+			TextDrawSetString(FAI_NPCs[npcid][TEXTDRAW][2], FAI_DisplayReadableInteger(healthInteger));
 		#else
 			if(float(healthInteger) / 1000 / 1000 / 1000 >= 1) {
 				format(string, sizeof(string), "%s B", FAI_DisplayReadableFloat(float(healthInteger) / 1000 / 1000 / 1000, 2, 2));
@@ -1432,15 +1432,15 @@ static FAI_UpdateBossHealthDisplay(npcid) {
 			} else {
 				FAI_strcpy(string, FAI_DisplayReadableInteger(healthInteger));
 			}
-			TextDrawSetString(FAI_Bosses[npcid][TEXTDRAW][2], string);
+			TextDrawSetString(FAI_NPCs[npcid][TEXTDRAW][2], string);
 		#endif
 	}
 }
-static FAI_UpdateBossCastDisplay(npcid) {
-	if(FCNPC_IsValid(npcid) && (FAI_IsBossCasting(npcid) || FAI_IsBossCastBarExtra(npcid))) {
+static FAI_UpdateCastDisplay(npcid) {
+	if(FCNPC_IsValid(npcid) && (FAI_IsCasting(npcid) || FAI_IsCastBarExtra(npcid))) {
 		new spellid = FAI_Casting[npcid][SPELLID];
-		TextDrawBoxColor(FAI_Bosses[npcid][TEXTDRAW][4], FAI_Spells[spellid][CAST_BAR_COLOR_DARK]);
-		TextDrawBoxColor(FAI_Bosses[npcid][TEXTDRAW][5], FAI_Spells[spellid][CAST_BAR_COLOR_LIGHT]);
+		TextDrawBoxColor(FAI_NPCs[npcid][TEXTDRAW][4], FAI_Spells[spellid][CAST_BAR_COLOR_DARK]);
+		TextDrawBoxColor(FAI_NPCs[npcid][TEXTDRAW][5], FAI_Spells[spellid][CAST_BAR_COLOR_LIGHT]);
 		//Don't show the extraProgress on the bar and the number representation
 		new showExtraProgress = FAI_Casting[npcid][CAST_PROGRESS] - FAI_Spells[spellid][CAST_TIME];
 		if(showExtraProgress < 0) {
@@ -1449,23 +1449,23 @@ static FAI_UpdateBossCastDisplay(npcid) {
 		new progressWithoutShowExtra = FAI_Casting[npcid][CAST_PROGRESS] - showExtraProgress;
 		//Show an inverted castbar if needed
 		if(!FAI_Spells[spellid][CAST_BAR_INVERTED]) {
-			TextDrawTextSize(FAI_Bosses[npcid][TEXTDRAW][5], (470.0 - 167.3) * progressWithoutShowExtra / FAI_Spells[spellid][CAST_TIME] + 167.3, 0.0);
+			TextDrawTextSize(FAI_NPCs[npcid][TEXTDRAW][5], (470.0 - 167.3) * progressWithoutShowExtra / FAI_Spells[spellid][CAST_TIME] + 167.3, 0.0);
 		} else {
-			TextDrawTextSize(FAI_Bosses[npcid][TEXTDRAW][5], (470.0 - ((470.0 - 167.3) * progressWithoutShowExtra / FAI_Spells[spellid][CAST_TIME] + 167.3)) + 167.3, 0.0);
+			TextDrawTextSize(FAI_NPCs[npcid][TEXTDRAW][5], (470.0 - ((470.0 - 167.3) * progressWithoutShowExtra / FAI_Spells[spellid][CAST_TIME] + 167.3)) + 167.3, 0.0);
 		}
 		//Reshow the textdraw to make the changes (color + size) visible
 		for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
 			//Only update the textdraw for a player if he is seeing the textdraw of the NPC
 			//Last part of condition: we don't need to display things to an npc
 			if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid)) {
-				new closestBoss = FAI_GetClosestBossToDisplay(playerid);
-				if(FCNPC_IsValid(closestBoss) && npcid == closestBoss) {
-					TextDrawShowForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][4]);
-					TextDrawShowForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][5]);
+				new closestNPC = FAI_GetClosestToDisplay(playerid);
+				if(FCNPC_IsValid(closestNPC) && npcid == closestNPC) {
+					TextDrawShowForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][4]);
+					TextDrawShowForPlayer(playerid, FAI_NPCs[npcid][TEXTDRAW][5]);
 				}
 			}
 		}
-		TextDrawSetString(FAI_Bosses[npcid][TEXTDRAW][6], FAI_Spells[spellid][NAME]);
+		TextDrawSetString(FAI_NPCs[npcid][TEXTDRAW][6], FAI_Spells[spellid][NAME]);
 		new string[21 + 1 + 21 + 2 + 1];
 		new Float:castProgress = float(progressWithoutShowExtra);
 		//Show an inverted number representation if needed
@@ -1483,33 +1483,33 @@ static FAI_UpdateBossCastDisplay(npcid) {
 		} else {
 			format(string, sizeof(string), "%s/%ss", string, FAI_DisplayReadableFloat(castTime / 1000, 2, 2));
 		}
-		TextDrawSetString(FAI_Bosses[npcid][TEXTDRAW][7], string);
+		TextDrawSetString(FAI_NPCs[npcid][TEXTDRAW][7], string);
 	}
 }
-static FAI_IncreaseBossCastProgress(npcid) {
+static FAI_IncreaseCastProgress(npcid) {
 	if(FCNPC_IsValid(npcid)) {
-		if(FAI_IsBossCasting(npcid)) {
+		if(FAI_IsCasting(npcid)) {
 			new spellid = FAI_Casting[npcid][SPELLID];
 			//Don't cast above castTime
 			if(FAI_Spells[spellid][CAST_TIME] - FAI_Casting[npcid][CAST_PROGRESS] <= FCNPC_GetUpdateRate()) {
-				FAI_SetBossCastingProgress(npcid, FAI_Spells[spellid][CAST_TIME]); //We set the CAST_PROGRESS to CAST_TIME (say 500) instead of CAST_PROGRESS + FCNPC_GetUpdateRate() (say 490 + 49), because we want showextra to start exactly at 0 (say 500 - 500) and not something > 0 (say 490 - 500 + 49)
+				FAI_SetCastingProgress(npcid, FAI_Spells[spellid][CAST_TIME]); //We set the CAST_PROGRESS to CAST_TIME (say 500) instead of CAST_PROGRESS + FCNPC_GetUpdateRate() (say 490 + 49), because we want showextra to start exactly at 0 (say 500 - 500) and not something > 0 (say 490 - 500 + 49)
 			} else {
-				FAI_SetBossCastingProgress(npcid, FAI_Casting[npcid][CAST_PROGRESS] + FCNPC_GetUpdateRate());
+				FAI_SetCastingProgress(npcid, FAI_Casting[npcid][CAST_PROGRESS] + FCNPC_GetUpdateRate());
 				//If the spell target becomes invalid, stop the cast
 				//Otherwise: start cast, spell target dies before cast on him ends, spell target respawns, spell will still be executed on him
-				if(FAI_Casting[npcid][TARGETID] != INVALID_PLAYER_ID && !FAI_IsBossValidForPlayer(FAI_Casting[npcid][TARGETID], npcid)) {
-					FAI_StopBossCasting(npcid);
+				if(FAI_Casting[npcid][TARGETID] != INVALID_PLAYER_ID && !FAI_IsValidForPlayer(FAI_Casting[npcid][TARGETID], npcid)) {
+					FAI_StopCasting(npcid);
 				}
 			}
-			FAI_UpdateBossCastDisplay(npcid);
+			FAI_UpdateCastDisplay(npcid);
 		}
 		//Keep showing the castbar for a small additional time after the cast is complete
-		else if(FAI_IsBossCastBarExtra(npcid)) {
-			FAI_SetBossCastingExtraProgress(npcid, FAI_GetBossCastingExtraProgress(npcid) + FCNPC_GetUpdateRate());
+		else if(FAI_IsCastBarExtra(npcid)) {
+			FAI_SetCastingExtraProgress(npcid, FAI_GetCastingExtraProgress(npcid) + FCNPC_GetUpdateRate());
 		}
 	}
 }
-stock bool:FAI_BossHasMeleeWeapons(npcid) {
+stock bool:FAI_HasMeleeWeapons(npcid) {
 	if(FCNPC_IsValid(npcid)) {
 		new weaponid = FCNPC_GetWeapon(npcid);
 		if(weaponid >= 0 && weaponid <= 15) {
@@ -1528,19 +1528,19 @@ stock bool:FAI_BossHasMeleeWeapons(npcid) {
 //Is casting & canmove & !canattack & not in attack range	==> move to target
 //Is casting & !canmove & !canattack & in attack range		==> nothing
 //Is casting & !canmove & !canattack & not in attack range	==> nothing
-static FAI_BossAttackTarget(npcid, targetid) {
-	if(FCNPC_IsValid(npcid) && FAI_IsBossValidForPlayer(targetid, npcid)) {
-		new Float:bossX, Float:bossY, Float:bossZ;
-		FCNPC_GetPosition(npcid, bossX, bossY, bossZ);
-		new Float:distance = GetPlayerDistanceFromPoint(targetid, bossX, bossY, bossZ);
-		new Float:attackRange = FAI_Bosses[npcid][RANGED_ATTACK_RANGE];
-		new bool:isMelee = FAI_BossHasMeleeWeapons(npcid);
+static FAI_AttackTarget(npcid, targetid) {
+	if(FCNPC_IsValid(npcid) && FAI_IsValidForPlayer(targetid, npcid)) {
+		new Float:npcX, Float:npcY, Float:npcZ;
+		FCNPC_GetPosition(npcid, npcX, npcY, npcZ);
+		new Float:distance = GetPlayerDistanceFromPoint(targetid, npcX, npcY, npcZ);
+		new Float:attackRange = FAI_NPCs[npcid][RANGED_ATTACK_RANGE];
+		new bool:isMelee = FAI_HasMeleeWeapons(npcid);
 		if(isMelee) {
-			attackRange = FAI_Bosses[npcid][MELEE_ATTACK_RANGE];
+			attackRange = FAI_NPCs[npcid][MELEE_ATTACK_RANGE];
 		}
 		new bool:canMove = true;
 		new bool:canAttack = true;
-		if(FAI_IsBossCasting(npcid)) {
+		if(FAI_IsCasting(npcid)) {
 			new spellid = FAI_Casting[npcid][SPELLID];
 			canMove = FAI_Spells[spellid][CAN_MOVE];
 			canAttack = FAI_Spells[spellid][CAN_ATTACK];
@@ -1548,33 +1548,33 @@ static FAI_BossAttackTarget(npcid, targetid) {
 		//Target in attack range, attack if allowed
 		if(attackRange == -1 || distance <= attackRange) {
 			if(canAttack) {
-				FAI_BossAttackAim(npcid, targetid);
+				FAI_AttackAim(npcid, targetid);
 			} else {
 				if(canMove) {
-					FAI_BossAttackMove(npcid, targetid);
+					FAI_AttackMove(npcid, targetid);
 				} else {
-					FAI_BossStopAttack(npcid);
+					FAI_StopAttack(npcid);
 				}
 			}
 		}
 		//Target not in attack range, move to target if allowed
 		else {
 			if(canMove) {
-				FAI_BossAttackMove(npcid, targetid);
+				FAI_AttackMove(npcid, targetid);
 			} else {
 				if(canAttack) {
-					FAI_BossAttackAim(npcid, targetid);
+					FAI_AttackAim(npcid, targetid);
 				} else {
-					FAI_BossStopAttack(npcid);
+					FAI_StopAttack(npcid);
 				}
 			}
 		}
 	}
 	return 1;
 }
-static FAI_BossAttackAim(npcid, targetid) {
-	if(FCNPC_IsValid(npcid) && FAI_IsBossValidForPlayer(targetid, npcid)) {
-		new bool:isMelee = FAI_BossHasMeleeWeapons(npcid);
+static FAI_AttackAim(npcid, targetid) {
+	if(FCNPC_IsValid(npcid) && FAI_IsValidForPlayer(targetid, npcid)) {
+		new bool:isMelee = FAI_HasMeleeWeapons(npcid);
 		if(FCNPC_IsMoving(npcid)) {
 			FCNPC_Stop(npcid);
 		}
@@ -1583,20 +1583,20 @@ static FAI_BossAttackAim(npcid, targetid) {
 				FCNPC_StopAttack(npcid);
 			}
 			if(!FCNPC_IsAimingAtPlayer(npcid, targetid)) { //So we don't aim again when we were already aiming at that same player. If aiming at another player, this will execute
-				FCNPC_AimAtPlayer(npcid, targetid, true, FAI_Bosses[npcid][RANGED_ATTACK_DELAY], FAI_Bosses[npcid][RANGED_ATTACK_SET_ANGLE]);
+				FCNPC_AimAtPlayer(npcid, targetid, true, FAI_NPCs[npcid][RANGED_ATTACK_DELAY], FAI_NPCs[npcid][RANGED_ATTACK_SET_ANGLE]);
 			}
 		} else {
 			if(FCNPC_IsAiming(npcid)) { //In case the npc switched weapons
 				FCNPC_StopAim(npcid);
 			}
 			if(!FCNPC_IsAttacking(npcid)) { //So we don't attack again when we were already attacking
-				FCNPC_MeleeAttack(npcid, FAI_Bosses[npcid][MELEE_ATTACK_DELAY], FAI_Bosses[npcid][MELEE_ATTACK_USE_FIGHT_STYLE]);
+				FCNPC_MeleeAttack(npcid, FAI_NPCs[npcid][MELEE_ATTACK_DELAY], FAI_NPCs[npcid][MELEE_ATTACK_USE_FIGHT_STYLE]);
 			}
 		}
 	}
 }
-static FAI_BossAttackMove(npcid, targetid) {
-	if(FCNPC_IsValid(npcid) && FAI_IsBossValidForPlayer(targetid, npcid)) {
+static FAI_AttackMove(npcid, targetid) {
+	if(FCNPC_IsValid(npcid) && FAI_IsValidForPlayer(targetid, npcid)) {
 		if(FCNPC_IsAiming(npcid)) {
 			FCNPC_StopAim(npcid);
 		}
@@ -1605,14 +1605,14 @@ static FAI_BossAttackMove(npcid, targetid) {
 		}
 		if(!FCNPC_IsMovingAtPlayer(npcid, targetid)) { //So we don't move again when we were already moving to that same player. If moving at another player, this will execute
 			#if FAI_USE_MAP_ANDREAS == true
-				FCNPC_GoToPlayer(npcid, targetid, FAI_Bosses[npcid][MOVE_TYPE], FAI_Bosses[npcid][MOVE_SPEED], FAI_Bosses[npcid][MOVE_USE_MAP_ANDREAS], FAI_Bosses[npcid][MOVE_RADIUS], FAI_Bosses[npcid][MOVE_SET_ANGLE]);
+				FCNPC_GoToPlayer(npcid, targetid, FAI_NPCs[npcid][MOVE_TYPE], FAI_NPCs[npcid][MOVE_SPEED], FAI_NPCs[npcid][MOVE_USE_MAP_ANDREAS], FAI_NPCs[npcid][MOVE_RADIUS], FAI_NPCs[npcid][MOVE_SET_ANGLE]);
 			#else
-				FCNPC_GoToPlayer(npcid, targetid, FAI_Bosses[npcid][MOVE_TYPE], FAI_Bosses[npcid][MOVE_SPEED], false, FAI_Bosses[npcid][MOVE_RADIUS], FAI_Bosses[npcid][MOVE_SET_ANGLE]);
+				FCNPC_GoToPlayer(npcid, targetid, FAI_NPCs[npcid][MOVE_TYPE], FAI_NPCs[npcid][MOVE_SPEED], false, FAI_NPCs[npcid][MOVE_RADIUS], FAI_NPCs[npcid][MOVE_SET_ANGLE]);
 			#endif
 		}
 	}
 }
-static FAI_BossStopAttack(npcid) {
+static FAI_StopAttack(npcid) {
 	if(FCNPC_IsValid(npcid)) {
 		if(FCNPC_IsMoving(npcid)) {
 			FCNPC_Stop(npcid);
@@ -1627,7 +1627,7 @@ static FAI_BossStopAttack(npcid) {
 }
 stock bool:FAI_IsEncounterStarted(npcid) {
 	if(FCNPC_IsValid(npcid)) {
-		if(FAI_Bosses[npcid][TARGET] != INVALID_PLAYER_ID) {
+		if(FAI_NPCs[npcid][TARGET] != INVALID_PLAYER_ID) {
 			return true;
 		}
 	}
@@ -1636,7 +1636,7 @@ stock bool:FAI_IsEncounterStarted(npcid) {
 stock FAI_StopEncounter(npcid) {
 	if(FCNPC_IsValid(npcid)) {
 		//Reset target & threat for all players
-		FAI_SetBossTargetWithReason(npcid, INVALID_PLAYER_ID, 0);
+		FAI_SetTargetWithReason(npcid, INVALID_PLAYER_ID, 0);
 		return 1;
 	}
 	return 0;
@@ -1677,7 +1677,7 @@ stock FAI_DestroyAllSpells() {
 }
 stock FAI_DestroySpell(spellid) {
 	if(FAI_IsValidSpell(spellid)) {
-		FAI_StopAllBossesCastingSpell(spellid);
+		FAI_StopAllCastingSpell(spellid);
 		FAI_InitSpell(spellid);
 		return 1;
 	}
@@ -1714,8 +1714,8 @@ stock FAI_SetSpellName(spellid, name[]) {
 	if(FAI_IsValidSpell(spellid)) {
 		FAI_strcpy(FAI_Spells[spellid][NAME], name, FAI_MAX_SPELL_NAME + 1);
 		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-			if(FCNPC_IsValid(npcid) && (FAI_IsBossCastingSpell(npcid, spellid) || FAI_IsBossCastBarExtraForSpell(npcid, spellid))) {
-				TextDrawSetString(FAI_Bosses[npcid][TEXTDRAW][6], FAI_Spells[spellid][NAME]);
+			if(FCNPC_IsValid(npcid) && (FAI_IsCastingSpell(npcid, spellid) || FAI_IsCastBarExtraForSpell(npcid, spellid))) {
+				TextDrawSetString(FAI_NPCs[npcid][TEXTDRAW][6], FAI_Spells[spellid][NAME]);
 				//Textdraw updates automatically
 			}
 		}
@@ -1735,14 +1735,14 @@ Instant:
 - casttime 500, progress 850, extraprogress 350 => casttime 0 (instant), progress becomes 0, init cast immediately (not complete stopcast as well, because it has already been called, because there is extraprogress)
 ShowExtra:
 - casttime 500, progress 850, extraprogress 350 => casttime 400, progress becomes 750 which is casttime + extraprogress (keep showextra fixed, otherwise showextra will start again)
-- casttime 500, progress 850, extraprogress 350 => casttime 900, progress becomes 1250 which is casttime + extraprogress (keep showextra fixed, otherwise FAI_OnBossStopCasting will be called again when progress reaches casttime again)
+- casttime 500, progress 850, extraprogress 350 => casttime 900, progress becomes 1250 which is casttime + extraprogress (keep showextra fixed, otherwise FAI_OnStopCasting will be called again when progress reaches casttime again)
 Keeppercent:
 - casttime 500, progress 450, extraprogress 0 => casttime 400, progress becomes 360
 - casttime 500, progress 450, extraprogress 0 => casttime 600, progress becomes 540
 Dont keeppercent:
 - casttime 500, progress 450, extraprogress 0 => casttime 400, progress becomes 400 which is casttime, execute complete stopcast immediately (not init cast as well to allow for showExtra, except if showExtra is invalid)
 - casttime 500, progress 450, extraprogress 0 => casttime 600, progress stays 450
-In other words: showextra does never scale it will always remain a fixed number. Instants don't have showextra time. Both are to prevent showextra from going over FAI_CAST_BAR_SHOW_EXTRA_TIME and to prevent FAI_OnBossStopCasting from being called twice.
+In other words: showextra does never scale it will always remain a fixed number. Instants don't have showextra time. Both are to prevent showextra from going over FAI_CAST_BAR_SHOW_EXTRA_TIME and to prevent FAI_OnStopCasting from being called twice.
 */
 stock FAI_SetSpellCastTime(spellid, castTime, bool:keepCastPercent = false) {
 	if(FAI_IsValidSpell(spellid)) {
@@ -1752,17 +1752,17 @@ stock FAI_SetSpellCastTime(spellid, castTime, bool:keepCastPercent = false) {
 		new oldCastTime = FAI_Spells[spellid][CAST_TIME];
 		FAI_Spells[spellid][CAST_TIME] = castTime;
 		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-			if(FCNPC_IsValid(npcid) && (FAI_IsBossCastingSpell(npcid, spellid) || FAI_IsBossCastBarExtraForSpell(npcid, spellid))) {
+			if(FCNPC_IsValid(npcid) && (FAI_IsCastingSpell(npcid, spellid) || FAI_IsCastBarExtraForSpell(npcid, spellid))) {
 				new showExtraProgress = FAI_Casting[npcid][CAST_PROGRESS] - oldCastTime;
 				if(showExtraProgress < 0) {
 					showExtraProgress = 0;
 				}
 				if(castTime == 0) {
-					FAI_Casting[npcid][CAST_PROGRESS] = 0; //Must be set before FAI_BossCastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
+					FAI_Casting[npcid][CAST_PROGRESS] = 0; //Must be set before FAI_CastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
 					if(showExtraProgress == 0) {
-						FAI_BossCastProgressComplete(npcid, spellid);
+						FAI_CastProgressComplete(npcid, spellid);
 					}
-					FAI_InitBossCasting(npcid);
+					FAI_InitCasting(npcid);
 				} else {
 					if(showExtraProgress != 0) {
 						FAI_Casting[npcid][CAST_PROGRESS] = castTime + showExtraProgress;
@@ -1771,17 +1771,17 @@ stock FAI_SetSpellCastTime(spellid, castTime, bool:keepCastPercent = false) {
 							FAI_Casting[npcid][CAST_PROGRESS] = floatround(float(FAI_Casting[npcid][CAST_PROGRESS]) / oldCastTime * castTime, floatround_floor); //floatround_floor, because (say 400.9) the next progress integer (401) wasn't reached yet
 						} else {
 							if(FAI_Casting[npcid][CAST_PROGRESS] >= castTime) {
-								FAI_Casting[npcid][CAST_PROGRESS] = castTime; //Must be set before FAI_BossCastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
-								FAI_BossCastProgressComplete(npcid, spellid);
+								FAI_Casting[npcid][CAST_PROGRESS] = castTime; //Must be set before FAI_CastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
+								FAI_CastProgressComplete(npcid, spellid);
 								#if FAI_CAST_BAR_SHOW_EXTRA_TIME <= 0
-									FAI_InitBossCasting(npcid);
+									FAI_InitCasting(npcid);
 								#endif
 							}
 						}
 					}
 					//Don't update castbar with instants or if no show extra
 					#if FAI_CAST_BAR_SHOW_EXTRA_TIME > 0
-						FAI_UpdateBossCastDisplay(npcid);
+						FAI_UpdateCastDisplay(npcid);
 					#endif
 				}
 			}
@@ -1817,8 +1817,8 @@ stock FAI_SetSpellCastBarColorDark(spellid, color) {
 	if(FAI_IsValidSpell(spellid)) {
 		FAI_Spells[spellid][CAST_BAR_COLOR_DARK] = color;
 		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-			if(FCNPC_IsValid(npcid) && (FAI_IsBossCastingSpell(npcid, spellid) || FAI_IsBossCastBarExtraForSpell(npcid, spellid))) {
-				FAI_UpdateBossCastDisplay(npcid);
+			if(FCNPC_IsValid(npcid) && (FAI_IsCastingSpell(npcid, spellid) || FAI_IsCastBarExtraForSpell(npcid, spellid))) {
+				FAI_UpdateCastDisplay(npcid);
 			}
 		}
 		return 1;
@@ -1835,8 +1835,8 @@ stock FAI_SetSpellCastBarColorLight(spellid, color) {
 	if(FAI_IsValidSpell(spellid)) {
 		FAI_Spells[spellid][CAST_BAR_COLOR_LIGHT] = color;
 		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-			if(FCNPC_IsValid(npcid) && (FAI_IsBossCastingSpell(npcid, spellid) || FAI_IsBossCastBarExtraForSpell(npcid, spellid))) {
-				FAI_UpdateBossCastDisplay(npcid);
+			if(FCNPC_IsValid(npcid) && (FAI_IsCastingSpell(npcid, spellid) || FAI_IsCastBarExtraForSpell(npcid, spellid))) {
+				FAI_UpdateCastDisplay(npcid);
 			}
 		}
 		return 1;
@@ -1866,9 +1866,9 @@ stock FAI_SetSpellCastBarInverted(spellid, bool:inverted, bool:invertProgressMad
 		new bool:oldInverted = FAI_Spells[spellid][CAST_BAR_INVERTED];
 		FAI_Spells[spellid][CAST_BAR_INVERTED] = inverted;
 		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-			if(FCNPC_IsValid(npcid) && (FAI_IsBossCastingSpell(npcid, spellid) || FAI_IsBossCastBarExtraForSpell(npcid, spellid))) {
-				FAI_UpdateBossCastDisplay(npcid);
-				if(invertProgressMade && FAI_IsBossCastingSpell(npcid, spellid) && oldInverted != inverted) { //Only invert when casting, not when showextra
+			if(FCNPC_IsValid(npcid) && (FAI_IsCastingSpell(npcid, spellid) || FAI_IsCastBarExtraForSpell(npcid, spellid))) {
+				FAI_UpdateCastDisplay(npcid);
+				if(invertProgressMade && FAI_IsCastingSpell(npcid, spellid) && oldInverted != inverted) { //Only invert when casting, not when showextra
 					FAI_Casting[npcid][CAST_PROGRESS] = FAI_Spells[spellid][CAST_TIME] - FAI_Casting[npcid][CAST_PROGRESS];
 				}
 			}
@@ -1900,9 +1900,9 @@ stock FAI_SetSpellCastTimeInverted(spellid, bool:inverted, bool:invertProgressMa
 		new bool:oldInverted = FAI_Spells[spellid][CAST_TIME_INVERTED];
 		FAI_Spells[spellid][CAST_TIME_INVERTED] = inverted;
 		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-			if(FCNPC_IsValid(npcid) && (FAI_IsBossCastingSpell(npcid, spellid) || FAI_IsBossCastBarExtraForSpell(npcid, spellid))) {
-				FAI_UpdateBossCastDisplay(npcid);
-				if(invertProgressMade && FAI_IsBossCastingSpell(npcid, spellid) && oldInverted != inverted) { //Only invert when casting, not when showextra
+			if(FCNPC_IsValid(npcid) && (FAI_IsCastingSpell(npcid, spellid) || FAI_IsCastBarExtraForSpell(npcid, spellid))) {
+				FAI_UpdateCastDisplay(npcid);
+				if(invertProgressMade && FAI_IsCastingSpell(npcid, spellid) && oldInverted != inverted) { //Only invert when casting, not when showextra
 					FAI_Casting[npcid][CAST_PROGRESS] = FAI_Spells[spellid][CAST_TIME] - FAI_Casting[npcid][CAST_PROGRESS];
 				}
 			}
@@ -1921,8 +1921,8 @@ stock FAI_SetSpellCanMove(spellid, bool:canMove) {
 	if(FAI_IsValidSpell(spellid)) {
 		FAI_Spells[spellid][CAN_MOVE] = canMove;
 		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-			if(FCNPC_IsValid(npcid) && (FAI_IsBossCastingSpell(npcid, spellid) || FAI_IsBossCastBarExtraForSpell(npcid, spellid)) && FAI_Bosses[npcid][TARGET] != INVALID_PLAYER_ID) {
-				FAI_BossAttackTarget(npcid, FAI_Bosses[npcid][TARGET]);
+			if(FCNPC_IsValid(npcid) && (FAI_IsCastingSpell(npcid, spellid) || FAI_IsCastBarExtraForSpell(npcid, spellid)) && FAI_NPCs[npcid][TARGET] != INVALID_PLAYER_ID) {
+				FAI_AttackTarget(npcid, FAI_NPCs[npcid][TARGET]);
 			}
 		}
 		return 1;
@@ -1939,8 +1939,8 @@ stock FAI_SetSpellCanAttack(spellid, bool:canAttack) {
 	if(FAI_IsValidSpell(spellid)) {
 		FAI_Spells[spellid][CAN_ATTACK] = canAttack;
 		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-			if(FCNPC_IsValid(npcid) && (FAI_IsBossCastingSpell(npcid, spellid) || FAI_IsBossCastBarExtraForSpell(npcid, spellid)) && FAI_Bosses[npcid][TARGET] != INVALID_PLAYER_ID) {
-				FAI_BossAttackTarget(npcid, FAI_Bosses[npcid][TARGET]);
+			if(FCNPC_IsValid(npcid) && (FAI_IsCastingSpell(npcid, spellid) || FAI_IsCastBarExtraForSpell(npcid, spellid)) && FAI_NPCs[npcid][TARGET] != INVALID_PLAYER_ID) {
+				FAI_AttackTarget(npcid, FAI_NPCs[npcid][TARGET]);
 			}
 		}
 		return 1;
@@ -1994,33 +1994,33 @@ stock FAI_SpellToString(spellid, string[], len, bool:allowDefaultColors = true) 
 }
 
 //Casting
-stock FAI_StopAllBossesCasting() {
+stock FAI_StopAllCasting() {
 	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-		FAI_StopBossCasting(npcid);
+		FAI_StopCasting(npcid);
 	}
 	return 1;
 }
-stock FAI_StopBossCasting(npcid) {
+stock FAI_StopCasting(npcid) {
 	if(FCNPC_IsValid(npcid)) {
-		return FAI_StopBossCastingSpell(npcid, FAI_Casting[npcid][SPELLID]);
+		return FAI_StopCastingSpell(npcid, FAI_Casting[npcid][SPELLID]);
 	}
 	return 0;
 }
-stock FAI_StopAllBossesCastingSpell(spellid) {
+stock FAI_StopAllCastingSpell(spellid) {
 	if(FAI_IsValidSpell(spellid)) {
 		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-			FAI_StopBossCastingSpell(npcid, spellid);
+			FAI_StopCastingSpell(npcid, spellid);
 		}
 		return 1;
 	}
 	return 0;
 }
-static FAI_InitAllBossesCasting() {
+static FAI_InitAllCasting() {
 	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-		FAI_InitBossCasting(npcid);
+		FAI_InitCasting(npcid);
 	}
 }
-static FAI_InitBossCasting(npcid) {
+static FAI_InitCasting(npcid) {
 	//Don't use FCNPC_IsValid(npcid)
 	if(npcid >= 0 && npcid < MAX_PLAYERS) {
 		FAI_Casting[npcid][SPELLID] = FAI_INVALID_SPELL_ID;
@@ -2028,8 +2028,8 @@ static FAI_InitBossCasting(npcid) {
 		FAI_Casting[npcid][TARGETID] = INVALID_PLAYER_ID;
 	}
 }
-forward bool:FAI_IsBossCasting(npcid); //Silence 'used before declaration' warning
-stock bool:FAI_IsBossCasting(npcid) {
+forward bool:FAI_IsCasting(npcid); //Silence 'used before declaration' warning
+stock bool:FAI_IsCasting(npcid) {
 	if(FCNPC_IsValid(npcid)) {
 		new spellid = FAI_Casting[npcid][SPELLID];
 		if(FAI_IsValidSpell(spellid) && FAI_Spells[spellid][CAST_TIME] > FAI_Casting[npcid][CAST_PROGRESS]) {
@@ -2038,13 +2038,13 @@ stock bool:FAI_IsBossCasting(npcid) {
 	}
 	return false;
 }
-forward bool:FAI_IsBossCastingSpell(npcid, spellid); //Silence used before definition warning
-stock bool:FAI_IsBossCastingSpell(npcid, spellid) {
-	//FCNPC_IsValid & FAI_IsValidSpell in FAI_IsBossCasting
-	return FAI_IsBossCasting(npcid) && spellid == FAI_Casting[npcid][SPELLID];
+forward bool:FAI_IsCastingSpell(npcid, spellid); //Silence used before definition warning
+stock bool:FAI_IsCastingSpell(npcid, spellid) {
+	//FCNPC_IsValid & FAI_IsValidSpell in FAI_IsCasting
+	return FAI_IsCasting(npcid) && spellid == FAI_Casting[npcid][SPELLID];
 }
-forward bool:FAI_IsBossCastBarExtra(npcid); //Silence used before definition warning
-stock bool:FAI_IsBossCastBarExtra(npcid) {
+forward bool:FAI_IsCastBarExtra(npcid); //Silence used before definition warning
+stock bool:FAI_IsCastBarExtra(npcid) {
 	if(FCNPC_IsValid(npcid)) {
 		new spellid = FAI_Casting[npcid][SPELLID];
 		if(FAI_IsValidSpell(spellid) && FAI_Casting[npcid][CAST_PROGRESS] >= FAI_Spells[spellid][CAST_TIME]) {
@@ -2053,55 +2053,55 @@ stock bool:FAI_IsBossCastBarExtra(npcid) {
 	}
 	return false;
 }
-forward bool:FAI_IsBossCastBarExtraForSpell(npcid, spellid); //Silence used before definition warning
-stock bool:FAI_IsBossCastBarExtraForSpell(npcid, spellid) {
-	//FCNPC_IsValid & FAI_IsValidSpell in FAI_IsBossCastBarExtra
-	return FAI_IsBossCastBarExtra(npcid) && spellid == FAI_Casting[npcid][SPELLID];
+forward bool:FAI_IsCastBarExtraForSpell(npcid, spellid); //Silence used before definition warning
+stock bool:FAI_IsCastBarExtraForSpell(npcid, spellid) {
+	//FCNPC_IsValid & FAI_IsValidSpell in FAI_IsCastBarExtra
+	return FAI_IsCastBarExtra(npcid) && spellid == FAI_Casting[npcid][SPELLID];
 }
-stock FAI_StopBossCastingSpell(npcid, spellid) {
-	if(FCNPC_IsValid(npcid) && FAI_IsValidSpell(spellid) && FAI_IsBossCastingSpell(npcid, spellid)) {
-		FAI_BossCastProgressInComplete(npcid, spellid);
-		FAI_InitBossCasting(npcid);
+stock FAI_StopCastingSpell(npcid, spellid) {
+	if(FCNPC_IsValid(npcid) && FAI_IsValidSpell(spellid) && FAI_IsCastingSpell(npcid, spellid)) {
+		FAI_CastProgressInComplete(npcid, spellid);
+		FAI_InitCasting(npcid);
 		return 1;
 	}
 	return 0;
 }
-static FAI_BossCastProgressInComplete(npcid, spellid) {
+static FAI_CastProgressInComplete(npcid, spellid) {
 	if(FCNPC_IsValid(npcid) && FAI_IsValidSpell(spellid)) {
-		if(FAI_IsBossCastingSpell(npcid, spellid)) { //Only call the end of the incomplete cast if CastProgress has actually not reached CastTime
-			CallRemoteFunction("FAI_OnBossStopCasting", "ddd", npcid, spellid, FAI_Casting[npcid][TARGETID], false);
+		if(FAI_IsCastingSpell(npcid, spellid)) { //Only call the end of the incomplete cast if CastProgress has actually not reached CastTime
+			CallRemoteFunction("FAI_OnStopCasting", "ddd", npcid, spellid, FAI_Casting[npcid][TARGETID], false);
 		}
 	}
 }
-static FAI_BossCastProgressComplete(npcid, spellid) {
+static FAI_CastProgressComplete(npcid, spellid) {
 	if(FCNPC_IsValid(npcid) && FAI_IsValidSpell(spellid)) {
 		if(FAI_Casting[npcid][CAST_PROGRESS] == FAI_Spells[spellid][CAST_TIME]) { //Only call the end of the complete cast if CastProgress has actually reached CastTime
-			CallRemoteFunction("FAI_OnBossStopCasting", "ddd", npcid, spellid, FAI_Casting[npcid][TARGETID], true);
+			CallRemoteFunction("FAI_OnStopCasting", "ddd", npcid, spellid, FAI_Casting[npcid][TARGETID], true);
 		}
 	}
 }
-stock FAI_StartBossCastingSpell(npcid, spellid, targetid = INVALID_PLAYER_ID) {
+stock FAI_StartCastingSpell(npcid, spellid, targetid = INVALID_PLAYER_ID) {
 	//Don't replace if casting already, do replace if showExtra
-	if(FCNPC_IsValid(npcid) && FAI_IsValidSpell(spellid) && FCNPC_IsSpawned(FAI_Bosses[npcid][NPCID]) && !FCNPC_IsDead(FAI_Bosses[npcid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID) && !FAI_IsBossCasting(npcid)) {
-		if(FAI_IsBossCastBarExtra(npcid)) {
-			FAI_InitBossCasting(npcid);
+	if(FCNPC_IsValid(npcid) && FAI_IsValidSpell(spellid) && FCNPC_IsSpawned(FAI_NPCs[npcid][NPCID]) && !FCNPC_IsDead(FAI_NPCs[npcid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID) && !FAI_IsCasting(npcid)) {
+		if(FAI_IsCastBarExtra(npcid)) {
+			FAI_InitCasting(npcid);
 		}
 		FAI_Casting[npcid][SPELLID] = spellid;
 		FAI_Casting[npcid][CAST_PROGRESS] = 0;
 		FAI_Casting[npcid][TARGETID] = targetid;
-		CallRemoteFunction("FAI_OnBossStartCasting", "ddd", npcid, spellid, targetid);
+		CallRemoteFunction("FAI_OnStartCasting", "ddd", npcid, spellid, targetid);
 		//Immediately end cast if instant
 		if(FAI_Spells[spellid][CAST_TIME] == 0) {
-			FAI_BossCastProgressComplete(npcid, spellid);
-			FAI_InitBossCasting(npcid);
+			FAI_CastProgressComplete(npcid, spellid);
+			FAI_InitCasting(npcid);
 		}
 		return 1;
 	}
 	return 0;
 }
-stock FAI_GetBossCastingSpell(npcid) {
+stock FAI_GetCastingSpell(npcid) {
 	//Don't return anything if showExtra is true, because the NPC isn't casting anymore even though the variable is still set to allow for the showExtra functionality
-	if(FCNPC_IsValid(npcid) && FAI_IsBossCasting(npcid)) {
+	if(FCNPC_IsValid(npcid) && FAI_IsCasting(npcid)) {
 		return FAI_Casting[npcid][SPELLID];
 	}
 	return -1;
@@ -2110,7 +2110,7 @@ stock FAI_GetBossCastingSpell(npcid) {
 Instant:
 - Will never happen because, onstopcast gets called immediately after onstartcast
 ShowExtra:
-- Will never happen, because FAI_IsBossCasting is not true with showExtra. Use FAI_StartBossCastingSpell instead.
+- Will never happen, because FAI_IsCasting is not true with showExtra. Use FAI_StartCastingSpell instead.
 Keeppercent:
 - casttime 500, progress 250 => casttime 200, progress becomes 100
 - casttime 500, progress 250 => casttime 600, progress becomes 300
@@ -2118,8 +2118,8 @@ Dont keeppercent:
 - casttime 500, progress 250 => casttime 200, progress becomes 200 which is casttime, execute complete stopcast immediately (not init cast as well to allow for showExtra, except if showExtra is invalid)
 - casttime 500, progress 250 => casttime 600, progress stays 250
 */
-stock FAI_SetBossCastingSpell(npcid, spellid, bool:keepCastPercent = false) {
-	if(FCNPC_IsValid(npcid) && FAI_IsValidSpell(spellid) && FAI_IsBossCasting(npcid) && FCNPC_IsSpawned(FAI_Bosses[npcid][NPCID]) && !FCNPC_IsDead(FAI_Bosses[npcid][NPCID])) {
+stock FAI_SetCastingSpell(npcid, spellid, bool:keepCastPercent = false) {
+	if(FCNPC_IsValid(npcid) && FAI_IsValidSpell(spellid) && FAI_IsCasting(npcid) && FCNPC_IsSpawned(FAI_NPCs[npcid][NPCID]) && !FCNPC_IsDead(FAI_NPCs[npcid][NPCID])) {
 		new oldCastTime = FAI_Spells[FAI_Casting[npcid][SPELLID]][CAST_TIME];
 		new newCastTime = FAI_Spells[spellid][CAST_TIME];
 		FAI_Casting[npcid][SPELLID] = spellid; //Must be called before
@@ -2127,27 +2127,27 @@ stock FAI_SetBossCastingSpell(npcid, spellid, bool:keepCastPercent = false) {
 			FAI_Casting[npcid][CAST_PROGRESS] = floatround(float(FAI_Casting[npcid][CAST_PROGRESS]) / oldCastTime * newCastTime, floatround_floor); //floatround_floor, because (say 400.9) the next progress integer (401) wasn't reached yet
 		} else {
 			if(FAI_Casting[npcid][CAST_PROGRESS] > newCastTime) {
-				FAI_Casting[npcid][CAST_PROGRESS] = newCastTime; //Must be set before FAI_BossCastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
-				FAI_BossCastProgressComplete(npcid, spellid);
+				FAI_Casting[npcid][CAST_PROGRESS] = newCastTime; //Must be set before FAI_CastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
+				FAI_CastProgressComplete(npcid, spellid);
 				#if FAI_CAST_BAR_SHOW_EXTRA_TIME <= 0
-					FAI_InitBossCasting(npcid);
+					FAI_InitCasting(npcid);
 				#endif
 			}
 		}
 		//Don't update castbar with instants or if no show extra
 		if(newCastTime > 0) {
 			#if FAI_CAST_BAR_SHOW_EXTRA_TIME > 0
-				FAI_UpdateBossCastDisplay(npcid);
+				FAI_UpdateCastDisplay(npcid);
 			#endif
 		}
 		return 1;
 	}
 	return 0;
 }
-stock FAI_GetBossCastingProgress(npcid) {
+stock FAI_GetCastingProgress(npcid) {
 	//Don't return anything if showExtra is true, because the NPC isn't casting anymore even though the variable is still set to allow for the showExtra functionality
-	//If the showextra progress is needed, use FAI_GetBossCastingExtraProgress
-	if(FCNPC_IsValid(npcid) && FAI_IsBossCasting(npcid)) {
+	//If the showextra progress is needed, use FAI_GetCastingExtraProgress
+	if(FCNPC_IsValid(npcid) && FAI_IsCasting(npcid)) {
 		return FAI_Casting[npcid][CAST_PROGRESS];
 	}
 	return -1;
@@ -2156,7 +2156,7 @@ stock FAI_GetBossCastingProgress(npcid) {
 Instant:
 - Will never happen because, onstopcast gets called immediately after onstartcast
 ShowExtra:
-- Will never happen, because FAI_IsBossCasting is not true with showExtra. Use FAI_SetBossCastingExtraProgress instead.
+- Will never happen, because FAI_IsCasting is not true with showExtra. Use FAI_SetCastingExtraProgress instead.
 (Don't) KeepCastPercent:
 - Not possible, because a spell can be used by multiple NPCs. Therefore we can not set the CAST_TIME of a spell according to the CAST_PROGRESS of a particular NPC.
 - Say we change the cast progress of an NPC and thus the cast time of the spell he is currently casting, why should another NPC who is also casting the same spell be affected by this?
@@ -2168,17 +2168,17 @@ Other conditions:
 - casttime 500, progress 450, showextramax 50 => progress 560, progress becomes 500, execute complete stopcast immediately (not init cast as well to allow for showExtra, except if showExtra is invalid)
 In other words: if the new progress is >= the casttime, make it equal to the casttime, to allow for a consistent showextra time.
 */
-stock FAI_SetBossCastingProgress(npcid, progress) {
-	if(FCNPC_IsValid(npcid) && FAI_IsBossCasting(npcid) && FCNPC_IsSpawned(FAI_Bosses[npcid][NPCID]) && !FCNPC_IsDead(FAI_Bosses[npcid][NPCID])) {
+stock FAI_SetCastingProgress(npcid, progress) {
+	if(FCNPC_IsValid(npcid) && FAI_IsCasting(npcid) && FCNPC_IsSpawned(FAI_NPCs[npcid][NPCID]) && !FCNPC_IsDead(FAI_NPCs[npcid][NPCID])) {
 		if(progress < 0) {
 			progress = 0;
 		}
 		new spellid = FAI_Casting[npcid][SPELLID];
 		if(progress >= FAI_Spells[spellid][CAST_TIME]) {
-			FAI_Casting[npcid][CAST_PROGRESS] = FAI_Spells[spellid][CAST_TIME]; //Must be set before FAI_BossCastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
-			FAI_BossCastProgressComplete(npcid, spellid); //Finish casting, but don't hide the castbar, to allow for showExtra
+			FAI_Casting[npcid][CAST_PROGRESS] = FAI_Spells[spellid][CAST_TIME]; //Must be set before FAI_CastProgressComplete is called, because that function checks for CAST_PROGRESS == CAST_TIME
+			FAI_CastProgressComplete(npcid, spellid); //Finish casting, but don't hide the castbar, to allow for showExtra
 			#if FAI_CAST_BAR_SHOW_EXTRA_TIME <= 0 //Do hide castbar if showExtra is invalid
-				FAI_InitBossCasting(npcid);
+				FAI_InitCasting(npcid);
 			#endif
 		} else {
 			FAI_Casting[npcid][CAST_PROGRESS] = progress;
@@ -2186,16 +2186,16 @@ stock FAI_SetBossCastingProgress(npcid, progress) {
 		//Don't update castbar with instants or if no show extra
 		if(FAI_Spells[spellid][CAST_TIME] > 0) {
 			#if FAI_CAST_BAR_SHOW_EXTRA_TIME > 0
-				FAI_UpdateBossCastDisplay(npcid);
+				FAI_UpdateCastDisplay(npcid);
 			#endif
 		}
 		return 1;
 	}
 	return 0;
 }
-stock FAI_GetBossCastingTarget(npcid) {
+stock FAI_GetCastingTarget(npcid) {
 	//Don't return anything if showExtra is true, because the NPC isn't casting anymore even though the variable is still set to allow for the showExtra functionality
-	if(FCNPC_IsValid(npcid) && FAI_IsBossCasting(npcid)) {
+	if(FCNPC_IsValid(npcid) && FAI_IsCasting(npcid)) {
 		return FAI_Casting[npcid][TARGETID];
 	}
 	return -1;
@@ -2203,16 +2203,16 @@ stock FAI_GetBossCastingTarget(npcid) {
 //The casting target doesn't have to be valid
 //The casting target doesn't have to be streamed in
 //The casting target doesn't have to be in aggro range
-stock FAI_SetBossCastingTarget(npcid, targetid) {
-	if(FCNPC_IsValid(npcid) && FAI_IsBossCasting(npcid) && FCNPC_IsSpawned(FAI_Bosses[npcid][NPCID]) && !FCNPC_IsDead(FAI_Bosses[npcid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)) {
+stock FAI_SetCastingTarget(npcid, targetid) {
+	if(FCNPC_IsValid(npcid) && FAI_IsCasting(npcid) && FCNPC_IsSpawned(FAI_NPCs[npcid][NPCID]) && !FCNPC_IsDead(FAI_NPCs[npcid][NPCID]) && (IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)) {
 		FAI_Casting[npcid][TARGETID] = targetid;
 		return 1;
 	}
 	return 0;
 }
-stock FAI_GetBossCastingExtraProgress(npcid) {
+stock FAI_GetCastingExtraProgress(npcid) {
 	//Don't return anything if casting is true, because the spell isn't yet in showextra
-	if(FCNPC_IsValid(npcid) && FAI_IsBossCastBarExtra(npcid)) {
+	if(FCNPC_IsValid(npcid) && FAI_IsCastBarExtra(npcid)) {
 		return FAI_Casting[npcid][CAST_PROGRESS] - FAI_Spells[FAI_Casting[npcid][SPELLID]][CAST_TIME];
 	}
 	return -1;
@@ -2221,7 +2221,7 @@ stock FAI_GetBossCastingExtraProgress(npcid) {
 Instant:
 - Will never happen because, onstopcast gets called immediately after onstartcast
 -Casting:
-- Will never happen, because FAI_IsBossCastBarExtra is not true when the NPC is casting. Use FAI_SetBossCastingProgress instead.
+- Will never happen, because FAI_IsCastBarExtra is not true when the NPC is casting. Use FAI_SetCastingProgress instead.
 (Don't) KeepCastPercent:
 - Not possible, because a spell can be used by multiple NPCs. Therefore we can not set the CAST_TIME of a spell according to the showextraprogress of a particular NPC.
 - Say we change the showextraprogress of an NPC and thus the cast time of the spell he is currently casting, why should another NPC who is also casting the same spell be affected by this?
@@ -2232,8 +2232,8 @@ Other conditions:
 - casttime 500, progress 525, showextra 25, showextramax 50 => showextra 55, progress becomes 50 (progress 550), init cast immediately (not complete stopcast as well, because it has already been called, because there is extraprogress)
 In other words: if the new showextra is >= the casttime + showextramax, init cast immediately, to allow for a consistent showextra time.
 */
-stock FAI_SetBossCastingExtraProgress(npcid, progress) {
-	if(FCNPC_IsValid(npcid) && FAI_IsBossCastBarExtra(npcid) && FCNPC_IsSpawned(FAI_Bosses[npcid][NPCID]) && !FCNPC_IsDead(FAI_Bosses[npcid][NPCID]) ) {
+stock FAI_SetCastingExtraProgress(npcid, progress) {
+	if(FCNPC_IsValid(npcid) && FAI_IsCastBarExtra(npcid) && FCNPC_IsSpawned(FAI_NPCs[npcid][NPCID]) && !FCNPC_IsDead(FAI_NPCs[npcid][NPCID]) ) {
 		if(progress < 0) {
 			progress = 0;
 		}
@@ -2241,7 +2241,7 @@ stock FAI_SetBossCastingExtraProgress(npcid, progress) {
 		new spellid = FAI_Casting[npcid][SPELLID];
 		if(progress + FAI_Spells[spellid][CAST_TIME] >= FAI_Spells[spellid][CAST_TIME] + FAI_CAST_BAR_SHOW_EXTRA_TIME) {
 			FAI_Casting[npcid][CAST_PROGRESS] = FAI_Spells[spellid][CAST_TIME] + FAI_CAST_BAR_SHOW_EXTRA_TIME;
-			FAI_InitBossCasting(npcid);
+			FAI_InitCasting(npcid);
 		} else {
 			FAI_Casting[npcid][CAST_PROGRESS] = progress + FAI_Spells[spellid][CAST_TIME];
 		}

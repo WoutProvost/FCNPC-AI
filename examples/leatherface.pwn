@@ -32,10 +32,10 @@ new bool:AnimationApplied;
 #if defined FILTERSCRIPT
 public OnFilterScriptInit()
 {
-	BossLeatherface = FAI_CreateBoss("BossLeatherface");
-	FAI_SetBossMaxHealth(BossLeatherface, 2000.0);
-	FAI_SetBossMoveInfo(BossLeatherface, FCNPC_MOVE_TYPE_SPRINT);
-	FAI_SetBossMeleeAttackInfo(BossLeatherface, 1.5, -1, false);
+	BossLeatherface = FAI_Create("BossLeatherface");
+	FAI_SetMaxHealth(BossLeatherface, 2000.0);
+	FAI_SetMoveInfo(BossLeatherface, FCNPC_MOVE_TYPE_SPRINT);
+	FAI_SetMeleeAttackInfo(BossLeatherface, 1.5, -1, false);
 	SetBossAtSpawn(BossLeatherface);
 	PlayerInRangeTimer = SetTimer("CheckPlayerInRange", 100, true);
 	CreateBossObjects();
@@ -54,7 +54,7 @@ public OnPlayerDisconnect(playerid, reason)
 {
 	if(playerid != INVALID_PLAYER_ID) {
 		if(playerid == BossLeatherface) {
-			//FAI_DestroyBoss(BossLeatherface); //We don't need to do this, since the NPC is already disconnecting
+			//FAI_Destroy(BossLeatherface); //We don't need to do this, since the NPC is already disconnecting
 			BossLeatherface = INVALID_PLAYER_ID;
 			KillTimer(PlayerInRangeTimer);
 			PlayerInRangeTimer = FAI_INVALID_TIMER_ID;
@@ -107,7 +107,7 @@ public FCNPC_OnReachDestination(npcid)
 	return 1;
 }
 
-public FAI_OnBossEncounterStart(npcid, bool:reasonShot, firstTarget)
+public FAI_OnEncounterStart(npcid, bool:reasonShot, firstTarget)
 {
 	if(npcid == BossLeatherface) {
 		IdleCount = -1;
@@ -115,7 +115,7 @@ public FAI_OnBossEncounterStart(npcid, bool:reasonShot, firstTarget)
 	return 1;
 }
 
-public FAI_OnBossEncounterStop(npcid, bool:reasonDeath, lastTarget)
+public FAI_OnEncounterStop(npcid, bool:reasonDeath, lastTarget)
 {
 	if(npcid == BossLeatherface) {
 		if(!reasonDeath) {
@@ -239,8 +239,8 @@ public SetBossAtSpawn(npcid) {
 		FCNPC_SetArmour(npcid, 0.0);
 		FCNPC_SetInvulnerable(npcid, false);
 		new Float:maxHealth;
-		FAI_GetBossMaxHealth(npcid, maxHealth);
-		FAI_SetBossCurrentHealth(npcid, maxHealth);
+		FAI_GetMaxHealth(npcid, maxHealth);
+		FAI_SetCurrentHealth(npcid, maxHealth);
 		if(IsPlayerAttachedObjectSlotUsed(npcid, ATTACHED_OBJECT_INDEX)) {
 			RemovePlayerAttachedObject(npcid, ATTACHED_OBJECT_INDEX);
 		}
@@ -258,7 +258,7 @@ public SetBossAtSpawn(npcid) {
 
 stock StreamerUpdateForValidPlayers(npcid) {
 	for(new playerid = 0, maxplayerid = GetPlayerPoolSize(); playerid <= maxplayerid; playerid++) {
-		if(FAI_IsBossValidForPlayer(playerid, npcid)) {
+		if(FAI_IsValidForPlayer(playerid, npcid)) {
 			Streamer_Update(playerid, STREAMER_TYPE_OBJECT);
 		}
 	}
@@ -310,10 +310,10 @@ public CheckPlayerInRange() {
 			} else {
 				if(FCNPC_IsMoving(BossLeatherface)) {
 					new Float:attackDistance, delay, bool:useFightStyle;
-					FAI_GetBossMeleeAttackInfo(BossLeatherface, attackDistance, delay, useFightStyle);
+					FAI_GetMeleeAttackInfo(BossLeatherface, attackDistance, delay, useFightStyle);
 					new Float:x, Float:y, Float:z;
 					FCNPC_GetPosition(BossLeatherface, x, y, z);
-					new Float:distance = GetPlayerDistanceFromPoint(FAI_GetBossTarget(BossLeatherface), x, y, z);
+					new Float:distance = GetPlayerDistanceFromPoint(FAI_GetTarget(BossLeatherface), x, y, z);
 					if(distance > attackDistance + 2.0) {
 						if(!AnimationApplied) {
 							FCNPC_ApplyAnimation(BossLeatherface, "ped", "FightSh_FWD", 4.1, 1, 1, 1, 0, 0);
@@ -331,12 +331,12 @@ public CheckPlayerInRange() {
 			new Float:x, Float:y, Float:z, Float:px, Float:py, Float:pz;
 			FCNPC_GetPosition(BossLeatherface, x, y, z);
 			for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
-				if(FAI_IsBossValidForPlayer(playerid, BossLeatherface) && !IsPlayerNPC(playerid)) {
+				if(FAI_IsValidForPlayer(playerid, BossLeatherface) && !IsPlayerNPC(playerid)) {
 					if(IdleCount != -1) {
-						if(FAI_GetBossTarget(BossLeatherface) == INVALID_PLAYER_ID) {
+						if(FAI_GetTarget(BossLeatherface) == INVALID_PLAYER_ID) {
 							GetPlayerPos(playerid, px, py, pz);
 							if(px <= -2811.0 && px >= -2821.0 && py <= -1515.0 && py >= -1531.0 && pz <= 143.0 && pz >= 140.0) {
-								FAI_SetBossTarget(BossLeatherface, playerid);
+								FAI_SetTarget(BossLeatherface, playerid);
 							}
 						}
 					}
