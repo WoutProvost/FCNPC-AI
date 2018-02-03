@@ -151,13 +151,9 @@ static bool:FAI_PlayerPaused[MAX_PLAYERS] = {false,...};
 static FAI_PauseTimer = FAI_INVALID_TIMER_ID;
 
 //Boss
-#if !defined FAI_MAX_BOSSES
-	#define FAI_MAX_BOSSES					20
-#endif
 #if !defined FAI_MAX_BOSS_FULL_NAME
 	#define FAI_MAX_BOSS_FULL_NAME			50
 #endif
-#define FAI_INVALID_BOSS_ID					-1
 #define FAI_INVALID_ICON_ID					-1
 #define FAI_MAX_BOSS_TEXTDRAWS				8
 enum {
@@ -196,7 +192,7 @@ enum FAI_ENUM_BOSS {
 	NPCID,
 	Text:TEXTDRAW[FAI_MAX_BOSS_TEXTDRAWS]
 }
-static FAI_Bosses[FAI_MAX_BOSSES][FAI_ENUM_BOSS];
+static FAI_Bosses[MAX_PLAYERS][FAI_ENUM_BOSS];
 static Text:FAI_BossBlackHealth = Text:INVALID_TEXT_DRAW;
 static Text:FAI_BossDarkRed = Text:INVALID_TEXT_DRAW;
 static Text:FAI_BossBlackCast = Text:INVALID_TEXT_DRAW;
@@ -235,7 +231,7 @@ enum FAI_ENUM_CASTING {
 	CAST_PROGRESS,
 	TARGETID
 }
-static FAI_Casting[FAI_MAX_BOSSES][FAI_ENUM_CASTING];
+static FAI_Casting[MAX_PLAYERS][FAI_ENUM_CASTING];
 
 //General
 static FAI_strcpy(dest[], const source[], maxlength = sizeof dest) {
@@ -496,7 +492,7 @@ public OnPlayerConnect(playerid) {
 public OnPlayerRequestClass(playerid, classid)
 {
 	//ForceClassSelection doesn't call a state change and thus PLAYER_STATE_WASTED isn't set
-	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+	for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 		TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][0]);
 		TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][1]);
 		TextDrawHideForPlayer(playerid, FAI_Bosses[bossid][TEXTDRAW][2]);
@@ -699,7 +695,7 @@ public FAI_Update() {
 					TextDrawHideForPlayer(playerid, FAI_BossBlackCast);
 				}
 			}
-			for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+			for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 				//Show the mapicon if the boss is valid for a player
 				if(FAI_IsBossValidForPlayer(playerid, bossid) && FAI_Bosses[bossid][ICONID] != FAI_INVALID_ICON_ID) {
 					new Float:bossX, Float:bossY, Float:bossZ;
@@ -745,7 +741,7 @@ public FAI_Update() {
 	}
 	
 	//Update boss
-	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+	for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 		if(FAI_IsValidBoss(bossid) && FCNPC_IsSpawned(FAI_Bosses[bossid][NPCID]) && !FCNPC_IsDead(FAI_Bosses[bossid][NPCID])) {
 			//Update casting bar
 			FAI_IncreaseBossCastProgress(bossid);
@@ -812,13 +808,13 @@ static FAI_InitAllBosses() {
 	TextDrawBoxColor(FAI_BossBlackCast, 0x000000ff);
 	TextDrawLetterSize(FAI_BossBlackCast, 0.0, 0.7);
 	TextDrawTextSize(FAI_BossBlackCast, 471.0, 0.0);
-	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+	for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 		FAI_InitBoss(bossid);
 	}
 }
 static FAI_InitBoss(bossid) {
 	//Don't use FAI_IsValidBoss(bossid)
-	if(bossid >= 0 && bossid < FAI_MAX_BOSSES) {
+	if(bossid >= 0 && bossid < MAX_PLAYERS) {
 		FAI_Bosses[bossid][TEXTDRAW][0] = TextDrawCreate(170.0, 430.0, "_");
 		TextDrawUseBox(FAI_Bosses[bossid][TEXTDRAW][0], 1);
 		TextDrawBoxColor(FAI_Bosses[bossid][TEXTDRAW][0], 0xB4191DFF);
@@ -879,7 +875,7 @@ static FAI_InitBoss(bossid) {
 }
 static FAI_ResetBossStats(bossid) {
 	//Don't use FAI_IsValidBoss(bossid)
-	if(bossid >= 0 && bossid < FAI_MAX_BOSSES) {
+	if(bossid >= 0 && bossid < MAX_PLAYERS) {
 		FAI_strcpy(FAI_Bosses[bossid][FULL_NAME], FAI_INVALID_STRING, FAI_MAX_BOSS_FULL_NAME + 1);
 		FAI_Bosses[bossid][ICONID] = FAI_INVALID_ICON_ID;
 		FAI_Bosses[bossid][ICON_MARKER] = 0;
@@ -912,7 +908,7 @@ static FAI_ResetBossStats(bossid) {
 }
 forward bool:FAI_IsValidBoss(bossid); //Silence 'used before declaration' warning
 stock bool:FAI_IsValidBoss(bossid) {
-	if(bossid >= 0 && bossid < FAI_MAX_BOSSES && FAI_Bosses[bossid][NPCID] != INVALID_PLAYER_ID) {
+	if(bossid >= 0 && bossid < MAX_PLAYERS && FAI_Bosses[bossid][NPCID] != INVALID_PLAYER_ID) {
 		return true;
 	}
 	return false;
@@ -924,7 +920,7 @@ stock FAI_DestroyAllBosses() {
 	FAI_BossBlackHealth = Text:INVALID_TEXT_DRAW;
 	FAI_BossDarkRed = Text:INVALID_TEXT_DRAW;
 	FAI_BossBlackCast = Text:INVALID_TEXT_DRAW;
-	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+	for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 		FAI_DestroyBoss(bossid);
 	}
 	return 1;
@@ -968,7 +964,7 @@ static FAI_DestroyBossNoFCNPC_Destroy(bossid) {
 	}
 }
 stock FAI_CreateBoss(name[]) {
-	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+	for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 		if(FAI_Bosses[bossid][NPCID] == INVALID_PLAYER_ID) {
 			FAI_Bosses[bossid][NPCID] = FCNPC_Create(name);
 			if(FAI_Bosses[bossid][NPCID] != INVALID_PLAYER_ID) {
@@ -988,12 +984,12 @@ stock FAI_CreateBoss(name[]) {
 				return bossid;
 			} else {
 				//FCNPC_Create failed
-				return FAI_INVALID_BOSS_ID;
+				return INVALID_PLAYER_ID;
 			}
 		}
 	}
 	//Max amount of bosses reached
-	return FAI_INVALID_BOSS_ID;
+	return INVALID_PLAYER_ID;
 }
 stock FAI_GetBossFullName(bossid, name[], len) {
 	if(FAI_IsValidBoss(bossid)) {
@@ -1342,12 +1338,12 @@ stock FAI_GetBossCurrentHealthPercent(bossid) {
 }
 
 stock FAI_GetBossIDFromNPCID(npcid) {
-	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+	for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 		if(npcid == FAI_Bosses[bossid][NPCID]) {
 			return bossid;
 		}
 	}
-	return FAI_INVALID_BOSS_ID;
+	return INVALID_PLAYER_ID;
 }
 #define FAI_GetBossIDFromPlayerID(%0) FAI_GetBossIDFromNPCID(%0) //Alias
 /*stock FAI_GetBossIDFromPlayerID(playerid) {
@@ -1377,12 +1373,12 @@ stock bool:FAI_IsBossValidForPlayer(playerid, bossid) {
 	return false;
 }
 static FAI_GetClosestBossToDisplay(playerid) {
-	new closestBoss = FAI_INVALID_BOSS_ID;
+	new closestBoss = INVALID_PLAYER_ID;
 	new Float:closestBossRange = 0.0;
 	if(IsPlayerConnected(playerid)) {
 		new Float:bossX, Float:bossY, Float:bossZ;
 		new Float:playerRange;
-		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 			if(FAI_IsBossValidForPlayer(playerid, bossid)) {
 				FCNPC_GetPosition(FAI_Bosses[bossid][NPCID], bossX, bossY, bossZ);
 				playerRange = GetPlayerDistanceFromPoint(playerid, bossX, bossY, bossZ);
@@ -1763,7 +1759,7 @@ stock FAI_GetSpellName(spellid, name[], len) {
 stock FAI_SetSpellName(spellid, name[]) {
 	if(FAI_IsValidSpell(spellid)) {
 		FAI_strcpy(FAI_Spells[spellid][NAME], name, FAI_MAX_SPELL_NAME + 1);
-		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 			if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid))) {
 				TextDrawSetString(FAI_Bosses[bossid][TEXTDRAW][6], FAI_Spells[spellid][NAME]);
 				//Textdraw updates automatically
@@ -1801,7 +1797,7 @@ stock FAI_SetSpellCastTime(spellid, castTime, bool:keepCastPercent = false) {
 		}
 		new oldCastTime = FAI_Spells[spellid][CAST_TIME];
 		FAI_Spells[spellid][CAST_TIME] = castTime;
-		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 			if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid))) {
 				new showExtraProgress = FAI_Casting[bossid][CAST_PROGRESS] - oldCastTime;
 				if(showExtraProgress < 0) {
@@ -1866,7 +1862,7 @@ stock FAI_GetSpellCastBarColorDark(spellid) {
 stock FAI_SetSpellCastBarColorDark(spellid, color) {
 	if(FAI_IsValidSpell(spellid)) {
 		FAI_Spells[spellid][CAST_BAR_COLOR_DARK] = color;
-		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 			if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid))) {
 				FAI_UpdateBossCastDisplay(bossid);
 			}
@@ -1884,7 +1880,7 @@ stock FAI_GetSpellCastBarColorLight(spellid) {
 stock FAI_SetSpellCastBarColorLight(spellid, color) {
 	if(FAI_IsValidSpell(spellid)) {
 		FAI_Spells[spellid][CAST_BAR_COLOR_LIGHT] = color;
-		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 			if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid))) {
 				FAI_UpdateBossCastDisplay(bossid);
 			}
@@ -1915,7 +1911,7 @@ stock FAI_SetSpellCastBarInverted(spellid, bool:inverted, bool:invertProgressMad
 		//Don't inv if already inv and vice versa
 		new bool:oldInverted = FAI_Spells[spellid][CAST_BAR_INVERTED];
 		FAI_Spells[spellid][CAST_BAR_INVERTED] = inverted;
-		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 			if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid))) {
 				FAI_UpdateBossCastDisplay(bossid);
 				if(invertProgressMade && FAI_IsBossCastingSpell(bossid, spellid) && oldInverted != inverted) { //Only invert when casting, not when showextra
@@ -1949,7 +1945,7 @@ stock FAI_SetSpellCastTimeInverted(spellid, bool:inverted, bool:invertProgressMa
 		//Don't inv if already inv and vice versa
 		new bool:oldInverted = FAI_Spells[spellid][CAST_TIME_INVERTED];
 		FAI_Spells[spellid][CAST_TIME_INVERTED] = inverted;
-		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 			if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid))) {
 				FAI_UpdateBossCastDisplay(bossid);
 				if(invertProgressMade && FAI_IsBossCastingSpell(bossid, spellid) && oldInverted != inverted) { //Only invert when casting, not when showextra
@@ -1970,7 +1966,7 @@ stock bool:FAI_GetSpellCanMove(spellid) {
 stock FAI_SetSpellCanMove(spellid, bool:canMove) {
 	if(FAI_IsValidSpell(spellid)) {
 		FAI_Spells[spellid][CAN_MOVE] = canMove;
-		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 			if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid)) && FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
 				FAI_BossAttackTarget(bossid, FAI_Bosses[bossid][TARGET]);
 			}
@@ -1988,7 +1984,7 @@ stock bool:FAI_GetSpellCanAttack(spellid) {
 stock FAI_SetSpellCanAttack(spellid, bool:canAttack) {
 	if(FAI_IsValidSpell(spellid)) {
 		FAI_Spells[spellid][CAN_ATTACK] = canAttack;
-		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 			if(FAI_IsValidBoss(bossid) && (FAI_IsBossCastingSpell(bossid, spellid) || FAI_IsBossCastBarExtraForSpell(bossid, spellid)) && FAI_Bosses[bossid][TARGET] != INVALID_PLAYER_ID) {
 				FAI_BossAttackTarget(bossid, FAI_Bosses[bossid][TARGET]);
 			}
@@ -2045,7 +2041,7 @@ stock FAI_SpellToString(spellid, string[], len, bool:allowDefaultColors = true) 
 
 //Casting
 stock FAI_StopAllBossesCasting() {
-	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+	for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 		FAI_StopBossCasting(bossid);
 	}
 	return 1;
@@ -2058,7 +2054,7 @@ stock FAI_StopBossCasting(bossid) {
 }
 stock FAI_StopAllBossesCastingSpell(spellid) {
 	if(FAI_IsValidSpell(spellid)) {
-		for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+		for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 			FAI_StopBossCastingSpell(bossid, spellid);
 		}
 		return 1;
@@ -2066,13 +2062,13 @@ stock FAI_StopAllBossesCastingSpell(spellid) {
 	return 0;
 }
 static FAI_InitAllBossesCasting() {
-	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
+	for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
 		FAI_InitBossCasting(bossid);
 	}
 }
 static FAI_InitBossCasting(bossid) {
 	//Don't use FAI_IsValidBoss(bossid)
-	if(bossid >= 0 && bossid < FAI_MAX_BOSSES) {
+	if(bossid >= 0 && bossid < MAX_PLAYERS) {
 		FAI_Casting[bossid][SPELLID] = FAI_INVALID_SPELL_ID;
 		FAI_Casting[bossid][CAST_PROGRESS] = FAI_INVALID_CAST_PROGRESS;
 		FAI_Casting[bossid][TARGETID] = INVALID_PLAYER_ID;
