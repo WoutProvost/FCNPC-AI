@@ -19,7 +19,7 @@ native FAI_Create(name[]);
 native FAI_GetFullName(npcid, name[], len);
 native FAI_SetFullName(npcid, name[]);
 native FAI_GetMapiconInfo(npcid, &iconid, &iconMarker, &iconColor, &iconStyle);
-native FAI_SetMapiconInfo(npcid, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL);
+native FAI_SetMapiconInfo(npcid, iconid = INVALID_TIMER_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL);
 native FAI_GetMaxHealth(npcid, &Float:health);
 native FAI_SetMaxHealth(npcid, Float:health);
 native FAI_GetDisplayRange(npcid, &Float:range);
@@ -127,9 +127,15 @@ forward FAI_OnStopCasting(npcid, spellid, targetid, bool:castComplete);
 	#define FAI_MAP_ANDREAS_MODE			MAP_ANDREAS_MODE_FULL
 #endif
 #include <FCNPC>
-#define FAI_INVALID_STRING					" "
-#define FAI_INVALID_COLOR					-1
-#define FAI_INVALID_TIMER_ID				-1
+#if !defined INVALID_STRING
+	#define INVALID_STRING					" "
+#endif
+#if !defined INVALID_COLOR_ID
+	#define INVALID_COLOR_ID				-1
+#endif
+#if !defined INVALID_TIMER_ID
+	#define INVALID_TIMER_ID				-1
+#endif
 #if !defined FAI_CAST_BAR_SHOW_EXTRA_TIME
 	#define FAI_CAST_BAR_SHOW_EXTRA_TIME	1000
 #endif
@@ -139,17 +145,21 @@ forward FAI_OnStopCasting(npcid, spellid, targetid, bool:castComplete);
 #if !defined FAI_SHORTEN_NUMBERS
 	#define FAI_SHORTEN_NUMBERS				false
 #endif
-#define FAI_isnull(%1) ((!(%1[0])) || (((%1[0]) == '\1') && (!(%1[1]))))
-static FAI_UpdateTimer = FAI_INVALID_TIMER_ID;
+#if !defined isnull
+	#define isnull(%1) ((!(%1[0])) || (((%1[0]) == '\1') && (!(%1[1]))))
+#endif
+static FAI_UpdateTimer = INVALID_TIMER_ID;
 static FAI_PauseTickCount[MAX_PLAYERS] = {0,...};
 static bool:FAI_PlayerPaused[MAX_PLAYERS] = {false,...};
-static FAI_PauseTimer = FAI_INVALID_TIMER_ID;
+static FAI_PauseTimer = INVALID_TIMER_ID;
 
 //NPC
 #if !defined FAI_MAX_FULL_NAME
 	#define FAI_MAX_FULL_NAME				50
 #endif
-#define FAI_INVALID_ICON_ID					-1
+#if !defined INVALID_ICON_ID
+	#define INVALID_ICON_ID					-1
+#endif
 #define FAI_MAX_TEXTDRAWS					8
 enum {
 	FAI_BEHAVIOUR_FRIENDLY,
@@ -428,13 +438,13 @@ static FAI_InitScript() {
 static FAI_ExitScript() {
 	//General
 	KillTimer(FAI_UpdateTimer);
-	FAI_UpdateTimer = FAI_INVALID_TIMER_ID;
+	FAI_UpdateTimer = INVALID_TIMER_ID;
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
 		FAI_PauseTickCount[playerid] = GetTickCount();
 		FAI_PlayerPaused[playerid] = false;
 	}
 	KillTimer(FAI_PauseTimer);
-	FAI_PauseTimer = FAI_INVALID_TIMER_ID;
+	FAI_PauseTimer = INVALID_TIMER_ID;
 
 	//NPC
 	FAI_DestroyAll();
@@ -686,7 +696,7 @@ public FAI_Update() {
 			}
 			for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
 				//Show the mapicon if the NPC is valid for a player
-				if(FAI_IsValidForPlayer(playerid, npcid) && FAI_NPCs[npcid][ICONID] != FAI_INVALID_ICON_ID) {
+				if(FAI_IsValidForPlayer(playerid, npcid) && FAI_NPCs[npcid][ICONID] != INVALID_TIMER_ID) {
 					new Float:npcX, Float:npcY, Float:npcZ;
 					FCNPC_GetPosition(FAI_NPCs[npcid][NPCID], npcX, npcY, npcZ);
 					SetPlayerMapIcon(playerid, FAI_NPCs[npcid][ICONID], npcX, npcY, npcZ, FAI_NPCs[npcid][ICON_MARKER], FAI_NPCs[npcid][ICON_COLOR], FAI_NPCs[npcid][ICON_STYLE]);
@@ -865,10 +875,10 @@ static FAI_Init(npcid) {
 static FAI_ResetStats(npcid) {
 	//Don't use FCNPC_IsValid(npcid)
 	if(npcid >= 0 && npcid < MAX_PLAYERS) {
-		FAI_strcpy(FAI_NPCs[npcid][FULL_NAME], FAI_INVALID_STRING, FAI_MAX_FULL_NAME + 1);
-		FAI_NPCs[npcid][ICONID] = FAI_INVALID_ICON_ID;
+		FAI_strcpy(FAI_NPCs[npcid][FULL_NAME], INVALID_STRING, FAI_MAX_FULL_NAME + 1);
+		FAI_NPCs[npcid][ICONID] = INVALID_TIMER_ID;
 		FAI_NPCs[npcid][ICON_MARKER] = 0;
-		FAI_NPCs[npcid][ICON_COLOR] = FAI_INVALID_COLOR;
+		FAI_NPCs[npcid][ICON_COLOR] = INVALID_COLOR_ID;
 		FAI_NPCs[npcid][ICON_STYLE] = MAPICON_LOCAL;
 		FAI_NPCs[npcid][MAX_HEALTH] = 0.0;
 		FAI_NPCs[npcid][RANGE_DISPLAY] = 0.0;
@@ -950,8 +960,8 @@ stock FAI_Create(name[]) {
 		if(FAI_NPCs[npcid][NPCID] == INVALID_PLAYER_ID) {
 			FAI_NPCs[npcid][NPCID] = FCNPC_Create(name);
 			if(FAI_NPCs[npcid][NPCID] != INVALID_PLAYER_ID) {
-				FAI_SetFullName(npcid, FAI_INVALID_STRING);
-				FAI_SetMapiconInfo(npcid, FAI_INVALID_ICON_ID, 23, 0xff0000ff, MAPICON_LOCAL);
+				FAI_SetFullName(npcid, INVALID_STRING);
+				FAI_SetMapiconInfo(npcid, INVALID_TIMER_ID, 23, 0xff0000ff, MAPICON_LOCAL);
 				FAI_SetMaxHealth(npcid, 100.0);
 				FAI_SetDisplayRange(npcid, 0.0);
 				FAI_SetAggroRange(npcid, 20.0);
@@ -983,7 +993,7 @@ stock FAI_GetFullName(npcid, name[], len) {
 stock FAI_SetFullName(npcid, name[]) {
 	if(FCNPC_IsValid(npcid)) {
 		//If the user didn't provide a valid fullName, use the playerName
-		if(!FAI_isnull(name) && !strcmp(name, FAI_INVALID_STRING, true)) {
+		if(!isnull(name) && !strcmp(name, INVALID_STRING, true)) {
 			new playerName[MAX_PLAYER_NAME + 1];
 			GetPlayerName(FAI_NPCs[npcid][NPCID], playerName, sizeof(playerName));
 			FAI_strcpy(FAI_NPCs[npcid][FULL_NAME], playerName, FAI_MAX_FULL_NAME + 1);
@@ -1008,9 +1018,9 @@ stock FAI_GetMapiconInfo(npcid, &iconid, &iconMarker, &iconColor, &iconStyle) {
 	}
 	return 0;
 }
-stock FAI_SetMapiconInfo(npcid, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL) {
+stock FAI_SetMapiconInfo(npcid, iconid = INVALID_TIMER_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL) {
 	if(FCNPC_IsValid(npcid)) {
-		if(iconid == FAI_INVALID_ICON_ID) {
+		if(iconid == INVALID_TIMER_ID) {
 			for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
 				RemovePlayerMapIcon(playerid, FAI_NPCs[npcid][ICONID]);
 			}
@@ -1651,20 +1661,20 @@ static FAI_InitAllSpells() {
 static FAI_InitSpell(spellid) {
 	//Don't use FAI_IsValidSpell(spellid)
 	if(spellid >= 0 && spellid < FAI_MAX_SPELLS) {
-		FAI_strcpy(FAI_Spells[spellid][NAME], FAI_INVALID_STRING, FAI_MAX_SPELL_NAME + 1);
+		FAI_strcpy(FAI_Spells[spellid][NAME], INVALID_STRING, FAI_MAX_SPELL_NAME + 1);
 		FAI_Spells[spellid][CAST_TIME] = 0;
 		FAI_Spells[spellid][AMOUNT] = 0.0;
-		FAI_Spells[spellid][CAST_BAR_COLOR_DARK] = FAI_INVALID_COLOR;
-		FAI_Spells[spellid][CAST_BAR_COLOR_LIGHT] = FAI_INVALID_COLOR;
+		FAI_Spells[spellid][CAST_BAR_COLOR_DARK] = INVALID_COLOR_ID;
+		FAI_Spells[spellid][CAST_BAR_COLOR_LIGHT] = INVALID_COLOR_ID;
 		FAI_Spells[spellid][CAST_BAR_INVERTED] = false;
 		FAI_Spells[spellid][CAST_TIME_INVERTED] = false;
 		FAI_Spells[spellid][CAN_MOVE] = false;
 		FAI_Spells[spellid][CAN_ATTACK] = false;
-		FAI_strcpy(FAI_Spells[spellid][INFO], FAI_INVALID_STRING, FAI_MAX_SPELL_INFO + 1);
+		FAI_strcpy(FAI_Spells[spellid][INFO], INVALID_STRING, FAI_MAX_SPELL_INFO + 1);
 	}
 }
 stock bool:FAI_IsValidSpell(spellid) {
-	if(spellid >= 0 && spellid < FAI_MAX_SPELLS && strcmp(FAI_Spells[spellid][NAME], FAI_INVALID_STRING, true)) {
+	if(spellid >= 0 && spellid < FAI_MAX_SPELLS && strcmp(FAI_Spells[spellid][NAME], INVALID_STRING, true)) {
 		return true;
 	}
 	return false;
@@ -1685,7 +1695,7 @@ stock FAI_DestroySpell(spellid) {
 }
 stock FAI_CreateSpell(name[]) {
 	for(new spellid = 0; spellid < FAI_MAX_SPELLS; spellid++) {
-		if(!strcmp(FAI_Spells[spellid][NAME], FAI_INVALID_STRING, true)) {
+		if(!strcmp(FAI_Spells[spellid][NAME], INVALID_STRING, true)) {
 			FAI_strcpy(FAI_Spells[spellid][NAME], name, FAI_MAX_SPELL_NAME + 1);
 			FAI_SetSpellName(spellid, name);
 			FAI_SetSpellCastTime(spellid, 2000, false);
@@ -1696,7 +1706,7 @@ stock FAI_CreateSpell(name[]) {
 			FAI_SetSpellCastTimeInverted(spellid, false, false);
 			FAI_SetSpellCanMove(spellid, false);
 			FAI_SetSpellCanAttack(spellid, false);
-			FAI_SetSpellInfo(spellid, FAI_INVALID_STRING);
+			FAI_SetSpellInfo(spellid, INVALID_STRING);
 			return spellid;
 		}
 	}
@@ -1956,7 +1966,7 @@ stock FAI_GetSpellInfo(spellid, info[], len) {
 stock FAI_SetSpellInfo(spellid, info[]) {
 	if(FAI_IsValidSpell(spellid)) {
 		//If the user didn't provide info, construct info based on other settings
-		if(!FAI_isnull(info) && !strcmp(info, FAI_INVALID_STRING, true)) {
+		if(!isnull(info) && !strcmp(info, INVALID_STRING, true)) {
 			new string[FAI_MAX_SPELL_INFO + 1];
 			new amountString[21 + 8 + 1];
 			format(amountString, sizeof(amountString), "Amount %s.", FAI_DisplayReadableFloat(FAI_Spells[spellid][AMOUNT], 2, 0));

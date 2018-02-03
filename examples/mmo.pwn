@@ -26,11 +26,11 @@ new SpellNoPlaceIsSafe = FAI_INVALID_SPELL_ID;
 new SpellFlightOfTheBumblebee = FAI_INVALID_SPELL_ID;
 new SpellRockOfLife = FAI_INVALID_SPELL_ID;
 new SpellSummonAdds = FAI_INVALID_SPELL_ID;
-new BossIdleMessageTimer = FAI_INVALID_TIMER_ID; //3 purpose timer: works as an idle message timer when he is spawned but an encounter hasn't started, works as a respawn timer when he is dead, works as a casting timer during an encounter
+new BossIdleMessageTimer = INVALID_TIMER_ID; //3 purpose timer: works as an idle message timer when he is spawned but an encounter hasn't started, works as a respawn timer when he is dead, works as a casting timer during an encounter
 new BossExecuteSpellCount = 0;
 new Float:BossTargetNotMovingPos[3] = {0.0, ...};
 new BossTargetNotMovingObject = INVALID_OBJECT_ID;
-new BossTargetNotMovingTimer = FAI_INVALID_TIMER_ID;
+new BossTargetNotMovingTimer = INVALID_TIMER_ID;
 new BossBigSmokeHealthState = 100;
 new RewardPickups[500] = {-1, ...};
 //Some variables, shared by all spells created in this script
@@ -39,7 +39,7 @@ new RewardPickups[500] = {-1, ...};
 //In this case GroundMarks and Bombs have an equal size, so we can handle everything in the same loop
 new GroundMarks[20] = {INVALID_OBJECT_ID, ...};
 new Bombs[20] = {INVALID_OBJECT_ID, ...};
-new ExplosionTimer = FAI_INVALID_TIMER_ID;
+new ExplosionTimer = INVALID_TIMER_ID;
 new ExplosionCount = 0;
 new BossAdds[2] = {INVALID_PLAYER_ID, ...};
 new SpellRockOfLifeTarget = INVALID_PLAYER_ID;
@@ -130,20 +130,20 @@ public OnPlayerDisconnect(playerid, reason)
 				Bombs[groundMark] = INVALID_OBJECT_ID;
 			}
 			KillTimer(ExplosionTimer);
-			ExplosionTimer = FAI_INVALID_TIMER_ID;
+			ExplosionTimer = INVALID_TIMER_ID;
 			ExplosionCount = 0;
 			for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
 				FAI_Destroy(BossAdds[add]); //Destroy the adds when their master gets destroyed
 				BossAdds[add] = INVALID_PLAYER_ID;
 			}
 			KillTimer(BossIdleMessageTimer);
-			BossIdleMessageTimer = FAI_INVALID_TIMER_ID;
+			BossIdleMessageTimer = INVALID_TIMER_ID;
 			BossExecuteSpellCount = 0;
 			BossTargetNotMovingPos[0] = 0.0;
 			BossTargetNotMovingPos[1] = 0.0;
 			BossTargetNotMovingPos[2] = 0.0;
 			KillTimer(BossTargetNotMovingTimer);
-			BossTargetNotMovingTimer = FAI_INVALID_TIMER_ID;
+			BossTargetNotMovingTimer = INVALID_TIMER_ID;
 			DestroyDynamicObject(BossTargetNotMovingObject);
 			BossTargetNotMovingObject = INVALID_OBJECT_ID;
 			BossBigSmokeHealthState = 0;
@@ -294,7 +294,7 @@ public FAI_OnEncounterStop(npcid, bool:reasonDeath, lastTarget)
 		BossTargetNotMovingPos[1] = 0.0;
 		BossTargetNotMovingPos[2] = 0.0;
 		KillTimer(BossTargetNotMovingTimer);
-		BossTargetNotMovingTimer = FAI_INVALID_TIMER_ID;
+		BossTargetNotMovingTimer = INVALID_TIMER_ID;
 		DestroyDynamicObject(BossTargetNotMovingObject);
 		BossTargetNotMovingObject = INVALID_OBJECT_ID;
 		for(new groundMark = 0, groundMarkCount = sizeof(GroundMarks); groundMark < groundMarkCount; groundMark++) {
@@ -304,7 +304,7 @@ public FAI_OnEncounterStop(npcid, bool:reasonDeath, lastTarget)
 			Bombs[groundMark] = INVALID_OBJECT_ID;
 		}
 		KillTimer(ExplosionTimer);
-		ExplosionTimer = FAI_INVALID_TIMER_ID;
+		ExplosionTimer = INVALID_TIMER_ID;
 		ExplosionCount = 0;
 		for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
 			if(BossAdds[add] != INVALID_PLAYER_ID) {
@@ -489,7 +489,7 @@ public FAI_OnStopCasting(npcid, spellid, targetid, bool:castComplete)
 		if(spellid == SpellNoPlaceIsSafe) {
 			ExplosionCount = 0;
 			KillTimer(ExplosionTimer);
-			ExplosionTimer = FAI_INVALID_TIMER_ID;
+			ExplosionTimer = INVALID_TIMER_ID;
 		}
 		if(spellid == SpellFlightOfTheBumblebee) {
 			if(castComplete) {
@@ -641,7 +641,7 @@ public TargetNotMovingCheck(npcid, randomSeconds) {
 		GetPlayerPos(targetid, x, y, z);
 		//2nd last part of condition: we don't need to cast the instant spell again when the previous explosion hasn't happened already
 		//Last part of condition: we don't need to cast the instant spell when another spell was stopped being cast, but the timer is still going on (like with RockOfLife)
-		if(BossTargetNotMovingPos[0] == x && BossTargetNotMovingPos[1] == y && BossTargetNotMovingPos[2] == z && BossTargetNotMovingTimer == FAI_INVALID_TIMER_ID && ExplosionTimer == FAI_INVALID_TIMER_ID) {
+		if(BossTargetNotMovingPos[0] == x && BossTargetNotMovingPos[1] == y && BossTargetNotMovingPos[2] == z && BossTargetNotMovingTimer == INVALID_TIMER_ID && ExplosionTimer == INVALID_TIMER_ID) {
 			FAI_StartCastingSpell(npcid, SpellMarkOfDeath, targetid);
 		}
 		GetPlayerPos(targetid, BossTargetNotMovingPos[0], BossTargetNotMovingPos[1], BossTargetNotMovingPos[2]);
@@ -813,7 +813,7 @@ public SpellMarkOfDeathExplosion(npcid) {
 	BossTargetNotMovingObject = INVALID_OBJECT_ID;
 	CreateExplosionForValidPlayers(npcid, markX, markY, markZ);
 	KillTimer(BossTargetNotMovingTimer);
-	BossTargetNotMovingTimer = FAI_INVALID_TIMER_ID;
+	BossTargetNotMovingTimer = INVALID_TIMER_ID;
 	return 1;
 }
 			
@@ -827,7 +827,7 @@ public WallOfFireExplosion(npcid) {
 	ExplosionCount--;
 	if(ExplosionCount < 0) {
 		KillTimer(ExplosionTimer);
-		ExplosionTimer = FAI_INVALID_TIMER_ID;
+		ExplosionTimer = INVALID_TIMER_ID;
 		ExplosionCount = 0;
 	}
 	return 1;
@@ -859,6 +859,6 @@ public SpellRockOfLifeEnd(playerid) {
 	SetCameraBehindPlayer(playerid);
 	SpellRockOfLifeTarget = INVALID_PLAYER_ID;
 	KillTimer(ExplosionTimer);
-	ExplosionTimer = FAI_INVALID_TIMER_ID;
+	ExplosionTimer = INVALID_TIMER_ID;
 	return 1;
 }

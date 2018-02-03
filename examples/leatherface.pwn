@@ -21,7 +21,7 @@
 #define DEFAULT_TIME_M					0	//Default samp time
 
 new BossLeatherface = INVALID_PLAYER_ID;
-new PlayerInRangeTimer = FAI_INVALID_TIMER_ID;
+new PlayerInRangeTimer = INVALID_TIMER_ID;
 new AudioStreamCount[MAX_PLAYERS] = {-1, ...};
 new bool:AlreadyInOutRange[MAX_PLAYERS] = {false, ...}; //True = in range, false = not in range
 new Objects[66] = {INVALID_OBJECT_ID,...};
@@ -57,7 +57,7 @@ public OnPlayerDisconnect(playerid, reason)
 			//FAI_Destroy(BossLeatherface); //We don't need to do this, since the NPC is already disconnecting
 			BossLeatherface = INVALID_PLAYER_ID;
 			KillTimer(PlayerInRangeTimer);
-			PlayerInRangeTimer = FAI_INVALID_TIMER_ID;
+			PlayerInRangeTimer = INVALID_TIMER_ID;
 			for(new otherplayerid = 0, highestPlayerid = GetPlayerPoolSize(); otherplayerid <= highestPlayerid; otherplayerid++) {
 				if(IsPlayerConnected(otherplayerid) && !IsPlayerNPC(otherplayerid)) {
 					if(AlreadyInOutRange[otherplayerid]) {
