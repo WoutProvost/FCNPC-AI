@@ -115,9 +115,6 @@ forward FAI_OnStopCasting(npcid, spellid, targetid, bool:castComplete);
 
 //General
 #define FAI_VERSION							"1.1.1"
-#if !defined INVALID_STRING
-	#define INVALID_STRING					" "
-#endif
 #if !defined INVALID_COLOR_ID
 	#define INVALID_COLOR_ID				-1
 #endif
@@ -132,9 +129,6 @@ forward FAI_OnStopCasting(npcid, spellid, targetid, bool:castComplete);
 #endif
 #if !defined FAI_FORMAT_HUMAN_READABLE
 	#define FAI_FORMAT_HUMAN_READABLE		false
-#endif
-#if !defined isnull
-	#define isnull(%1) ((!(%1[0])) || (((%1[0]) == '\1') && (!(%1[1]))))
 #endif
 static FAI_UpdateTimer = INVALID_TIMER_ID;
 static FAI_PauseTickCount[MAX_PLAYERS] = {0,...};
@@ -227,10 +221,15 @@ enum FAI_ENUM_CASTING {
 static FAI_Casting[MAX_PLAYERS][FAI_ENUM_CASTING];
 
 //General
-static FAI_strcpy(dest[], const source[], maxlength = sizeof dest) {
-	dest[0] = '\0';
-	return strcat(dest, source, maxlength);
-}
+#if !defined strcpy
+	#define strcpy(%0,%1,%2) strcat((%0[0] = '\0', %0), %2, %1)
+#endif
+ #if !defined strclr
+ 	#define strclr(%0) (%0[0] = '\0')
+#endif
+#if !defined strempty
+	#define strempty(%1) ((!(%1[0])) || (((%1[0]) == '\1') && (!(%1[1]))))
+#endif
 static FAI_strtokdelim(const string[], delimiter, &index) {
 	new length = strlen(string);
 	while ((index < length) && (string[index] <= delimiter)) {
@@ -270,7 +269,7 @@ static FAI_DisplayReadableInteger(amount) {
 }
 static FAI_DisplayReadableFloat(Float:amount, maxDecimals = 6, minDecimals = 0) {
 	new amountAsString[21 + 1], front[21 + 1], end[21 + 1], idx, frontval;
-	FAI_strcpy(amountAsString, FAI_RemoveUnnecessaryDecimals(amount, maxDecimals, minDecimals));
+	strcpy(amountAsString, sizeof(amountAsString), FAI_RemoveUnnecessaryDecimals(amount, maxDecimals, minDecimals));
 	front = FAI_strtokdelim(amountAsString, '.', idx); //Bij een negatief getal wordt de - eraf gedaan? Oplossing zie hieronder.
 	end = FAI_strtokdelim(amountAsString, '.', idx);
 	frontval = strval(front);
@@ -856,7 +855,7 @@ static FAI_Init(npcid) {
 static FAI_ResetStats(npcid) {
 	//Don't use FCNPC_IsValid(npcid)
 	if(npcid >= 0 && npcid < MAX_PLAYERS) {
-		FAI_strcpy(FAI_NPCs[npcid][FULL_NAME], INVALID_STRING, FAI_MAX_FULL_NAME + 1);
+		strclr(FAI_NPCs[npcid][FULL_NAME]);
 		FAI_NPCs[npcid][ICONID] = INVALID_TIMER_ID;
 		FAI_NPCs[npcid][ICON_MARKER] = 0;
 		FAI_NPCs[npcid][ICON_COLOR] = INVALID_COLOR_ID;
@@ -941,7 +940,7 @@ stock FAI_Create(name[]) {
 		if(FAI_NPCs[npcid][NPCID] == INVALID_PLAYER_ID) {
 			FAI_NPCs[npcid][NPCID] = FCNPC_Create(name);
 			if(FAI_NPCs[npcid][NPCID] != INVALID_PLAYER_ID) {
-				FAI_SetFullName(npcid, INVALID_STRING);
+				FAI_SetFullName(npcid, "");
 				FAI_SetMapiconInfo(npcid, INVALID_TIMER_ID, 23, 0xff0000ff, MAPICON_LOCAL);
 				FAI_SetMaxHealth(npcid, 100.0);
 				FAI_SetDisplayRange(npcid, 0.0);
@@ -966,7 +965,7 @@ stock FAI_Create(name[]) {
 }
 stock FAI_GetFullName(npcid, name[], len) {
 	if(FCNPC_IsValid(npcid)) {
-		FAI_strcpy(name, FAI_NPCs[npcid][FULL_NAME], len);
+		strcpy(name, len, FAI_NPCs[npcid][FULL_NAME]);
 		return strlen(name);
 	}
 	return -1;
@@ -974,14 +973,14 @@ stock FAI_GetFullName(npcid, name[], len) {
 stock FAI_SetFullName(npcid, name[]) {
 	if(FCNPC_IsValid(npcid)) {
 		//If the user didn't provide a valid fullName, use the playerName
-		if(!isnull(name) && !strcmp(name, INVALID_STRING, true)) {
+		if(strempty(name)) {
 			new playerName[MAX_PLAYER_NAME + 1];
 			GetPlayerName(FAI_NPCs[npcid][NPCID], playerName, sizeof(playerName));
-			FAI_strcpy(FAI_NPCs[npcid][FULL_NAME], playerName, FAI_MAX_FULL_NAME + 1);
+			strcpy(FAI_NPCs[npcid][FULL_NAME], FAI_MAX_FULL_NAME + 1, playerName);
 		}
 		//If the user did provide a valid fullName, use that one
 		else {
-			FAI_strcpy(FAI_NPCs[npcid][FULL_NAME], name, FAI_MAX_FULL_NAME + 1);
+			strcpy(FAI_NPCs[npcid][FULL_NAME], FAI_MAX_FULL_NAME + 1, name);
 		}
 		TextDrawSetString(FAI_NPCs[npcid][TEXTDRAW][3], FAI_NPCs[npcid][FULL_NAME]);
 		//FullName textdraw updates automatically
@@ -1421,7 +1420,7 @@ static FAI_UpdateHealthDisplay(npcid) {
 			} else if(float(healthInteger) / 1000 >= 1) {
 				format(string, sizeof(string), "%s K", FAI_DisplayReadableFloat(float(healthInteger) / 1000, 2, 2));
 			} else {
-				FAI_strcpy(string, FAI_DisplayReadableInteger(healthInteger));
+				strcpy(string, sizeof(string), FAI_DisplayReadableInteger(healthInteger));
 			}
 			TextDrawSetString(FAI_NPCs[npcid][TEXTDRAW][2], string);
 		#endif
@@ -1638,7 +1637,7 @@ static FAI_InitAllSpells() {
 static FAI_InitSpell(spellid) {
 	//Don't use FAI_IsValidSpell(spellid)
 	if(spellid >= 0 && spellid < FAI_MAX_SPELLS) {
-		FAI_strcpy(FAI_Spells[spellid][NAME], INVALID_STRING, FAI_MAX_SPELL_NAME + 1);
+		strclr(FAI_Spells[spellid][NAME]);
 		FAI_Spells[spellid][CAST_TIME] = 0;
 		FAI_Spells[spellid][AMOUNT] = 0.0;
 		FAI_Spells[spellid][CAST_BAR_COLOR_DARK] = INVALID_COLOR_ID;
@@ -1647,11 +1646,11 @@ static FAI_InitSpell(spellid) {
 		FAI_Spells[spellid][CAST_TIME_INVERTED] = false;
 		FAI_Spells[spellid][CAN_MOVE] = false;
 		FAI_Spells[spellid][CAN_ATTACK] = false;
-		FAI_strcpy(FAI_Spells[spellid][INFO], INVALID_STRING, FAI_MAX_SPELL_INFO + 1);
+		strclr(FAI_Spells[spellid][INFO]);
 	}
 }
 stock bool:FAI_IsValidSpell(spellid) {
-	if(spellid >= 0 && spellid < FAI_MAX_SPELLS && strcmp(FAI_Spells[spellid][NAME], INVALID_STRING, true)) {
+	if(spellid >= 0 && spellid < FAI_MAX_SPELLS && !strempty(FAI_Spells[spellid][NAME])) {
 		return true;
 	}
 	return false;
@@ -1672,8 +1671,8 @@ stock FAI_DestroySpell(spellid) {
 }
 stock FAI_CreateSpell(name[]) {
 	for(new spellid = 0; spellid < FAI_MAX_SPELLS; spellid++) {
-		if(!strcmp(FAI_Spells[spellid][NAME], INVALID_STRING, true)) {
-			FAI_strcpy(FAI_Spells[spellid][NAME], name, FAI_MAX_SPELL_NAME + 1);
+		if(strempty(FAI_Spells[spellid][NAME])) {
+			strcpy(FAI_Spells[spellid][NAME], FAI_MAX_SPELL_NAME + 1, name);
 			FAI_SetSpellName(spellid, name);
 			FAI_SetSpellCastTime(spellid, 2000, false);
 			FAI_SetSpellAmount(spellid, 0.0);
@@ -1683,7 +1682,7 @@ stock FAI_CreateSpell(name[]) {
 			FAI_SetSpellCastTimeInverted(spellid, false, false);
 			FAI_SetSpellCanMove(spellid, false);
 			FAI_SetSpellCanAttack(spellid, false);
-			FAI_SetSpellInfo(spellid, INVALID_STRING);
+			FAI_SetSpellInfo(spellid, "");
 			return spellid;
 		}
 	}
@@ -1692,14 +1691,14 @@ stock FAI_CreateSpell(name[]) {
 }
 stock FAI_GetSpellName(spellid, name[], len) {
 	if(FAI_IsValidSpell(spellid)) {
-		FAI_strcpy(name, FAI_Spells[spellid][NAME], len);
+		strcpy(name, len, FAI_Spells[spellid][NAME]);
 		return strlen(name);
 	}
 	return -1;
 }
 stock FAI_SetSpellName(spellid, name[]) {
 	if(FAI_IsValidSpell(spellid)) {
-		FAI_strcpy(FAI_Spells[spellid][NAME], name, FAI_MAX_SPELL_NAME + 1);
+		strcpy(FAI_Spells[spellid][NAME], FAI_MAX_SPELL_NAME + 1, name);
 		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
 			if(FCNPC_IsValid(npcid) && (FAI_IsCastingSpell(npcid, spellid) || FAI_IsCastBarExtraForSpell(npcid, spellid))) {
 				TextDrawSetString(FAI_NPCs[npcid][TEXTDRAW][6], FAI_Spells[spellid][NAME]);
@@ -1936,14 +1935,14 @@ stock FAI_SetSpellCanAttack(spellid, bool:canAttack) {
 }
 stock FAI_GetSpellInfo(spellid, info[], len) {
 	if(FAI_IsValidSpell(spellid)) {
-		return FAI_strcpy(info, FAI_Spells[spellid][INFO], len);
+		return strcpy(info, len, FAI_Spells[spellid][INFO]);
 	}
 	return -1;
 }
 stock FAI_SetSpellInfo(spellid, info[]) {
 	if(FAI_IsValidSpell(spellid)) {
 		//If the user didn't provide info, construct info based on other settings
-		if(!isnull(info) && !strcmp(info, INVALID_STRING, true)) {
+		if(strempty(info)) {
 			new string[FAI_MAX_SPELL_INFO + 1];
 			new amountString[21 + 8 + 1];
 			format(amountString, sizeof(amountString), "Amount %s.", FAI_DisplayReadableFloat(FAI_Spells[spellid][AMOUNT], 2, 0));
@@ -1955,14 +1954,14 @@ stock FAI_SetSpellInfo(spellid, info[]) {
 					format(castTimeString, sizeof(castTimeString), "%s second", FAI_DisplayReadableFloat(float(FAI_Spells[spellid][CAST_TIME]) / 1000, 2, 0));
 				}
 			} else {
-				FAI_strcpy(castTimeString, "Instant");
+				strcpy(castTimeString, sizeof(castTimeString), "Instant");
 			}
 			format(string, sizeof(string), "%s %s cast.", amountString, castTimeString);
-			FAI_strcpy(FAI_Spells[spellid][INFO], string, FAI_MAX_SPELL_INFO + 1);
+			strcpy(FAI_Spells[spellid][INFO], FAI_MAX_SPELL_INFO + 1, string);
 		}
 		//If the user did provide info, use that one
 		else {
-			FAI_strcpy(FAI_Spells[spellid][INFO], info, FAI_MAX_SPELL_INFO + 1);
+			strcpy(FAI_Spells[spellid][INFO], FAI_MAX_SPELL_INFO + 1, info);
 		}
 		return 1;
 	}
