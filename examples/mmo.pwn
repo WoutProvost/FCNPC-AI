@@ -18,7 +18,7 @@
 #define INTERIOR_NORMAL					0
 #define VIRTUAL_WORLD_NORMAL			0
 
-new BossBigSmoke = FAI_INVALID_BOSS_ID;
+new BossBigSmoke = INVALID_PLAYER_ID;
 new SpellCarpetOfFire = FAI_INVALID_SPELL_ID;
 new SpellWallOfFire = FAI_INVALID_SPELL_ID;
 new SpellMarkOfDeath = FAI_INVALID_SPELL_ID;
@@ -41,7 +41,7 @@ new GroundMarks[20] = {INVALID_OBJECT_ID, ...};
 new Bombs[20] = {INVALID_OBJECT_ID, ...};
 new ExplosionTimer = FAI_INVALID_TIMER_ID;
 new ExplosionCount = 0;
-new BossAdds[2] = {FAI_INVALID_BOSS_ID, ...};
+new BossAdds[2] = {INVALID_PLAYER_ID, ...};
 new SpellRockOfLifeTarget = INVALID_PLAYER_ID;
 
 #if defined FILTERSCRIPT
@@ -106,10 +106,10 @@ public OnFilterScriptExit()
 public OnPlayerDisconnect(playerid, reason)
 {
 	new bossid = FAI_GetBossIDFromNPCID(playerid);
-	if(bossid != FAI_INVALID_BOSS_ID) {
+	if(bossid != INVALID_PLAYER_ID) {
 		if(bossid == BossBigSmoke) {
 			//FAI_DestroyBoss(BossBigSmoke); //We don't need to do this, since the boss is already disconnecting
-			BossBigSmoke = FAI_INVALID_BOSS_ID;
+			BossBigSmoke = INVALID_PLAYER_ID;
 			//We still need to destroy the spells, since it is possible that the boss is just disconnecting and the script isn't exiting and we want that the spells destroy along with the boss
 			FAI_DestroySpell(SpellCarpetOfFire);
 			SpellCarpetOfFire = FAI_INVALID_SPELL_ID;
@@ -136,7 +136,7 @@ public OnPlayerDisconnect(playerid, reason)
 			ExplosionCount = 0;
 			for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
 				FAI_DestroyBoss(BossAdds[add]); //Destroy the adds when their master gets destroyed
-				BossAdds[add] = FAI_INVALID_BOSS_ID;
+				BossAdds[add] = INVALID_PLAYER_ID;
 			}
 			KillTimer(BossIdleMessageTimer);
 			BossIdleMessageTimer = FAI_INVALID_TIMER_ID;
@@ -161,7 +161,7 @@ public OnPlayerDisconnect(playerid, reason)
 			for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
 				if(bossid == BossAdds[add]) {
 					//FAI_DestroyBoss(BossAdds[add]); //We don't need to do this, since the add is already disconnecting
-					BossAdds[add] = FAI_INVALID_BOSS_ID;
+					BossAdds[add] = INVALID_PLAYER_ID;
 					break;
 				}
 			}
@@ -192,7 +192,7 @@ public FCNPC_OnRespawn(npcid)
 public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss)
 {
 	new bossid = FAI_GetBossIDFromNPCID(npcid);
-	if(bossid != FAI_INVALID_BOSS_ID) {
+	if(bossid != INVALID_PLAYER_ID) {
 		if(bossid == BossBigSmoke) {
 			/*
 			BossBigSmokeHealthState: we need to use this since there is a setCurrentHealth mechanic
@@ -311,7 +311,7 @@ public FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 		ExplosionTimer = FAI_INVALID_TIMER_ID;
 		ExplosionCount = 0;
 		for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
-			if(BossAdds[add] != FAI_INVALID_BOSS_ID) {
+			if(BossAdds[add] != INVALID_PLAYER_ID) {
 				new npcid = FAI_GetBossNPCID(BossAdds[add]);
 				SetPlayerColor(npcid, 0xffffff00);
 				FCNPC_SetPosition(npcid, 1086.9752, 1074.7021, -50.0);
@@ -324,7 +324,7 @@ public FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 		}
 	} else {
 		for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
-			if(BossAdds[add] != FAI_INVALID_BOSS_ID && bossid == BossAdds[add]) {
+			if(BossAdds[add] != INVALID_PLAYER_ID && bossid == BossAdds[add]) {
 				new npcid = FAI_GetBossNPCID(bossid);
 				SetPlayerColor(npcid, 0xffffff00);
 				FCNPC_SetPosition(npcid, 1086.9752, 1074.7021, -50.0);
@@ -440,7 +440,7 @@ public FAI_OnBossStartCasting(bossid, spellid, targetid)
 			new currentAddCount = 0;
 			for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
 				//If the add is not available, count as used
-				if(BossAdds[add] == FAI_INVALID_BOSS_ID) {
+				if(BossAdds[add] == INVALID_PLAYER_ID) {
 					currentAddCount++;
 				}
 				//If the add is available, count as used when above -45.0 z position
@@ -532,7 +532,7 @@ public FAI_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete)
 				new currentAddCount = 0;
 				for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
 					//If the add is not available, count as used
-					if(BossAdds[add] == FAI_INVALID_BOSS_ID) {
+					if(BossAdds[add] == INVALID_PLAYER_ID) {
 						currentAddCount++;
 					}
 					//If the add is available, count as used when above -45.0 z position
@@ -619,7 +619,7 @@ public TargetNotMovingCheck(bossid, randomSeconds) {
 				new currentAddCount = 0;
 				for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
 					//If the add is not available, count as used
-					if(BossAdds[add] == FAI_INVALID_BOSS_ID) {
+					if(BossAdds[add] == INVALID_PLAYER_ID) {
 						currentAddCount++;
 					}
 					//If the add is available, count as used when above -45.0 z position
@@ -739,7 +739,7 @@ stock BossYell(bossid, message[], soundid = -1, Float:soundX = 0.0, Float:soundY
 
 stock BossYellSpawnMessage(npcid) {
 	new bossid = FAI_GetBossIDFromNPCID(npcid);
-	if(bossid != FAI_INVALID_BOSS_ID) {
+	if(bossid != INVALID_PLAYER_ID) {
 		if(bossid == BossBigSmoke) {
 			BossYell(bossid, "You've killed me once CJ, however once wasn't enough");
 		}
