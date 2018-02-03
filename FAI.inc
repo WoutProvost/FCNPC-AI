@@ -14,7 +14,7 @@
 
 //FAKE NATIVES
 /*
-//Boss
+//NPC
 native FAI_CreateBoss(name[]);
 native FAI_GetBossFullName(npcid, name[], len);
 native FAI_SetBossFullName(npcid, name[]);
@@ -103,7 +103,7 @@ native bool:FAI_IsBossCastBarExtraForSpell(npcid, spellid);
 */
 
 //CALLBACKS
-//Boss
+//NPC
 forward FAI_OnBossEncounterStart(npcid, bool:reasonShot, firstTarget);
 forward FAI_OnBossEncounterStop(npcid, bool:reasonDeath, lastTarget);
 forward FAI_OnPlayerGetAggro(playerid, npcid);
@@ -145,7 +145,7 @@ static FAI_PauseTickCount[MAX_PLAYERS] = {0,...};
 static bool:FAI_PlayerPaused[MAX_PLAYERS] = {false,...};
 static FAI_PauseTimer = FAI_INVALID_TIMER_ID;
 
-//Boss
+//NPC
 #if !defined FAI_MAX_BOSS_FULL_NAME
 	#define FAI_MAX_BOSS_FULL_NAME			50
 #endif
@@ -410,7 +410,7 @@ static FAI_InitScript() {
 	}
 	FAI_PauseTimer = SetTimer("FAI_CheckPausedPlayers", 1000, 1);
 
-	//Boss
+	//NPC
 	FAI_InitAllBosses();
 
 	//Spell
@@ -436,7 +436,7 @@ static FAI_ExitScript() {
 	KillTimer(FAI_PauseTimer);
 	FAI_PauseTimer = FAI_INVALID_TIMER_ID;
 
-	//Boss
+	//NPC
 	FAI_DestroyAllBosses();
 
 	//Spell
@@ -549,7 +549,7 @@ public FCNPC_OnRespawn(npcid)
 {
 	if(FCNPC_IsValid(npcid)) {
 		if(FAI_Bosses[npcid][CUR_HEALTH] != 0) {
-			//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). FAI_SetBossTargetWithReason doesn't take care of this for various reasons.
+			//In case the NPC is casting when the encounter hasn't started yet (can happen by using FAI_StartBossCastingSpell). FAI_SetBossTargetWithReason doesn't take care of this for various reasons.
 			if(FAI_Bosses[npcid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(npcid)) {
 				FAI_StopBossCasting(npcid);
 			}
@@ -608,7 +608,7 @@ stock FAI_DamageBoss(npcid, damagerid, Float:amount) {
 			if(FAI_Bosses[npcid][CUR_HEALTH] > amount) {
 				FAI_SetBossCurrentHealth(npcid, FAI_Bosses[npcid][CUR_HEALTH] - amount);
 			} else {
-				//Make the damager that makes the last shot, kill the boss
+				//Make the damager that makes the last shot, kill the NPC
 				FCNPC_SetHealth(npcid, FAI_Bosses[npcid][CUR_HEALTH]);
 				//FAI_SetBossCurrentHealth(npcid, 0); //Happens in FCNPC_OnDeath
 				//Return 1 to allow the dammage to be afflicted to npc, which will kill him in this case
@@ -636,13 +636,13 @@ stock FAI_HealBoss(npcid, healerid, Float:amount) {
 public FCNPC_OnDeath(npcid, killerid, weaponid)
 {
 	if(FCNPC_IsValid(npcid)) {
-		//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). FAI_SetBossTargetWithReason doesn't take care of this for various reasons.
+		//In case the NPC is casting when the encounter hasn't started yet (can happen by using FAI_StartBossCastingSpell). FAI_SetBossTargetWithReason doesn't take care of this for various reasons.
 		if(FAI_Bosses[npcid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(npcid)) {
 			FAI_StopBossCasting(npcid);
 		}
 		//Reset target & threat for all players
 		FAI_SetBossTargetWithReason(npcid, INVALID_PLAYER_ID, 2);
-		//If the boss was killed with FCNPC_Kill or FCNPC_SetHealth with value <= 0.0, not by taking damage
+		//If the NPC was killed with FCNPC_Kill or FCNPC_SetHealth with value <= 0.0, not by taking damage
 		FAI_SetBossCurrentHealth(npcid, 0);
 	}
 	#if defined FAI_FCNPC_OnDeath
@@ -662,19 +662,19 @@ public FCNPC_OnDeath(npcid, killerid, weaponid)
 
 forward FAI_Update();
 public FAI_Update() {
-	//Boss
-	//Show/hide boss textdraws & mapicon to player
+	//NPC
+	//Show/hide NPC textdraws & mapicon to player
 	for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
 		//Last part of condition: we don't need to display things to an npc
 		if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid)) {
 			new closestBoss = FAI_GetClosestBossToDisplay(playerid);
-			//Hide the textdraws all bosses share if no boss is in range for a player
+			//Hide the textdraws all NPCs share if no NPC is in range for a player
 			if(!FCNPC_IsValid(closestBoss)) {
 				TextDrawHideForPlayer(playerid, FAI_BossBlackHealth);
 				TextDrawHideForPlayer(playerid, FAI_BossDarkRed);
 				TextDrawHideForPlayer(playerid, FAI_BossBlackCast);
 			}
-			//Show the textdraws all bosses share if a boss is in range for a player
+			//Show the textdraws all NPCs share if an NPC is in range for a player
 			else {
 				TextDrawShowForPlayer(playerid, FAI_BossBlackHealth);
 				TextDrawShowForPlayer(playerid, FAI_BossDarkRed);
@@ -685,17 +685,17 @@ public FAI_Update() {
 				}
 			}
 			for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-				//Show the mapicon if the boss is valid for a player
+				//Show the mapicon if the NPC is valid for a player
 				if(FAI_IsBossValidForPlayer(playerid, npcid) && FAI_Bosses[npcid][ICONID] != FAI_INVALID_ICON_ID) {
 					new Float:bossX, Float:bossY, Float:bossZ;
 					FCNPC_GetPosition(FAI_Bosses[npcid][NPCID], bossX, bossY, bossZ);
 					SetPlayerMapIcon(playerid, FAI_Bosses[npcid][ICONID], bossX, bossY, bossZ, FAI_Bosses[npcid][ICON_MARKER], FAI_Bosses[npcid][ICON_COLOR], FAI_Bosses[npcid][ICON_STYLE]);
 				}
-				//Hide the mapicon if the boss is invalid for a player
+				//Hide the mapicon if the NPC is invalid for a player
 				else {
 					RemovePlayerMapIcon(playerid, FAI_Bosses[npcid][ICONID]);
 				}
-				//Show the textdraws specific to a boss if he is the closest boss for a player
+				//Show the textdraws specific to an NPC if he is the closest NPC for a player
 				if(npcid == closestBoss) {
 					TextDrawShowForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][0]);
 					TextDrawShowForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][1]);
@@ -713,8 +713,8 @@ public FAI_Update() {
 						TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][7]);
 					}
 				}
-				//Hide the textdraws specific to a boss if he is not the closest boss for a player
-				//Otherwise if multiple bosses are in range, their textdraws will be put on top of eachother, which is ugly and we don't want of course
+				//Hide the textdraws specific to an NPC if he is not the closest NPC for a player
+				//Otherwise if multiple NPCs are in range, their textdraws will be put on top of eachother, which is ugly and we don't want of course
 				else {
 					TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][0]);
 					TextDrawHideForPlayer(playerid, FAI_Bosses[npcid][TEXTDRAW][1]);
@@ -729,12 +729,12 @@ public FAI_Update() {
 		}
 	}
 	
-	//Update boss
+	//Update NPC
 	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
 		if(FCNPC_IsValid(npcid) && FCNPC_IsSpawned(FAI_Bosses[npcid][NPCID]) && !FCNPC_IsDead(FAI_Bosses[npcid][NPCID])) {
 			//Update casting bar
 			FAI_IncreaseBossCastProgress(npcid);
-			//Get new target if no target, or if old target invalid, or if the boss is not streamed in anymore for his old target
+			//Get new target if no target, or if old target invalid, or if the NPC is not streamed in anymore for his old target
 			if(!FAI_IsBossValidForPlayer(FAI_Bosses[npcid][TARGET], npcid) || !IsPlayerStreamedIn(FAI_Bosses[npcid][NPCID], FAI_Bosses[npcid][TARGET])) {
 				//Only set target if the encounter has already started OR if the behaviour is unfriendly
 				if(FAI_Bosses[npcid][TARGET] != INVALID_PLAYER_ID || FAI_Bosses[npcid][BEHAVIOUR] == FAI_BOSS_BEHAVIOUR_UNFRIENDLY) {
@@ -780,7 +780,7 @@ static FAI_GetTickCountDiff(oldInteger, newInteger) {
 	return newInteger - oldInteger;
 }
 
-//Boss
+//NPC
 static FAI_InitAllBosses() {
 	FAI_BossBlackHealth = TextDrawCreate(169.0, 429, "_");
 	TextDrawUseBox(FAI_BossBlackHealth, 1);
@@ -920,7 +920,7 @@ static FAI_DestroyBossNoFCNPC_Destroy(npcid) {
 		for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
 			RemovePlayerMapIcon(playerid, FAI_Bosses[npcid][ICONID]);
 		}
-		//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). FAI_SetBossTargetWithReason doesn't take care of this for various reasons.
+		//In case the NPC is casting when the encounter hasn't started yet (can happen by using FAI_StartBossCastingSpell). FAI_SetBossTargetWithReason doesn't take care of this for various reasons.
 		if(FAI_Bosses[npcid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(npcid)) {
 			FAI_StopBossCasting(npcid);
 		}
@@ -970,7 +970,7 @@ stock FAI_CreateBoss(name[]) {
 			}
 		}
 	}
-	//Max amount of bosses reached
+	//Max amount of NPCs reached
 	return INVALID_PLAYER_ID;
 }
 stock FAI_GetBossFullName(npcid, name[], len) {
@@ -1141,7 +1141,7 @@ Reason:
 - 3: target aggro (valid new target, invalid new target)
 - 4: explicit set (valid new target, invalid new target)
 */
-//Invalid boss										=> nothing
+//Invalid NPC										=> nothing
 //Not connected new target							=> nothing
 //Old target same as new target						=> nothing
 //CheckIfStreamedIn and new target not streamed in	=> nothing
@@ -1407,7 +1407,7 @@ static FAI_UpdateBossHealthDisplay(npcid) {
 	if(FCNPC_IsValid(npcid)) {
 		TextDrawTextSize(FAI_Bosses[npcid][TEXTDRAW][0], (470.0 - 167.3) * FAI_Bosses[npcid][CUR_HEALTH] / FAI_Bosses[npcid][MAX_HEALTH] + 167.3, 0.0);
 		for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
-			//Only update the textdraw for a player if he is seeing the textdraw of the boss
+			//Only update the textdraw for a player if he is seeing the textdraw of the NPC
 			//Last part of condition: we don't need to display things to an npc
 			if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid)) {
 				new closestBoss = FAI_GetClosestBossToDisplay(playerid);
@@ -1455,7 +1455,7 @@ static FAI_UpdateBossCastDisplay(npcid) {
 		}
 		//Reshow the textdraw to make the changes (color + size) visible
 		for(new playerid = 0, playerCount = GetPlayerPoolSize(); playerid <= playerCount; playerid++) {
-			//Only update the textdraw for a player if he is seeing the textdraw of the boss
+			//Only update the textdraw for a player if he is seeing the textdraw of the NPC
 			//Last part of condition: we don't need to display things to an npc
 			if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid)) {
 				new closestBoss = FAI_GetClosestBossToDisplay(playerid);
@@ -2100,7 +2100,7 @@ stock FAI_StartBossCastingSpell(npcid, spellid, targetid = INVALID_PLAYER_ID) {
 	return 0;
 }
 stock FAI_GetBossCastingSpell(npcid) {
-	//Don't return anything if showExtra is true, because the boss isn't casting anymore even though the variable is still set to allow for the showExtra functionality
+	//Don't return anything if showExtra is true, because the NPC isn't casting anymore even though the variable is still set to allow for the showExtra functionality
 	if(FCNPC_IsValid(npcid) && FAI_IsBossCasting(npcid)) {
 		return FAI_Casting[npcid][SPELLID];
 	}
@@ -2145,7 +2145,7 @@ stock FAI_SetBossCastingSpell(npcid, spellid, bool:keepCastPercent = false) {
 	return 0;
 }
 stock FAI_GetBossCastingProgress(npcid) {
-	//Don't return anything if showExtra is true, because the boss isn't casting anymore even though the variable is still set to allow for the showExtra functionality
+	//Don't return anything if showExtra is true, because the NPC isn't casting anymore even though the variable is still set to allow for the showExtra functionality
 	//If the showextra progress is needed, use FAI_GetBossCastingExtraProgress
 	if(FCNPC_IsValid(npcid) && FAI_IsBossCasting(npcid)) {
 		return FAI_Casting[npcid][CAST_PROGRESS];
@@ -2158,8 +2158,8 @@ Instant:
 ShowExtra:
 - Will never happen, because FAI_IsBossCasting is not true with showExtra. Use FAI_SetBossCastingExtraProgress instead.
 (Don't) KeepCastPercent:
-- Not possible, because a spell can be used by multiple bosses. Therefore we can not set the CAST_TIME of a spell according to the CAST_PROGRESS of a particular boss.
-- Say we change the cast progress of a boss and thus the cast time of the spell he is currently casting, why should another boss who is also casting the same spell be affected by this?
+- Not possible, because a spell can be used by multiple NPCs. Therefore we can not set the CAST_TIME of a spell according to the CAST_PROGRESS of a particular NPC.
+- Say we change the cast progress of an NPC and thus the cast time of the spell he is currently casting, why should another NPC who is also casting the same spell be affected by this?
 Other conditions:
 - casttime 500, progress 450, showextramax 50 => progress 0, progress becomes 0, do nothing special
 - casttime 500, progress 450, showextramax 50 => progress 475, progress becomes 475, do nothing special
@@ -2194,7 +2194,7 @@ stock FAI_SetBossCastingProgress(npcid, progress) {
 	return 0;
 }
 stock FAI_GetBossCastingTarget(npcid) {
-	//Don't return anything if showExtra is true, because the boss isn't casting anymore even though the variable is still set to allow for the showExtra functionality
+	//Don't return anything if showExtra is true, because the NPC isn't casting anymore even though the variable is still set to allow for the showExtra functionality
 	if(FCNPC_IsValid(npcid) && FAI_IsBossCasting(npcid)) {
 		return FAI_Casting[npcid][TARGETID];
 	}
@@ -2221,10 +2221,10 @@ stock FAI_GetBossCastingExtraProgress(npcid) {
 Instant:
 - Will never happen because, onstopcast gets called immediately after onstartcast
 -Casting:
-- Will never happen, because FAI_IsBossCastBarExtra is not true when the boss is casting. Use FAI_SetBossCastingProgress instead.
+- Will never happen, because FAI_IsBossCastBarExtra is not true when the NPC is casting. Use FAI_SetBossCastingProgress instead.
 (Don't) KeepCastPercent:
-- Not possible, because a spell can be used by multiple bosses. Therefore we can not set the CAST_TIME of a spell according to the showextraprogress of a particular boss.
-- Say we change the showextraprogress of a boss and thus the cast time of the spell he is currently casting, why should another boss who is also casting the same spell be affected by this?
+- Not possible, because a spell can be used by multiple NPCs. Therefore we can not set the CAST_TIME of a spell according to the showextraprogress of a particular NPC.
+- Say we change the showextraprogress of an NPC and thus the cast time of the spell he is currently casting, why should another NPC who is also casting the same spell be affected by this?
 Other conditions:
 - casttime 500, progress 525, showextra 25, showextramax 50 => showextra 0, showextra becomes 0 (progress 500), do nothing special
 - casttime 500, progress 525, showextra 25, showextramax 50 => showextra 35, showextra becomes 35 (progress 535), do nothing special
