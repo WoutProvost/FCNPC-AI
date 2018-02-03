@@ -248,9 +248,6 @@ public SetBossAtSpawn(npcid) {
 		IdleCount = 0;
 		DeathCount = -1;
 		AnimationApplied = false;
-		//Recreate objects, some objects can change positions and roll away
-		DestroyBossObjects();
-		CreateBossObjects();
 		StreamerUpdateForValidPlayers(npcid);
 	}
 	return 1;
