@@ -49,12 +49,8 @@ native bool:FAI_IsBossValidForPlayer(playerid, bossid);
 native bool:FAI_IsPlayerInDisplayRange(playerid, bossid);
 native bool:FAI_IsPlayerInAggroRange(playerid, bossid);
 native bool:FAI_BossHasMeleeWeapons(bossid);
-native FAI_GetBossNPCID(bossid);
-native FAI_GetBossPlayerID(bossid);
 native Text:FAI_GetBossTextDraw(bossid, textdraw);
 native FAI_GetBossCurrentHealthPercent(bossid);
-native FAI_GetBossIDFromNPCID(npcid);
-native FAI_GetBossIDFromPlayerID(playerid);
 native FAI_DamageBoss(bossid, damagerid, Float:amount);
 native FAI_HealBoss(bossid, healerid, Float:amount);
 native bool:FAI_IsEncounterStarted(bossid);
@@ -455,9 +451,8 @@ public OnPlayerDisconnect(playerid, reason) {
 	#if defined FAI_OnPlayerDisconnect
 		FAI_OnPlayerDisconnect(playerid, reason);
 	#endif
-	new bossid = FAI_GetBossIDFromNPCID(playerid);
-	if(FAI_IsValidBoss(bossid)) {
-		FAI_DestroyBossNoFCNPC_Destroy(bossid); //Call after
+	if(FAI_IsValidBoss(playerid)) {
+		FAI_DestroyBossNoFCNPC_Destroy(playerid); //Call after
 	}
 	return 1;
 }
@@ -553,17 +548,16 @@ public OnPlayerUpdate(playerid)
 */
 public FCNPC_OnRespawn(npcid)
 {
-	new bossid = FAI_GetBossIDFromNPCID(npcid);
-	if(FAI_IsValidBoss(bossid)) {
-		if(FAI_Bosses[bossid][CUR_HEALTH] != 0) {
+	if(FAI_IsValidBoss(npcid)) {
+		if(FAI_Bosses[npcid][CUR_HEALTH] != 0) {
 			//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). FAI_SetBossTargetWithReason doesn't take care of this for various reasons.
-			if(FAI_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(bossid)) {
-				FAI_StopBossCasting(bossid);
+			if(FAI_Bosses[npcid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(npcid)) {
+				FAI_StopBossCasting(npcid);
 			}
 			//Reset target & threat for all players
-			FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 0);
+			FAI_SetBossTargetWithReason(npcid, INVALID_PLAYER_ID, 0);
 		} else {
-			FAI_SetBossCurrentHealth(bossid, FAI_Bosses[bossid][MAX_HEALTH]);
+			FAI_SetBossCurrentHealth(npcid, FAI_Bosses[npcid][MAX_HEALTH]);
 		}
 	}
 	#if defined FAI_FCNPC_OnRespawn
@@ -583,9 +577,8 @@ public FCNPC_OnRespawn(npcid)
 public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss)
 {
 	new ret = 1;
-	new bossid = FAI_GetBossIDFromNPCID(npcid);
-	if(FAI_IsValidBoss(bossid)) {
-		ret = FAI_DamageBoss(bossid, damagerid, health_loss);
+	if(FAI_IsValidBoss(npcid)) {
+		ret = FAI_DamageBoss(npcid, damagerid, health_loss);
 	}
 	#if defined FAI_FCNPC_OnTakeDamage
 		FAI_FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss);
@@ -603,11 +596,10 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 #endif
 stock FAI_DamageBoss(bossid, damagerid, Float:amount) {
 	if(FAI_IsValidBoss(bossid) && (IsPlayerConnected(damagerid) || damagerid == INVALID_PLAYER_ID)) {
-		new bossplayerid = FAI_GetBossNPCID(bossid);
 		//2nd part of condition: if the npc is dead, this function can still be called before the OnDeath callback gets called (mainly when shot with fast guns: minigun, ...)
 		//3rd part of condition: damage not inflicted by players (falling, ...)
 		//4th part of condition: neccesary to reject invalid damage done: the NPC is visible and thus damagable in other interiors
-		if(FCNPC_IsSpawned(bossplayerid) && !FCNPC_IsDead(bossplayerid) && (damagerid == INVALID_PLAYER_ID || FAI_IsBossValidForPlayer(damagerid, bossid))) {
+		if(FCNPC_IsSpawned(bossid) && !FCNPC_IsDead(bossid) && (damagerid == INVALID_PLAYER_ID || FAI_IsBossValidForPlayer(damagerid, bossid))) {
 			//Only set target if the encounter has not yet started AND the behaviour is neutral or unfriendly
 			if(FAI_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && FAI_Bosses[bossid][BEHAVIOUR] != FAI_BOSS_BEHAVIOUR_FRIENDLY) {
 				//Set target to damagerid if no target yet (valid damagerid + no target yet check in setter)
@@ -618,7 +610,7 @@ stock FAI_DamageBoss(bossid, damagerid, Float:amount) {
 				FAI_SetBossCurrentHealth(bossid, FAI_Bosses[bossid][CUR_HEALTH] - amount);
 			} else {
 				//Make the damager that makes the last shot, kill the boss
-				FCNPC_SetHealth(bossplayerid, FAI_Bosses[bossid][CUR_HEALTH]);
+				FCNPC_SetHealth(bossid, FAI_Bosses[bossid][CUR_HEALTH]);
 				//FAI_SetBossCurrentHealth(bossid, 0); //Happens in FCNPC_OnDeath
 				//Return 1 to allow the dammage to be afflicted to npc, which will kill him in this case
 				return 1;
@@ -630,8 +622,7 @@ stock FAI_DamageBoss(bossid, damagerid, Float:amount) {
 }
 stock FAI_HealBoss(bossid, healerid, Float:amount) {
 	if(FAI_IsValidBoss(bossid) && (IsPlayerConnected(healerid) || healerid == INVALID_PLAYER_ID)) {
-		new bossplayerid = FAI_GetBossNPCID(bossid);
-		if(FCNPC_IsSpawned(bossplayerid) && !FCNPC_IsDead(bossplayerid)) {
+		if(FCNPC_IsSpawned(bossid) && !FCNPC_IsDead(bossid)) {
 			//Don't heal above MAX_HEALTH
 			if(FAI_Bosses[bossid][MAX_HEALTH] - FAI_Bosses[bossid][CUR_HEALTH] <= amount) {
 				FAI_SetBossCurrentHealth(bossid, FAI_Bosses[bossid][MAX_HEALTH]);
@@ -645,16 +636,15 @@ stock FAI_HealBoss(bossid, healerid, Float:amount) {
 }
 public FCNPC_OnDeath(npcid, killerid, weaponid)
 {
-	new bossid = FAI_GetBossIDFromNPCID(npcid);
-	if(FAI_IsValidBoss(bossid)) {
+	if(FAI_IsValidBoss(npcid)) {
 		//In case the boss is casting when the encounter hasn't started yet (can happen by using startbosscastingspell). FAI_SetBossTargetWithReason doesn't take care of this for various reasons.
-		if(FAI_Bosses[bossid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(bossid)) {
-			FAI_StopBossCasting(bossid);
+		if(FAI_Bosses[npcid][TARGET] == INVALID_PLAYER_ID && FAI_IsBossCasting(npcid)) {
+			FAI_StopBossCasting(npcid);
 		}
 		//Reset target & threat for all players
-		FAI_SetBossTargetWithReason(bossid, INVALID_PLAYER_ID, 2);
+		FAI_SetBossTargetWithReason(npcid, INVALID_PLAYER_ID, 2);
 		//If the boss was killed with FCNPC_Kill or FCNPC_SetHealth with value <= 0.0, not by taking damage
-		FAI_SetBossCurrentHealth(bossid, 0);
+		FAI_SetBossCurrentHealth(npcid, 0);
 	}
 	#if defined FAI_FCNPC_OnDeath
 		FAI_FCNPC_OnDeath(npcid, killerid, weaponid);
@@ -1314,16 +1304,6 @@ stock FAI_SetBossBehaviour(bossid, behaviour) {
 	}
 	return 0;
 }
-stock FAI_GetBossNPCID(bossid) {
-	if(FAI_IsValidBoss(bossid)) {
-		return FAI_Bosses[bossid][NPCID];
-	}
-	return INVALID_PLAYER_ID;
-}
-#define FAI_GetBossPlayerID(%0) FAI_GetBossNPCID(%0) //Alias
-/*stock FAI_GetBossPlayerID(bossid) {
-	return FAI_GetBossNPCID(bossid);
-}*/
 stock Text:FAI_GetBossTextDraw(bossid, textdraw) {
 	if(FAI_IsValidBoss(bossid) && textdraw >= 0 && textdraw < FAI_MAX_BOSS_TEXTDRAWS) {
 		return FAI_Bosses[bossid][TEXTDRAW][textdraw];
@@ -1336,27 +1316,13 @@ stock FAI_GetBossCurrentHealthPercent(bossid) {
 	}
 	return -1;
 }
-
-stock FAI_GetBossIDFromNPCID(npcid) {
-	for(new bossid = 0; bossid < MAX_PLAYERS; bossid++) {
-		if(npcid == FAI_Bosses[bossid][NPCID]) {
-			return bossid;
-		}
-	}
-	return INVALID_PLAYER_ID;
-}
-#define FAI_GetBossIDFromPlayerID(%0) FAI_GetBossIDFromNPCID(%0) //Alias
-/*stock FAI_GetBossIDFromPlayerID(playerid) {
-	return FAI_GetBossIDFromNPCID(playerid);
-}*/
 forward bool:FAI_IsBossValidForPlayer(playerid, bossid); //Silence 'used before declaration' warning
 stock bool:FAI_IsBossValidForPlayer(playerid, bossid) {
 	if(IsPlayerConnected(playerid) && FAI_IsValidBoss(bossid)) {
 		new playerState = GetPlayerState(playerid);
-		new bossplayerid = FAI_GetBossNPCID(bossid);
-		if(bossplayerid != playerid && FCNPC_IsSpawned(bossplayerid) && (!FCNPC_IsDead(bossplayerid) || FAI_Bosses[bossid][DISPLAY_IF_DEAD])) {
-			new bossInterior = FCNPC_GetInterior(bossplayerid);
-			new bossWorld = FCNPC_GetVirtualWorld(bossplayerid);
+		if(bossid != playerid && FCNPC_IsSpawned(bossid) && (!FCNPC_IsDead(bossid) || FAI_Bosses[bossid][DISPLAY_IF_DEAD])) {
+			new bossInterior = FCNPC_GetInterior(bossid);
+			new bossWorld = FCNPC_GetVirtualWorld(bossid);
 			if(!IsPlayerNPC(playerid)) {
 				if(GetPlayerInterior(playerid) == bossInterior && GetPlayerVirtualWorld(playerid) == bossWorld && playerState != PLAYER_STATE_NONE && playerState != PLAYER_STATE_WASTED
 				&& playerState != PLAYER_STATE_SPAWNED && playerState != PLAYER_STATE_SPECTATING && !FAI_PlayerPaused[playerid]) {
@@ -1553,7 +1519,7 @@ static FAI_IncreaseBossCastProgress(bossid) {
 }
 stock bool:FAI_BossHasMeleeWeapons(bossid) {
 	if(FAI_IsValidBoss(bossid)) {
-		new weaponid = FCNPC_GetWeapon(FAI_GetBossNPCID(bossid));
+		new weaponid = FCNPC_GetWeapon(bossid);
 		if(weaponid >= 0 && weaponid <= 15) {
 			return true;
 		}
@@ -1572,9 +1538,8 @@ stock bool:FAI_BossHasMeleeWeapons(bossid) {
 //Is casting & !canmove & !canattack & not in attack range	==> nothing
 static FAI_BossAttackTarget(bossid, targetid) {
 	if(FAI_IsValidBoss(bossid) && FAI_IsBossValidForPlayer(targetid, bossid)) {
-		new bossplayerid = FAI_GetBossNPCID(bossid);
 		new Float:bossX, Float:bossY, Float:bossZ;
-		FCNPC_GetPosition(bossplayerid, bossX, bossY, bossZ);
+		FCNPC_GetPosition(bossid, bossX, bossY, bossZ);
 		new Float:distance = GetPlayerDistanceFromPoint(targetid, bossX, bossY, bossZ);
 		new Float:attackRange = FAI_Bosses[bossid][RANGED_ATTACK_RANGE];
 		new bool:isMelee = FAI_BossHasMeleeWeapons(bossid);
@@ -1617,57 +1582,54 @@ static FAI_BossAttackTarget(bossid, targetid) {
 }
 static FAI_BossAttackAim(bossid, targetid) {
 	if(FAI_IsValidBoss(bossid) && FAI_IsBossValidForPlayer(targetid, bossid)) {
-		new bossplayerid = FAI_GetBossNPCID(bossid);
 		new bool:isMelee = FAI_BossHasMeleeWeapons(bossid);
-		if(FCNPC_IsMoving(bossplayerid)) {
-			FCNPC_Stop(bossplayerid);
+		if(FCNPC_IsMoving(bossid)) {
+			FCNPC_Stop(bossid);
 		}
 		if(!isMelee) {
-			if(FCNPC_IsAttacking(bossplayerid)) { //In case the npc switched weapons
-				FCNPC_StopAttack(bossplayerid);
+			if(FCNPC_IsAttacking(bossid)) { //In case the npc switched weapons
+				FCNPC_StopAttack(bossid);
 			}
-			if(!FCNPC_IsAimingAtPlayer(bossplayerid, targetid)) { //So we don't aim again when we were already aiming at that same player. If aiming at another player, this will execute
-				FCNPC_AimAtPlayer(bossplayerid, targetid, true, FAI_Bosses[bossid][RANGED_ATTACK_DELAY], FAI_Bosses[bossid][RANGED_ATTACK_SET_ANGLE]);
+			if(!FCNPC_IsAimingAtPlayer(bossid, targetid)) { //So we don't aim again when we were already aiming at that same player. If aiming at another player, this will execute
+				FCNPC_AimAtPlayer(bossid, targetid, true, FAI_Bosses[bossid][RANGED_ATTACK_DELAY], FAI_Bosses[bossid][RANGED_ATTACK_SET_ANGLE]);
 			}
 		} else {
-			if(FCNPC_IsAiming(bossplayerid)) { //In case the npc switched weapons
-				FCNPC_StopAim(bossplayerid);
+			if(FCNPC_IsAiming(bossid)) { //In case the npc switched weapons
+				FCNPC_StopAim(bossid);
 			}
-			if(!FCNPC_IsAttacking(bossplayerid)) { //So we don't attack again when we were already attacking
-				FCNPC_MeleeAttack(bossplayerid, FAI_Bosses[bossid][MELEE_ATTACK_DELAY], FAI_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE]);
+			if(!FCNPC_IsAttacking(bossid)) { //So we don't attack again when we were already attacking
+				FCNPC_MeleeAttack(bossid, FAI_Bosses[bossid][MELEE_ATTACK_DELAY], FAI_Bosses[bossid][MELEE_ATTACK_USE_FIGHT_STYLE]);
 			}
 		}
 	}
 }
 static FAI_BossAttackMove(bossid, targetid) {
 	if(FAI_IsValidBoss(bossid) && FAI_IsBossValidForPlayer(targetid, bossid)) {
-		new bossplayerid = FAI_GetBossNPCID(bossid);
-		if(FCNPC_IsAiming(bossplayerid)) {
-			FCNPC_StopAim(bossplayerid);
+		if(FCNPC_IsAiming(bossid)) {
+			FCNPC_StopAim(bossid);
 		}
-		if(FCNPC_IsAttacking(bossplayerid)) {
-			FCNPC_StopAttack(bossplayerid);
+		if(FCNPC_IsAttacking(bossid)) {
+			FCNPC_StopAttack(bossid);
 		}
-		if(!FCNPC_IsMovingAtPlayer(bossplayerid, targetid)) { //So we don't move again when we were already moving to that same player. If moving at another player, this will execute
+		if(!FCNPC_IsMovingAtPlayer(bossid, targetid)) { //So we don't move again when we were already moving to that same player. If moving at another player, this will execute
 			#if FAI_USE_MAP_ANDREAS == true
-				FCNPC_GoToPlayer(bossplayerid, targetid, FAI_Bosses[bossid][MOVE_TYPE], FAI_Bosses[bossid][MOVE_SPEED], FAI_Bosses[bossid][MOVE_USE_MAP_ANDREAS], FAI_Bosses[bossid][MOVE_RADIUS], FAI_Bosses[bossid][MOVE_SET_ANGLE]);
+				FCNPC_GoToPlayer(bossid, targetid, FAI_Bosses[bossid][MOVE_TYPE], FAI_Bosses[bossid][MOVE_SPEED], FAI_Bosses[bossid][MOVE_USE_MAP_ANDREAS], FAI_Bosses[bossid][MOVE_RADIUS], FAI_Bosses[bossid][MOVE_SET_ANGLE]);
 			#else
-				FCNPC_GoToPlayer(bossplayerid, targetid, FAI_Bosses[bossid][MOVE_TYPE], FAI_Bosses[bossid][MOVE_SPEED], false, FAI_Bosses[bossid][MOVE_RADIUS], FAI_Bosses[bossid][MOVE_SET_ANGLE]);
+				FCNPC_GoToPlayer(bossid, targetid, FAI_Bosses[bossid][MOVE_TYPE], FAI_Bosses[bossid][MOVE_SPEED], false, FAI_Bosses[bossid][MOVE_RADIUS], FAI_Bosses[bossid][MOVE_SET_ANGLE]);
 			#endif
 		}
 	}
 }
 static FAI_BossStopAttack(bossid) {
 	if(FAI_IsValidBoss(bossid)) {
-		new bossplayerid = FAI_GetBossNPCID(bossid);
-		if(FCNPC_IsMoving(bossplayerid)) {
-			FCNPC_Stop(bossplayerid);
+		if(FCNPC_IsMoving(bossid)) {
+			FCNPC_Stop(bossid);
 		}
-		if(FCNPC_IsAiming(bossplayerid)) {
-			FCNPC_StopAim(bossplayerid);
+		if(FCNPC_IsAiming(bossid)) {
+			FCNPC_StopAim(bossid);
 		}
-		if(FCNPC_IsAttacking(bossplayerid)) {
-			FCNPC_StopAttack(bossplayerid);
+		if(FCNPC_IsAttacking(bossid)) {
+			FCNPC_StopAttack(bossid);
 		}
 	}
 }

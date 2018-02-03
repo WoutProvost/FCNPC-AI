@@ -52,9 +52,8 @@ public OnFilterScriptExit()
 
 public OnPlayerDisconnect(playerid, reason)
 {
-	new bossid = FAI_GetBossIDFromNPCID(playerid);
-	if(bossid != INVALID_PLAYER_ID) {
-		if(bossid == BossLeatherface) {
+	if(playerid != INVALID_PLAYER_ID) {
+		if(playerid == BossLeatherface) {
 			//FAI_DestroyBoss(BossLeatherface); //We don't need to do this, since the boss is already disconnecting
 			BossLeatherface = INVALID_PLAYER_ID;
 			KillTimer(PlayerInRangeTimer);
@@ -88,7 +87,7 @@ public OnPlayerSpawn(playerid)
 
 public FCNPC_OnReachDestination(npcid)
 {
-	if(FAI_GetBossIDFromNPCID(npcid) == BossLeatherface) {
+	if(npcid == BossLeatherface) {
 		if(IdleCount != -1) {
 			new Float:x, Float:y, Float:z;
 			FCNPC_GetPosition(npcid, x, y, z);
@@ -222,31 +221,30 @@ stock DestroyBossObjects() {
 forward SetBossAtSpawn(bossid);
 public SetBossAtSpawn(bossid) {
 	if(bossid == BossLeatherface) {
-		new bossplayerid = FAI_GetBossNPCID(bossid);
-		SetPlayerColor(bossplayerid, 0xff000000); //Alpha values = 00 because we don't want an additional playericon on the map
-		if(!FCNPC_IsSpawned(bossplayerid)) {
-			FCNPC_Spawn(bossplayerid, 168, -2820.2534, -1530.3491, 140.8438);
+		SetPlayerColor(bossid, 0xff000000); //Alpha values = 00 because we don't want an additional playericon on the map
+		if(!FCNPC_IsSpawned(bossid)) {
+			FCNPC_Spawn(bossid, 168, -2820.2534, -1530.3491, 140.8438);
 		} else {
-			if(FCNPC_IsDead(bossplayerid)) {
-				FCNPC_Respawn(bossplayerid);
+			if(FCNPC_IsDead(bossid)) {
+				FCNPC_Respawn(bossid);
 			}
-			FCNPC_SetSkin(bossplayerid, 168);
-			FCNPC_SetPosition(bossplayerid, -2820.2534, -1530.3491, 140.8438);
+			FCNPC_SetSkin(bossid, 168);
+			FCNPC_SetPosition(bossid, -2820.2534, -1530.3491, 140.8438);
 		}
-		FCNPC_SetAngle(bossplayerid, 324.4991);
-		FCNPC_SetInterior(bossplayerid, INTERIOR_NORMAL);
-		FCNPC_SetVirtualWorld(bossplayerid, VIRTUAL_WORLD_NORMAL);
-		FCNPC_SetWeapon(bossplayerid, WEAPON_CHAINSAW);
-		FCNPC_SetHealth(bossplayerid, 100.0);
-		FCNPC_SetArmour(bossplayerid, 0.0);
-		FCNPC_SetInvulnerable(bossplayerid, false);
+		FCNPC_SetAngle(bossid, 324.4991);
+		FCNPC_SetInterior(bossid, INTERIOR_NORMAL);
+		FCNPC_SetVirtualWorld(bossid, VIRTUAL_WORLD_NORMAL);
+		FCNPC_SetWeapon(bossid, WEAPON_CHAINSAW);
+		FCNPC_SetHealth(bossid, 100.0);
+		FCNPC_SetArmour(bossid, 0.0);
+		FCNPC_SetInvulnerable(bossid, false);
 		new Float:maxHealth;
 		FAI_GetBossMaxHealth(bossid, maxHealth);
 		FAI_SetBossCurrentHealth(bossid, maxHealth);
-		if(IsPlayerAttachedObjectSlotUsed(bossplayerid, ATTACHED_OBJECT_INDEX)) {
-			RemovePlayerAttachedObject(bossplayerid, ATTACHED_OBJECT_INDEX);
+		if(IsPlayerAttachedObjectSlotUsed(bossid, ATTACHED_OBJECT_INDEX)) {
+			RemovePlayerAttachedObject(bossid, ATTACHED_OBJECT_INDEX);
 		}
-		SetPlayerAttachedObject(bossplayerid, ATTACHED_OBJECT_INDEX, 19036, 2, 0.086, 0.043, -0.007, 86.100196, 91.500007, 0.0, 1.0, 1.0, 1.0);
+		SetPlayerAttachedObject(bossid, ATTACHED_OBJECT_INDEX, 19036, 2, 0.086, 0.043, -0.007, 86.100196, 91.500007, 0.0, 1.0, 1.0, 1.0);
 		IdleCount = 0;
 		DeathCount = -1;
 		AnimationApplied = false;
@@ -269,9 +267,8 @@ stock StreamerUpdateForValidPlayers(bossid) {
 
 forward CheckPlayerInRange();
 public CheckPlayerInRange() {
-	new bossplayerid = FAI_GetBossNPCID(BossLeatherface);
-	if(bossplayerid != INVALID_PLAYER_ID) {
-		if(FCNPC_IsDead(bossplayerid)) {
+	if(BossLeatherface != INVALID_PLAYER_ID) {
+		if(FCNPC_IsDead(BossLeatherface)) {
 			if(DeathCount != -1) {
 				DeathCount--;
 				if(DeathCount == 0) {
@@ -283,56 +280,56 @@ public CheckPlayerInRange() {
 				IdleCount++;
 				switch(IdleCount) {
 					case 10: {
-						FCNPC_GoTo(bossplayerid, -2811.7888, -1528.6459, 140.8438, FCNPC_MOVE_TYPE_WALK);
+						FCNPC_GoTo(BossLeatherface, -2811.7888, -1528.6459, 140.8438, FCNPC_MOVE_TYPE_WALK);
 					}
 					case 100: {
-						FCNPC_GoTo(bossplayerid, -2813.3208, -1517.8263, 140.8438, FCNPC_MOVE_TYPE_WALK);
+						FCNPC_GoTo(BossLeatherface, -2813.3208, -1517.8263, 140.8438, FCNPC_MOVE_TYPE_WALK);
 					}
 					case 200: {
-						FCNPC_GoTo(bossplayerid, -2819.4717, -1516.2056, 140.8438, FCNPC_MOVE_TYPE_WALK);
+						FCNPC_GoTo(BossLeatherface, -2819.4717, -1516.2056, 140.8438, FCNPC_MOVE_TYPE_WALK);
 					}
 					case 280: {
-						FCNPC_GoTo(bossplayerid, -2820.0303, -1518.5581, 140.8438, FCNPC_MOVE_TYPE_WALK);
+						FCNPC_GoTo(BossLeatherface, -2820.0303, -1518.5581, 140.8438, FCNPC_MOVE_TYPE_WALK);
 					}
 					case 340: {
-						FCNPC_GoTo(bossplayerid, -2811.7930, -1518.4700, 140.8438, FCNPC_MOVE_TYPE_WALK);
+						FCNPC_GoTo(BossLeatherface, -2811.7930, -1518.4700, 140.8438, FCNPC_MOVE_TYPE_WALK);
 					}
 					case 440: {
-						FCNPC_GoTo(bossplayerid, -2817.3579, -1524.5388, 140.8438, FCNPC_MOVE_TYPE_WALK);
+						FCNPC_GoTo(BossLeatherface, -2817.3579, -1524.5388, 140.8438, FCNPC_MOVE_TYPE_WALK);
 					}
 					case 520: {
-						FCNPC_GoTo(bossplayerid, -2807.3572,- 1524.1216, 140.8438, FCNPC_MOVE_TYPE_WALK);
+						FCNPC_GoTo(BossLeatherface, -2807.3572,- 1524.1216, 140.8438, FCNPC_MOVE_TYPE_WALK);
 					}
 					case 610: {
-						FCNPC_GoTo(bossplayerid, -2811.8003, -1524.0878, 140.8438, FCNPC_MOVE_TYPE_WALK);
+						FCNPC_GoTo(BossLeatherface, -2811.8003, -1524.0878, 140.8438, FCNPC_MOVE_TYPE_WALK);
 					}
 					case 730: {
 						IdleCount = 0;
 					}
 				}
 			} else {
-				if(FCNPC_IsMoving(bossplayerid)) {
+				if(FCNPC_IsMoving(BossLeatherface)) {
 					new Float:attackDistance, delay, bool:useFightStyle;
 					FAI_GetBossMeleeAttackInfo(BossLeatherface, attackDistance, delay, useFightStyle);
 					new Float:x, Float:y, Float:z;
-					FCNPC_GetPosition(bossplayerid, x, y, z);
+					FCNPC_GetPosition(BossLeatherface, x, y, z);
 					new Float:distance = GetPlayerDistanceFromPoint(FAI_GetBossTarget(BossLeatherface), x, y, z);
 					if(distance > attackDistance + 2.0) {
 						if(!AnimationApplied) {
-							FCNPC_ApplyAnimation(bossplayerid, "ped", "FightSh_FWD", 4.1, 1, 1, 1, 0, 0);
+							FCNPC_ApplyAnimation(BossLeatherface, "ped", "FightSh_FWD", 4.1, 1, 1, 1, 0, 0);
 							AnimationApplied = true;
 						}
 					}
 					if(distance >= attackDistance && distance <= attackDistance + 2.0) {
 						if(AnimationApplied) {
-							FCNPC_ClearAnimations(bossplayerid);
+							FCNPC_ClearAnimations(BossLeatherface);
 							AnimationApplied = false;
 						}
 					}
 				}
 			}
 			new Float:x, Float:y, Float:z, Float:px, Float:py, Float:pz;
-			FCNPC_GetPosition(bossplayerid, x, y, z);
+			FCNPC_GetPosition(BossLeatherface, x, y, z);
 			for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
 				if(FAI_IsBossValidForPlayer(playerid, BossLeatherface) && !IsPlayerNPC(playerid)) {
 					if(IdleCount != -1) {

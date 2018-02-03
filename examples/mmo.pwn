@@ -86,11 +86,10 @@ public OnFilterScriptInit()
 		FAI_SetBossBehaviour(BossAdds[add], FAI_BOSS_BEHAVIOUR_FRIENDLY);
 		FAI_SetBossMoveInfo(BossAdds[add], FCNPC_MOVE_TYPE_AUTO, FCNPC_MOVE_SPEED_AUTO, true);
 		FAI_SetBossAllowNPCTargets(BossAdds[add], false);
-		new npcid = FAI_GetBossNPCID(BossAdds[add]);
-		SetPlayerColor(npcid, 0xffffff00);
-		FCNPC_Spawn(npcid, 0, 1086.9752, 1074.7021, -50.0);
-		FCNPC_SetInterior(npcid, INTERIOR_NORMAL);
-		FCNPC_SetVirtualWorld(npcid, VIRTUAL_WORLD_NORMAL);
+		SetPlayerColor(BossAdds[add], 0xffffff00);
+		FCNPC_Spawn(BossAdds[add], 0, 1086.9752, 1074.7021, -50.0);
+		FCNPC_SetInterior(BossAdds[add], INTERIOR_NORMAL);
+		FCNPC_SetVirtualWorld(BossAdds[add], VIRTUAL_WORLD_NORMAL);
 	}
 	return 1;
 }
@@ -105,9 +104,8 @@ public OnFilterScriptExit()
 
 public OnPlayerDisconnect(playerid, reason)
 {
-	new bossid = FAI_GetBossIDFromNPCID(playerid);
-	if(bossid != INVALID_PLAYER_ID) {
-		if(bossid == BossBigSmoke) {
+	if(playerid != INVALID_PLAYER_ID) {
+		if(playerid == BossBigSmoke) {
 			//FAI_DestroyBoss(BossBigSmoke); //We don't need to do this, since the boss is already disconnecting
 			BossBigSmoke = INVALID_PLAYER_ID;
 			//We still need to destroy the spells, since it is possible that the boss is just disconnecting and the script isn't exiting and we want that the spells destroy along with the boss
@@ -159,7 +157,7 @@ public OnPlayerDisconnect(playerid, reason)
 			}
 		} else {
 			for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
-				if(bossid == BossAdds[add]) {
+				if(playerid == BossAdds[add]) {
 					//FAI_DestroyBoss(BossAdds[add]); //We don't need to do this, since the add is already disconnecting
 					BossAdds[add] = INVALID_PLAYER_ID;
 					break;
@@ -191,29 +189,28 @@ public FCNPC_OnRespawn(npcid)
 
 public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss)
 {
-	new bossid = FAI_GetBossIDFromNPCID(npcid);
-	if(bossid != INVALID_PLAYER_ID) {
-		if(bossid == BossBigSmoke) {
+	if(npcid != INVALID_PLAYER_ID) {
+		if(npcid == BossBigSmoke) {
 			/*
 			BossBigSmokeHealthState: we need to use this since there is a setCurrentHealth mechanic
 			- Say: boss gets damaged to 90% health => Make boss yell because he is past a certain health amount
 			- Next: some healing spell heals the boss to 95%
 			- Next: boss gets damaged to 90%, we don't want to call make the boss yell again because he passed the same point
 			*/
-			new BossHealthPercent = FAI_GetBossCurrentHealthPercent(bossid);
-			if(BossHealthPercent < BossBigSmokeHealthState && FAI_GetBossBehaviour(bossid) != FAI_BOSS_BEHAVIOUR_FRIENDLY) {
+			new BossHealthPercent = FAI_GetBossCurrentHealthPercent(npcid);
+			if(BossHealthPercent < BossBigSmokeHealthState && FAI_GetBossBehaviour(npcid) != FAI_BOSS_BEHAVIOUR_FRIENDLY) {
 				BossBigSmokeHealthState = BossHealthPercent;
 				switch(BossBigSmokeHealthState) {
-					case 90: {BossYell(bossid, "Fry, motherfuckers", 35713); ExecuteSpell(bossid);}
-					case 80: {BossYell(bossid, "All kinds of crazy cats out there want a piece of me", 33301); ExecuteSpell(bossid);}
-					case 60: {BossYell(bossid, "This guy is really getting on my fucking nerves", 35224); ExecuteSpell(bossid);}
-					case 40: {BossYell(bossid, "Somebody save the Smoke", 33303); ExecuteSpell(bossid);}
-					case 20: {BossYell(bossid, "Shoot him! Help me", 33302); ExecuteSpell(bossid);}
+					case 90: {BossYell(npcid, "Fry, motherfuckers", 35713); ExecuteSpell(npcid);}
+					case 80: {BossYell(npcid, "All kinds of crazy cats out there want a piece of me", 33301); ExecuteSpell(npcid);}
+					case 60: {BossYell(npcid, "This guy is really getting on my fucking nerves", 35224); ExecuteSpell(npcid);}
+					case 40: {BossYell(npcid, "Somebody save the Smoke", 33303); ExecuteSpell(npcid);}
+					case 20: {BossYell(npcid, "Shoot him! Help me", 33302); ExecuteSpell(npcid);}
 				}
 			}
 			//Reduce cast progress a bit when damaged
-			if(FAI_IsBossCastingSpell(bossid, SpellFlightOfTheBumblebee)) {
-				FAI_SetBossCastingProgress(bossid, FAI_GetBossCastingProgress(bossid) - floatround(health_loss, floatround_floor));
+			if(FAI_IsBossCastingSpell(npcid, SpellFlightOfTheBumblebee)) {
+				FAI_SetBossCastingProgress(npcid, FAI_GetBossCastingProgress(npcid) - floatround(health_loss, floatround_floor));
 			}
 		}
 	}
@@ -273,10 +270,9 @@ public FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 			BossYell(bossid, "I wish I'd have stayed home and watched the fucking game", 15891);
 			//Reward for killing the boss
 			new Float:bossX, Float:bossY, Float:bossZ, Float:cashX, Float:cashY, Float:cashZ, Float:radius, Float:angle;
-			new bossplayerid = FAI_GetBossNPCID(bossid);
-			new bossInterior = FCNPC_GetInterior(bossplayerid);
-			new bossWorld = FCNPC_GetVirtualWorld(bossplayerid);
-			FCNPC_GetPosition(bossplayerid, bossX, bossY, bossZ);
+			new bossInterior = FCNPC_GetInterior(bossid);
+			new bossWorld = FCNPC_GetVirtualWorld(bossid);
+			FCNPC_GetPosition(bossid, bossX, bossY, bossZ);
 			for(new rewardPickup = 0, rewardPickupCount = sizeof(RewardPickups); rewardPickup < rewardPickupCount; rewardPickup++) {
 				radius = RandomFloatGivenInteger(10);
 				angle = RandomFloatGivenInteger(360);
@@ -312,9 +308,8 @@ public FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 		ExplosionCount = 0;
 		for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
 			if(BossAdds[add] != INVALID_PLAYER_ID) {
-				new npcid = FAI_GetBossNPCID(BossAdds[add]);
-				SetPlayerColor(npcid, 0xffffff00);
-				FCNPC_SetPosition(npcid, 1086.9752, 1074.7021, -50.0);
+				SetPlayerColor(BossAdds[add], 0xffffff00);
+				FCNPC_SetPosition(BossAdds[add], 1086.9752, 1074.7021, -50.0);
 				FAI_SetBossBehaviour(BossAdds[add], FAI_BOSS_BEHAVIOUR_FRIENDLY);
 			}
 		}
@@ -325,9 +320,8 @@ public FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 	} else {
 		for(new add = 0, addCount = sizeof(BossAdds); add < addCount; add++) {
 			if(BossAdds[add] != INVALID_PLAYER_ID && bossid == BossAdds[add]) {
-				new npcid = FAI_GetBossNPCID(bossid);
-				SetPlayerColor(npcid, 0xffffff00);
-				FCNPC_SetPosition(npcid, 1086.9752, 1074.7021, -50.0);
+				SetPlayerColor(bossid, 0xffffff00);
+				FCNPC_SetPosition(bossid, 1086.9752, 1074.7021, -50.0);
 				FAI_SetBossBehaviour(bossid, FAI_BOSS_BEHAVIOUR_FRIENDLY);
 				break;
 			}
@@ -339,7 +333,7 @@ public FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget)
 public FAI_OnPlayerGetAggro(playerid, bossid)
 {
 	if(bossid == BossBigSmoke) {
-		new bossPlayerColor = GetPlayerColor(FAI_GetBossNPCID(bossid));
+		new bossPlayerColor = GetPlayerColor(bossid);
 		new string[144 + 1], fullName[FAI_MAX_BOSS_FULL_NAME + 1];
 		FAI_GetBossFullName(bossid, fullName, sizeof(fullName));
 		format(string, sizeof(string), "{%06x}[Boss] %s whispers:{%06x} Come here, I will get you!", bossPlayerColor >>> 8, fullName, 0xffffffff >>> 8);
@@ -351,7 +345,7 @@ public FAI_OnPlayerGetAggro(playerid, bossid)
 public FAI_OnPlayerLoseAggro(playerid, bossid)
 {
 	if(bossid == BossBigSmoke) {
-		new bossPlayerColor = GetPlayerColor(FAI_GetBossNPCID(bossid));
+		new bossPlayerColor = GetPlayerColor(bossid);
 		new string[144 + 1], fullName[FAI_MAX_BOSS_FULL_NAME + 1];
 		FAI_GetBossFullName(bossid, fullName, sizeof(fullName));
 		format(string, sizeof(string), "{%06x}[Boss] %s whispers:{%06x} Maybe next time when our paths cross...", bossPlayerColor >>> 8, fullName, 0xffffffff >>> 8);
@@ -363,14 +357,13 @@ public FAI_OnPlayerLoseAggro(playerid, bossid)
 public FAI_OnBossStartCasting(bossid, spellid, targetid)
 {
 	if(bossid == BossBigSmoke) {
-		new bossplayerid = FAI_GetBossNPCID(bossid);
-		FCNPC_ApplyAnimation(bossplayerid, "PARK", "Tai_Chi_Loop", 4.1, 1, 1, 1, 0, 0);
+		FCNPC_ApplyAnimation(bossid, "PARK", "Tai_Chi_Loop", 4.1, 1, 1, 1, 0, 0);
 		if(spellid == SpellCarpetOfFire) {
 			new spellCastTime = FAI_GetSpellCastTime(spellid);
 			new Float:bossX, Float:bossY, Float:bossZ, Float:markX, Float:markY, Float:markZ, Float:radius, Float:angle, Float:bombHeight = 50.0;
-			new bossInterior = FCNPC_GetInterior(bossplayerid);
-			new bossWorld = FCNPC_GetVirtualWorld(bossplayerid);
-			FCNPC_GetPosition(bossplayerid, bossX, bossY, bossZ);
+			new bossInterior = FCNPC_GetInterior(bossid);
+			new bossWorld = FCNPC_GetVirtualWorld(bossid);
+			FCNPC_GetPosition(bossid, bossX, bossY, bossZ);
 			for(new groundMark = 0, groundMarkCount = sizeof(GroundMarks); groundMark < groundMarkCount; groundMark++) {
 				radius = RandomFloatGivenInteger(50) + 1.0;
 				angle = RandomFloatGivenInteger(360);
@@ -394,10 +387,10 @@ public FAI_OnBossStartCasting(bossid, spellid, targetid)
 		}
 		if(spellid == SpellWallOfFire) {
 			new Float:bossX, Float:bossY, Float:bossZ, Float:bossA, Float:markX, Float:markY, Float:markZ, Float:radius;
-			new bossInterior = FCNPC_GetInterior(bossplayerid);
-			new bossWorld = FCNPC_GetVirtualWorld(bossplayerid);
-			FCNPC_GetPosition(bossplayerid, bossX, bossY, bossZ);
-			bossA = FCNPC_GetAngle(bossplayerid);
+			new bossInterior = FCNPC_GetInterior(bossid);
+			new bossWorld = FCNPC_GetVirtualWorld(bossid);
+			FCNPC_GetPosition(bossid, bossX, bossY, bossZ);
+			bossA = FCNPC_GetAngle(bossid);
 			for(new groundMark = 19; groundMark >= 0; groundMark--) {
 				radius = 40.0 - 40.0 / 20 * groundMark;
 				markX = bossX + (radius * floatcos(bossA + 90, degrees));
@@ -418,7 +411,7 @@ public FAI_OnBossStartCasting(bossid, spellid, targetid)
 					MapAndreas_FindZ_For2DCoord(playerX, playerY, playerZ);
 				#endif
 				DestroyDynamicObject(BossTargetNotMovingObject);
-				BossTargetNotMovingObject = CreateDynamicObject(354, playerX, playerY, playerZ - 2.0, 0.0, 0.0, 0.0, FCNPC_GetVirtualWorld(bossplayerid), FCNPC_GetInterior(bossplayerid));
+				BossTargetNotMovingObject = CreateDynamicObject(354, playerX, playerY, playerZ - 2.0, 0.0, 0.0, 0.0, FCNPC_GetVirtualWorld(bossid), FCNPC_GetInterior(bossid));
 				StreamerUpdateForValidPlayers(bossid);
 				KillTimer(BossTargetNotMovingTimer);
 				BossTargetNotMovingTimer = SetTimerEx("SpellMarkOfDeathExplosion", 1000, false, "d", bossid); //Different timer to avoid conflict with other spells
@@ -446,7 +439,7 @@ public FAI_OnBossStartCasting(bossid, spellid, targetid)
 				//If the add is available, count as used when above -45.0 z position
 				else {
 					new Float:x, Float:y, Float:z;
-					FCNPC_GetPosition(FAI_GetBossNPCID(BossAdds[add]), x, y, z);
+					FCNPC_GetPosition(BossAdds[add], x, y, z);
 					if(z > -45.0) {
 						currentAddCount++;
 					}
@@ -464,8 +457,7 @@ public FAI_OnBossStartCasting(bossid, spellid, targetid)
 public FAI_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete)
 {
 	if(bossid == BossBigSmoke) {
-		new bossplayerid = FAI_GetBossNPCID(bossid);
-		FCNPC_ClearAnimations(bossplayerid);
+		FCNPC_ClearAnimations(bossid);
 		if(spellid == SpellCarpetOfFire) {
 			new Float:markX, Float:markY, Float:markZ;
 			for(new groundMark = 0, groundMarkCount = sizeof(GroundMarks); groundMark < groundMarkCount; groundMark++) {
@@ -515,7 +507,7 @@ public FAI_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete)
 					GetPlayerPos(targetid, playerX, playerY, playerZ);
 					TogglePlayerControllable(targetid, 0);
 					DestroyDynamicObject(GroundMarks[0]);
-					GroundMarks[0] = CreateDynamicObject(749, playerX, playerY, playerZ - 2.0, 0.0, 0.0, 0.0, FCNPC_GetVirtualWorld(bossplayerid), FCNPC_GetInterior(bossplayerid));
+					GroundMarks[0] = CreateDynamicObject(749, playerX, playerY, playerZ - 2.0, 0.0, 0.0, 0.0, FCNPC_GetVirtualWorld(bossid), FCNPC_GetInterior(bossid));
 					StreamerUpdateForValidPlayers(bossid);
 					camX = playerX + (radius * floatcos(angle + 90, degrees));
 					camY = playerY + (radius * floatsin(angle + 90, degrees));
@@ -538,12 +530,12 @@ public FAI_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete)
 					//If the add is available, count as used when above -45.0 z position
 					else {
 						new Float:x, Float:y, Float:z;
-						FCNPC_GetPosition(FAI_GetBossNPCID(BossAdds[add]), x, y, z);
+						FCNPC_GetPosition(BossAdds[add], x, y, z);
 						if(z > -45.0) {
 							currentAddCount++;
 						} else {
 							new Float:BSX, Float:BSY, Float:BSZ, Float:addX, Float:addY, Float:addZ, Float:angle;
-							FCNPC_GetPosition(FAI_GetBossNPCID(BossBigSmoke), BSX, BSY, BSZ);
+							FCNPC_GetPosition(BossBigSmoke, BSX, BSY, BSZ);
 							angle = RandomFloatGivenInteger(360);
 							addX = BSX + (50.0 * floatcos(angle + 90, degrees));
 							addY = BSY + (50.0 * floatsin(angle + 90, degrees));
@@ -552,45 +544,44 @@ public FAI_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete)
 							#endif
 							new randomSkin = random(3) + 102;
 							new randomWeapon = random(2);
-							new addplayerid = FAI_GetBossNPCID(BossAdds[add]);
-							if(!FCNPC_IsSpawned(addplayerid)) {
-								FCNPC_Spawn(addplayerid, randomSkin, addX, addY, addZ + 1.0);
+							if(!FCNPC_IsSpawned(BossAdds[add])) {
+								FCNPC_Spawn(BossAdds[add], randomSkin, addX, addY, addZ + 1.0);
 							} else {
-								if(FCNPC_IsDead(addplayerid)) {
-									FCNPC_Respawn(addplayerid);
+								if(FCNPC_IsDead(BossAdds[add])) {
+									FCNPC_Respawn(BossAdds[add]);
 								}
-								FCNPC_SetSkin(addplayerid, randomSkin);
-								FCNPC_SetPosition(addplayerid, addX, addY, addZ + 1.0);
+								FCNPC_SetSkin(BossAdds[add], randomSkin);
+								FCNPC_SetPosition(BossAdds[add], addX, addY, addZ + 1.0);
 							}
-							FCNPC_SetAngle(addplayerid, angle + 180);
-							FCNPC_SetInterior(addplayerid, INTERIOR_NORMAL);
-							FCNPC_SetVirtualWorld(addplayerid, VIRTUAL_WORLD_NORMAL);
-							FCNPC_ToggleReloading(addplayerid, true);
-							FCNPC_ToggleInfiniteAmmo(addplayerid, true);
+							FCNPC_SetAngle(BossAdds[add], angle + 180);
+							FCNPC_SetInterior(BossAdds[add], INTERIOR_NORMAL);
+							FCNPC_SetVirtualWorld(BossAdds[add], VIRTUAL_WORLD_NORMAL);
+							FCNPC_ToggleReloading(BossAdds[add], true);
+							FCNPC_ToggleInfiniteAmmo(BossAdds[add], true);
 							switch(randomWeapon) {
 								case 0: {
-									FCNPC_SetWeapon(addplayerid, WEAPON_UZI);
-									FCNPC_SetWeaponSkillLevel(addplayerid, WEAPONSKILL_MICRO_UZI, 0);
-									FCNPC_SetWeaponInfo(addplayerid, WEAPON_UZI, 1200, 200, 50, 0.5);
-									FCNPC_SetAmmoInClip(addplayerid, 50);
-									FCNPC_SetWeaponState(addplayerid, WEAPONSTATE_MORE_BULLETS);
+									FCNPC_SetWeapon(BossAdds[add], WEAPON_UZI);
+									FCNPC_SetWeaponSkillLevel(BossAdds[add], WEAPONSKILL_MICRO_UZI, 0);
+									FCNPC_SetWeaponInfo(BossAdds[add], WEAPON_UZI, 1200, 200, 50, 0.5);
+									FCNPC_SetAmmoInClip(BossAdds[add], 50);
+									FCNPC_SetWeaponState(BossAdds[add], WEAPONSTATE_MORE_BULLETS);
 								}
 								case 1: {
-									FCNPC_SetWeapon(addplayerid, WEAPON_COLT45);
-									FCNPC_SetWeaponSkillLevel(addplayerid, WEAPONSKILL_PISTOL, 0);
-									FCNPC_SetWeaponInfo(addplayerid, WEAPON_COLT45, 1300, 160, 17, 0.5);
-									FCNPC_SetAmmoInClip(addplayerid, 17);
-									FCNPC_SetWeaponState(addplayerid, WEAPONSTATE_MORE_BULLETS);
+									FCNPC_SetWeapon(BossAdds[add], WEAPON_COLT45);
+									FCNPC_SetWeaponSkillLevel(BossAdds[add], WEAPONSKILL_PISTOL, 0);
+									FCNPC_SetWeaponInfo(BossAdds[add], WEAPON_COLT45, 1300, 160, 17, 0.5);
+									FCNPC_SetAmmoInClip(BossAdds[add], 17);
+									FCNPC_SetWeaponState(BossAdds[add], WEAPONSTATE_MORE_BULLETS);
 								}
 							}
-							FCNPC_SetFightingStyle(addplayerid, FIGHT_STYLE_NORMAL);
-							FCNPC_SetHealth(addplayerid, 100.0);
-							FCNPC_SetArmour(addplayerid, 0.0);
-							FCNPC_SetInvulnerable(addplayerid, false);
+							FCNPC_SetFightingStyle(BossAdds[add], FIGHT_STYLE_NORMAL);
+							FCNPC_SetHealth(BossAdds[add], 100.0);
+							FCNPC_SetArmour(BossAdds[add], 0.0);
+							FCNPC_SetInvulnerable(BossAdds[add], false);
 							FAI_SetBossMaxHealth(BossAdds[add], 100.0);
 							FAI_SetBossCurrentHealth(BossAdds[add], 100.0);
 							FAI_SetBossBehaviour(BossAdds[add], FAI_BOSS_BEHAVIOUR_UNFRIENDLY);
-							SetPlayerColor(addplayerid, 0xb31a1eff);
+							SetPlayerColor(BossAdds[add], 0xb31a1eff);
 						}
 					}
 				}
@@ -625,7 +616,7 @@ public TargetNotMovingCheck(bossid, randomSeconds) {
 					//If the add is available, count as used when above -45.0 z position
 					else {
 						new Float:x, Float:y, Float:z;
-						FCNPC_GetPosition(FAI_GetBossNPCID(BossAdds[add]), x, y, z);
+						FCNPC_GetPosition(BossAdds[add], x, y, z);
 						if(z > -45.0) {
 							currentAddCount++;
 						}
@@ -684,7 +675,7 @@ public BossIdleMessage(bossid) {
 }
 
 stock SendTargetidStartCastMessage(targetid, bossid, spellid) {
-	new bossPlayerColor = GetPlayerColor(FAI_GetBossNPCID(bossid));
+	new bossPlayerColor = GetPlayerColor(bossid);
 	new string[144 + 1], fullName[FAI_MAX_BOSS_FULL_NAME + 1], spellName[FAI_MAX_SPELL_NAME + 1];
 	FAI_GetBossFullName(bossid, fullName, sizeof(fullName));
 	FAI_GetSpellName(spellid, spellName, sizeof(spellName));
@@ -697,11 +688,10 @@ stock SendTargetidStartCastMessage(targetid, bossid, spellid) {
 }
 
 stock GetRandomPlayerInRange(bossid, bool:vehicleAllowed = true) {
-	new bossplayerid = FAI_GetBossNPCID(bossid);
 	new Float:bossX, Float:bossY, Float:bossZ, Float:playerDistanceToBoss;
 	new playersInRange[MAX_PLAYERS] = {INVALID_PLAYER_ID, ...};
 	new playersInRangeCount = 0;
-	FCNPC_GetPosition(bossplayerid, bossX, bossY, bossZ);
+	FCNPC_GetPosition(bossid, bossX, bossY, bossZ);
 	for(new playerid = 0, maxplayerid = GetPlayerPoolSize(); playerid <= maxplayerid; playerid++) {
 		if(FAI_IsBossValidForPlayer(playerid, bossid) && (vehicleAllowed || !IsPlayerInAnyVehicle(playerid)) && !IsPlayerNPC(playerid)) {
 			playerDistanceToBoss = GetPlayerDistanceFromPoint(playerid, bossX, bossY, bossZ);
@@ -720,10 +710,9 @@ stock GetRandomPlayerInRange(bossid, bool:vehicleAllowed = true) {
 //Display a message in the playercolor of the boss and play a sound, to all players (not npcs) who are in the same interior and world as the boss
 stock BossYell(bossid, message[], soundid = -1, Float:soundX = 0.0, Float:soundY = 0.0, Float:soundZ = 0.0) {
 	new string[144 + 1], fullName[FAI_MAX_BOSS_FULL_NAME + 1];
-	new bossplayerid = FAI_GetBossNPCID(bossid);
-	new bossInterior = FCNPC_GetInterior(bossplayerid);
-	new bossWorld = FCNPC_GetVirtualWorld(bossplayerid);
-	new bossPlayerColor = GetPlayerColor(bossplayerid);
+	new bossInterior = FCNPC_GetInterior(bossid);
+	new bossWorld = FCNPC_GetVirtualWorld(bossid);
+	new bossPlayerColor = GetPlayerColor(bossid);
 	FAI_GetBossFullName(bossid, fullName, sizeof(fullName));
 	for(new playerid = 0, maxplayerid = GetPlayerPoolSize(); playerid <= maxplayerid; playerid++) {
 		if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid) && GetPlayerInterior(playerid) == bossInterior && GetPlayerVirtualWorld(playerid) == bossWorld) {
@@ -738,10 +727,9 @@ stock BossYell(bossid, message[], soundid = -1, Float:soundX = 0.0, Float:soundY
 }
 
 stock BossYellSpawnMessage(npcid) {
-	new bossid = FAI_GetBossIDFromNPCID(npcid);
-	if(bossid != INVALID_PLAYER_ID) {
-		if(bossid == BossBigSmoke) {
-			BossYell(bossid, "You've killed me once CJ, however once wasn't enough");
+	if(npcid != INVALID_PLAYER_ID) {
+		if(npcid == BossBigSmoke) {
+			BossYell(npcid, "You've killed me once CJ, however once wasn't enough");
 		}
 	}
 	return 1;
@@ -782,33 +770,32 @@ stock Float:RandomFloatGivenInteger(integer) {
 forward SetBossAtSpawn(bossid);
 public SetBossAtSpawn(bossid) {
 	if(bossid == BossBigSmoke) {
-		new bossplayerid = FAI_GetBossNPCID(bossid);
-		SetPlayerColor(bossplayerid, 0xff000000); //Alpha values = 00 because we don't want an additional playericon on the map
-		if(!FCNPC_IsSpawned(bossplayerid)) {
-			FCNPC_Spawn(bossplayerid, 149, 1086.9752, 1074.7021, 10.8382);
+		SetPlayerColor(bossid, 0xff000000); //Alpha values = 00 because we don't want an additional playericon on the map
+		if(!FCNPC_IsSpawned(bossid)) {
+			FCNPC_Spawn(bossid, 149, 1086.9752, 1074.7021, 10.8382);
 		} else {
-			if(FCNPC_IsDead(bossplayerid)) {
-				FCNPC_Respawn(bossplayerid);
+			if(FCNPC_IsDead(bossid)) {
+				FCNPC_Respawn(bossid);
 			}
-			FCNPC_SetSkin(bossplayerid, 149);
-			FCNPC_SetPosition(bossplayerid, 1086.9752, 1074.7021, 10.8382);
+			FCNPC_SetSkin(bossid, 149);
+			FCNPC_SetPosition(bossid, 1086.9752, 1074.7021, 10.8382);
 		}
-		FCNPC_SetAngle(bossplayerid, 39.3813);
-		FCNPC_SetInterior(bossplayerid, INTERIOR_NORMAL);
-		FCNPC_SetVirtualWorld(bossplayerid, VIRTUAL_WORLD_NORMAL);
-		FCNPC_ToggleReloading(bossplayerid, true);
-		FCNPC_ToggleInfiniteAmmo(bossplayerid, true);
-		//FCNPC_SetWeapon(bossplayerid, WEAPON_COLT45);
-		//FCNPC_SetAmmo(bossplayerid, 1000);
-		//FCNPC_SetAmmoInClip(bossplayerid, 17);
-		//FCNPC_SetWeaponState(bossplayerid, WEAPONSTATE_MORE_BULLETS);
-		//FCNPC_SetWeaponSkillLevel(bossplayerid, WEAPONSKILL_PISTOL, 0);
-		//FCNPC_SetWeaponInfo(bossplayerid, WEAPON_COLT45, -1, -1, -1, 1.0);
-		FCNPC_SetWeapon(bossplayerid, WEAPON_BRASSKNUCKLE);
-		FCNPC_SetFightingStyle(bossplayerid, FIGHT_STYLE_NORMAL);
-		FCNPC_SetHealth(bossplayerid, 100.0);
-		FCNPC_SetArmour(bossplayerid, 0.0);
-		FCNPC_SetInvulnerable(bossplayerid, false);
+		FCNPC_SetAngle(bossid, 39.3813);
+		FCNPC_SetInterior(bossid, INTERIOR_NORMAL);
+		FCNPC_SetVirtualWorld(bossid, VIRTUAL_WORLD_NORMAL);
+		FCNPC_ToggleReloading(bossid, true);
+		FCNPC_ToggleInfiniteAmmo(bossid, true);
+		//FCNPC_SetWeapon(bossid, WEAPON_COLT45);
+		//FCNPC_SetAmmo(bossid, 1000);
+		//FCNPC_SetAmmoInClip(bossid, 17);
+		//FCNPC_SetWeaponState(bossid, WEAPONSTATE_MORE_BULLETS);
+		//FCNPC_SetWeaponSkillLevel(bossid, WEAPONSKILL_PISTOL, 0);
+		//FCNPC_SetWeaponInfo(bossid, WEAPON_COLT45, -1, -1, -1, 1.0);
+		FCNPC_SetWeapon(bossid, WEAPON_BRASSKNUCKLE);
+		FCNPC_SetFightingStyle(bossid, FIGHT_STYLE_NORMAL);
+		FCNPC_SetHealth(bossid, 100.0);
+		FCNPC_SetArmour(bossid, 0.0);
+		FCNPC_SetInvulnerable(bossid, false);
 		new Float:maxHealth;
 		FAI_GetBossMaxHealth(bossid, maxHealth);
 		FAI_SetBossCurrentHealth(bossid, maxHealth);
@@ -848,8 +835,7 @@ public WallOfFireExplosion(bossid) {
 forward SpellNoPlaceIsSafeExplosion(bossid, spell);
 public SpellNoPlaceIsSafeExplosion(bossid, spell) {
 	new Float:bossX, Float:bossY, Float:bossZ, Float:markX, Float:markY, Float:markZ, Float:radius, Float:angle;
-	new bossplayerid = FAI_GetBossNPCID(bossid);
-	FCNPC_GetPosition(bossplayerid, bossX, bossY, bossZ);
+	FCNPC_GetPosition(bossid, bossX, bossY, bossZ);
 	radius = RandomFloatGivenInteger(50) + 1.0;
 	angle = RandomFloatGivenInteger(360);
 	markX = bossX + (radius * floatcos(angle + 90, degrees));
