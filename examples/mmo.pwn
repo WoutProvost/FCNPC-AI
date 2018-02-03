@@ -668,7 +668,7 @@ new const IdleMessages[][] = {
 };
 forward BossIdleMessage(npcid);
 public BossIdleMessage(npcid) {
-	if(FAI_IsValidBoss(npcid)) { //Only make the NPC yell if he actually exists (if he is destroyed for some reason, we don't need to make him yell)
+	if(FCNPC_IsValid(npcid)) { //Only make the NPC yell if he actually exists (if he is destroyed for some reason, we don't need to make him yell)
 		new randomMessage = random(sizeof(IdleMessages));
 		BossYell(npcid, IdleMessages[randomMessage]);
 	}
