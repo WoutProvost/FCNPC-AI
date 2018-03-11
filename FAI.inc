@@ -246,8 +246,8 @@ static bool:FAI_HasNPCMeleeWeapon(npcid) {
 }
 static FAI_UpdateNPCAttackMove(npcid) {
 	if(FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][TARGET])) {
-		new Float:npcX, Float:npcY, Float:npcZ;
-		FCNPC_GetPosition(npcid, npcX, npcY, npcZ);
+		new Float:x, Float:y, Float:z;
+		FCNPC_GetPosition(npcid, x, y, z);
 		new Float:attackRange = FAI_NPCs[npcid][AIM_AT_RANGE];
 		if(FAI_HasNPCMeleeWeapon(npcid)) {
 			attackRange = FAI_NPCs[npcid][MELEE_ATTACK_RANGE];
@@ -255,7 +255,7 @@ static FAI_UpdateNPCAttackMove(npcid) {
 		new bool:canMove = true;
 		new bool:canAttack = true;
 		//Target in attack range, attack if allowed, otherwise move if allowed, otherwise stop attacking
-		if(attackRange < 0.0 || GetPlayerDistanceFromPoint(FAI_NPCs[npcid][TARGET], npcX, npcY, npcZ) <= attackRange) {
+		if(attackRange < 0.0 || GetPlayerDistanceFromPoint(FAI_NPCs[npcid][TARGET], x, y, z) <= attackRange) {
 			if(canAttack) {
 				FAI_ChangeNPCAttack(npcid);
 			} else {
@@ -403,13 +403,13 @@ static FAI_ChangeNPCTarget(npcid, newtargetid, reason) {
 }
 static bool:FAI_IsPlayerInAggroRange(playerid, npcid) {
 	if(FAI_IsValidNPCForPlayer(npcid, playerid)) {
-		new Float:playerX, Float:playerY, Float:playerZ;
+		new Float:x, Float:y, Float:z;
 		if(!IsPlayerNPC(playerid)) {
-			GetPlayerPos(playerid, playerX, playerY, playerZ);
+			GetPlayerPos(playerid, x, y, z);
 		} else {
-			FCNPC_GetPosition(playerid, playerX, playerY, playerZ);
+			FCNPC_GetPosition(playerid, x, y, z);
 		}
-		new Float:npcRange = GetPlayerDistanceFromPoint(npcid, playerX, playerY, playerZ);
+		new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
 		if(FAI_NPCs[npcid][AGGRO_RANGE][playerid] < 0.0 || npcRange <= FAI_NPCs[npcid][AGGRO_RANGE][playerid]) {
 			return true;
 		}
@@ -419,18 +419,17 @@ static bool:FAI_IsPlayerInAggroRange(playerid, npcid) {
 static FAI_GetClosestPlayer(npcid) {
 	new closestPlayer = INVALID_PLAYER_ID;
 	new Float:closestPlayerRange = 0.0;
-	new Float:playerX, Float:playerY, Float:playerZ;
-	new Float:npcRange;
 	for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
 		//Only set target if the encounter has already started OR if the behaviour is unfriendly for that player
 		if(FAI_IsValidNPCForPlayer(npcid, playerid) && ((FAI_NPCs[npcid][TARGET] != INVALID_PLAYER_ID && FAI_NPCs[npcid][BEHAVIOUR][playerid] != FCNPC_BEHAVIOUR_FRIENDLY)
 		|| (FAI_NPCs[npcid][TARGET] == INVALID_PLAYER_ID && FAI_NPCs[npcid][BEHAVIOUR][playerid] == FCNPC_BEHAVIOUR_UNFRIENDLY))) {
+			new Float:x, Float:y, Float:z;
 			if(!IsPlayerNPC(playerid)) {
-				GetPlayerPos(playerid, playerX, playerY, playerZ);
+				GetPlayerPos(playerid, x, y, z);
 			} else {
-				FCNPC_GetPosition(playerid, playerX, playerY, playerZ);
+				FCNPC_GetPosition(playerid, x, y, z);
 			}
-			npcRange = GetPlayerDistanceFromPoint(npcid, playerX, playerY, playerZ);
+			new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
 			if(FAI_IsPlayerInAggroRange(playerid, npcid) && (closestPlayer == INVALID_PLAYER_ID || npcRange < closestPlayerRange)) {
 				closestPlayerRange = npcRange;
 				closestPlayer = playerid;
