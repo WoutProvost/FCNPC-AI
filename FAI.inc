@@ -115,7 +115,7 @@ static FAI_NPCs[MAX_PLAYERS][FAI_ENUM_NPC];
 
 //========================================INTERNAL FUNCTIONS========================================
 //General
-static FAI_ScriptInit() {	
+static FAI_ScriptInit() {
 	//Players
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
 		FAI_PauseTickCount[playerid] = GetTickCount();
@@ -183,6 +183,8 @@ static FAI_GetTickCountDiff(oldInteger, newInteger) { //Fix for the GetTickCount
 static FAI_ResetNPC(npcid) {
 	//Don't use FAI_IsValidNPC
 	FAI_NPCs[npcid][VALID] = false;
+	FAI_NPCs[npcid][HEALTH] = 100.0;
+	FAI_NPCs[npcid][MAX_HEALTH] = 100.0;
 	FAI_NPCs[npcid][GO_TO_TYPE] = FCNPC_MOVE_TYPE_AUTO;
 	FAI_NPCs[npcid][GO_TO_SPEED] = FCNPC_MOVE_SPEED_AUTO;
 	FAI_NPCs[npcid][GO_TO_USE_MAP_ANDREAS] = false;
@@ -210,8 +212,6 @@ static FAI_ResetNPC(npcid) {
 		FAI_NPCs[npcid][AGGRO_RANGE][playerid] = 0.0;
 		FAI_NPCs[npcid][THREAT][playerid] = 0.0;
 	}
-	FAI_NPCs[npcid][HEALTH] = 100.0;
-	FAI_NPCs[npcid][MAX_HEALTH] = 100.0;
 }
 static bool:FAI_IsValidNPC(npcid) { //Only handle NPCs created in this FS/GM
 	return npcid >= 0 && npcid < MAX_PLAYERS && FAI_NPCs[npcid][VALID];
@@ -598,12 +598,14 @@ public FCNPC_OnDestroy(npcid) //This will both handle NPCs being destroyed progr
 public FCNPC_OnUpdate(npcid)
 {
 	//NPCs
-	FAI_UpdateNPCTarget(npcid);
-	FAI_UpdateNPCAttackMove(npcid); //Call after setting target
-	//Reset threat of recently invalid players
-	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we also need to reset recently disconnected players
-		if(FAI_NPCs[npcid][THREAT][playerid] != 0.0 && !FAI_IsValidNPCForPlayer(npcid, playerid)) {
-			FAI_NPCs[npcid][THREAT][playerid] = 0.0;
+	if(FAI_IsValidNPC(npcid)) {
+		FAI_UpdateNPCTarget(npcid);
+		FAI_UpdateNPCAttackMove(npcid); //Call after setting target
+		//Reset threat of recently invalid players
+		for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we also need to reset recently disconnected players
+			if(FAI_NPCs[npcid][THREAT][playerid] != 0.0 && !FAI_IsValidNPCForPlayer(npcid, playerid)) {
+				FAI_NPCs[npcid][THREAT][playerid] = 0.0;
+			}
 		}
 	}
 	new ret = 1;
@@ -865,11 +867,14 @@ stock FCNPC_GetMeleeAttackInfo(npcid, &Float:range, &delay, &bool:useFightStyle)
 	return 0;
 }
 stock FCNPC_SetTarget(npcid, playerid) {
-	new reason = FCNPC_EAR_EXPLICIT_TARGET_SET;
-	if(playerid == INVALID_PLAYER_ID) {
-		reason = FCNPC_EOR_EXPLICIT_TARGET_SET;
+	if(FAI_IsValidNPC(npcid)) {
+		new reason = FCNPC_EAR_EXPLICIT_TARGET_SET;
+		if(playerid == INVALID_PLAYER_ID) {
+			reason = FCNPC_EOR_EXPLICIT_TARGET_SET;
+		}
+		return FAI_ChangeNPCTarget(npcid, playerid, reason); //Can be INVALID_PLAYER_ID
 	}
-	return FAI_ChangeNPCTarget(npcid, playerid, reason); //Can be INVALID_PLAYER_ID
+	return 0;
 }
 stock FCNPC_GetTarget(npcid) {
 	if(FAI_IsValidNPC(npcid)) {
