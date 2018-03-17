@@ -17,6 +17,10 @@
 #endif
 #define _FAI_included
 #pragma library FAI
+
+#if !defined _FCNPC_included
+	#error Include FCNPC before this include
+#endif
  
 //========================================FAKE NATIVES========================================
 /*
