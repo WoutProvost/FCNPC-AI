@@ -17,10 +17,12 @@
 #endif
 #define _FAI_included
 #pragma library FAI
-
+ 
 //========================================FAKE NATIVES========================================
 /*
 //NPCs
+native bool:FAI_IsValidNPC(npcid);
+native bool:FAI_IsValidNPCForPlayer(npcid, playerid);
 native FCNPC_SetHealth(npcid, Float:health, Float:maxHealth = 100.0);
 native Float:FCNPC_GetHealth(npcid, &Float:maxHealth = 100.0);
 native FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true, Float:dist_offset = 0.0, Float:dist_check = 1.5, stopdelay = 250);
@@ -212,28 +214,6 @@ static FAI_ResetNPC(npcid) {
 		FAI_NPCs[npcid][AGGRO_RANGE][playerid] = 0.0;
 		FAI_NPCs[npcid][THREAT][playerid] = 0.0;
 	}
-}
-static bool:FAI_IsValidNPC(npcid) { //Only handle NPCs created in this FS/GM
-	return npcid >= 0 && npcid < MAX_PLAYERS && FAI_NPCs[npcid][VALID];
-}
-static bool:FAI_IsValidNPCForPlayer(npcid, playerid) {
-	if(FAI_IsValidNPC(npcid) && IsPlayerConnected(playerid) && npcid != playerid && FCNPC_IsSpawned(npcid) && !FCNPC_IsDead(npcid)) {
-		new npcInterior = FCNPC_GetInterior(npcid);
-		new npcWorld = FCNPC_GetVirtualWorld(npcid);
-		if(!IsPlayerNPC(playerid)) {
-			new playerState = GetPlayerState(playerid);
-			if(GetPlayerInterior(playerid) == npcInterior && GetPlayerVirtualWorld(playerid) == npcWorld && playerState != PLAYER_STATE_NONE && playerState != PLAYER_STATE_WASTED
-			&& playerState != PLAYER_STATE_SPAWNED && playerState != PLAYER_STATE_SPECTATING && !FAI_PlayerPaused[playerid] && IsPlayerStreamedIn(npcid, playerid)) {
-				return true;
-			}
-		} else {
-			//FCNPC_IsValid ==> only support FCNPC bots, no standard bots because those can't react to anything anyway
-			if(FCNPC_IsValid(playerid) && FCNPC_GetInterior(playerid) == npcInterior && FCNPC_GetVirtualWorld(playerid) == npcWorld && FCNPC_IsSpawned(playerid) && !FCNPC_IsDead(playerid)/* && IsPlayerStreamedIn(npcid, playerid)*/) {
-				return true;
-			}
-		}
-	}
-	return false;
 }
 static bool:FAI_HasNPCMeleeWeapon(npcid) {
 	if(FAI_IsValidNPC(npcid)) {
@@ -785,6 +765,30 @@ stock Float:FAI_FCNPC_GetHealth(npcid, &Float:maxHealth = 100.0) { //Default val
 
 //========================================FUNCTIONS========================================
 //NPC
+forward bool:FAI_IsValidNPC(npcid); //Silence warning 208
+stock bool:FAI_IsValidNPC(npcid) { //Only handle NPCs created in this FS/GM
+	return npcid >= 0 && npcid < MAX_PLAYERS && FAI_NPCs[npcid][VALID];
+}
+forward bool:FAI_IsValidNPCForPlayer(npcid, playerid); //Silence warning 208
+stock bool:FAI_IsValidNPCForPlayer(npcid, playerid) {
+	if(FAI_IsValidNPC(npcid) && IsPlayerConnected(playerid) && npcid != playerid && FCNPC_IsSpawned(npcid) && !FCNPC_IsDead(npcid)) {
+		new npcInterior = FCNPC_GetInterior(npcid);
+		new npcWorld = FCNPC_GetVirtualWorld(npcid);
+		if(!IsPlayerNPC(playerid)) {
+			new playerState = GetPlayerState(playerid);
+			if(GetPlayerInterior(playerid) == npcInterior && GetPlayerVirtualWorld(playerid) == npcWorld && playerState != PLAYER_STATE_NONE && playerState != PLAYER_STATE_WASTED
+			&& playerState != PLAYER_STATE_SPAWNED && playerState != PLAYER_STATE_SPECTATING && !FAI_PlayerPaused[playerid] && IsPlayerStreamedIn(npcid, playerid)) {
+				return true;
+			}
+		} else {
+			//FCNPC_IsValid ==> only support FCNPC bots, no standard bots because those can't react to anything anyway
+			if(FCNPC_IsValid(playerid) && FCNPC_GetInterior(playerid) == npcInterior && FCNPC_GetVirtualWorld(playerid) == npcWorld && FCNPC_IsSpawned(playerid) && !FCNPC_IsDead(playerid)/* && IsPlayerStreamedIn(npcid, playerid)*/) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
 stock FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true, Float:dist_offset = 0.0, Float:dist_check = 1.5, stopdelay = 250) {
 	if(FAI_IsValidNPC(npcid)) {
 		FAI_NPCs[npcid][GO_TO_TYPE] = type;
