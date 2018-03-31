@@ -768,7 +768,7 @@ stock Float:FAI_FCNPC_GetHealth(npcid, &Float:maxHealth = 100.0) { //Default val
 #define FCNPC_GetHealth FAI_FCNPC_GetHealth
 
 //========================================FUNCTIONS========================================
-//NPC
+//NPCs
 forward bool:FAI_IsValidNPC(npcid); //Silence warning 208
 stock bool:FAI_IsValidNPC(npcid) { //Only handle NPCs created in this FS/GM
 	return npcid >= 0 && npcid < MAX_PLAYERS && FAI_NPCs[npcid][VALID];
