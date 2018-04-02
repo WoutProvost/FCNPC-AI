@@ -21,7 +21,7 @@
 #if !defined _FCNPC_included
 	#error Include FCNPC before this include
 #endif
- 
+
 //========================================FAKE NATIVES========================================
 /*
 //NPCs
@@ -347,7 +347,7 @@ static FAI_UpdateNPCTarget(npcid) {
 	/*
 	//Get new target when there is no target, or if the current target is invalid, or if the behaviour for the current target is friendly
 	if(!FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][TARGET]) || FAI_NPCs[npcid][BEHAVIOUR][FAI_NPCs[npcid][TARGET]] == FCNPC_BEHAVIOUR_FRIENDLY) {
-		//Set target to closestPlayerid
+		//Set target to closest player
 		new newtargetid = FAI_GetClosestPlayer(npcid);
 		new reason = FCNPC_EAR_AGGRO;
 		if(newtargetid == INVALID_PLAYER_ID) {
