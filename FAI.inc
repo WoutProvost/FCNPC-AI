@@ -51,7 +51,7 @@ forward FCNPC_OnEncounterStop(npcid, lastTarget, reason);
 forward FCNPC_OnPlayerGetAggro(playerid, npcid);
 forward FCNPC_OnPlayerLoseAggro(playerid, npcid);
 
-//========================================DEFINES========================================
+//========================================CONSTANTS========================================
 //General
 #define FAI_VERSION							"2.0"
 #if !defined INVALID_TIMER_ID
@@ -175,13 +175,8 @@ public FAI_CheckPlayersPausedState() {
 		}
 	}
 }
-static FAI_GetTickCountDiff(oldInteger, newInteger) { //Fix for the GetTickCount integer overflow problem when the server is run for 24+ days
-	if(oldInteger < 0 && newInteger >= 0) {
-		return newInteger - oldInteger;
-	} else if(oldInteger >= 0 && newInteger < 0 || oldInteger > newInteger) {
-		return (cellmax - oldInteger + 1) - (cellmin - newInteger);
-	}
-	return newInteger - oldInteger;
+static FAI_GetTickCountDiff(oldtick, newtick) { //Fixes the problem with GetTickCount, due to integer overflow when the server is run for 24+ days (CREDITS: ZiGGi https://gist.github.com/ziggi/5d7d8dc42f54531feba7ae924c608e73)
+	return newtick - oldtick;
 }
 
 //NPCs
