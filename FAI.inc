@@ -39,9 +39,9 @@ native FCNPC_GetTarget(npcid);
 native FCNPC_SetBehaviour(npcid, playerid, behaviour);
 native FCNPC_GetBehaviour(npcid, playerid);
 native FCNPC_SetAggroRange(npcid, playerid, Float:range);
-native FCNPC_GetAggroRange(npcid, playerid, &Float:range);
+native Float:FCNPC_GetAggroRange(npcid, playerid);
 native FCNPC_SetThreat(npcid, playerid, Float:threat);
-native FCNPC_GetThreat(npcid, playerid, &Float:threat);
+native Float:FCNPC_GetThreat(npcid, playerid);
 */
 
 //========================================CALLBACKS========================================
@@ -178,7 +178,7 @@ public FAI_CheckPlayersPausedState() {
 		new playerState = GetPlayerState(playerid);
 		if(IsPlayerConnected(playerid) && playerState != PLAYER_STATE_WASTED && playerState != PLAYER_STATE_NONE) { //OnPlayerUpdate isn't called when the player is initializing, dead or in class selection
 			new bool:playerInGame = true;
-			if(FAI_GetTickCountDiff(FAI_PauseTickCount[playerid], GetTickCount()) > 2000) {
+			if(GetTickCount() - FAI_PauseTickCount[playerid] > 2000) {
 				playerInGame = false;
 			}
 			if(!playerInGame && !FAI_PlayerPaused[playerid]) {
@@ -188,9 +188,6 @@ public FAI_CheckPlayersPausedState() {
 			}
 		}
 	}
-}
-static FAI_GetTickCountDiff(oldtick, newtick) { //Fixes the problem with GetTickCount, due to integer overflow when the server is run for 24+ days (CREDITS: ZiGGi https://gist.github.com/ziggi/5d7d8dc42f54531feba7ae924c608e73)
-	return newtick - oldtick;
 }
 
 //NPCs
@@ -896,7 +893,7 @@ stock FCNPC_GetTarget(npcid) {
 	if(FAI_IsValidNPC(npcid)) {
 		return FAI_NPCs[npcid][FAI_NPC_TARGET];
 	}
-	return -1;
+	return 0;
 }
 stock FCNPC_SetBehaviour(npcid, playerid, behaviour) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
@@ -912,7 +909,7 @@ stock FCNPC_GetBehaviour(npcid, playerid) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
 		return FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid];
 	}
-	return -1;
+	return 0;
 }
 stock FCNPC_SetAggroRange(npcid, playerid, Float:range) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
@@ -922,10 +919,9 @@ stock FCNPC_SetAggroRange(npcid, playerid, Float:range) {
 	}
 	return 0;
 }
-stock FCNPC_GetAggroRange(npcid, playerid, &Float:range) {
+stock Float:FCNPC_GetAggroRange(npcid, playerid) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
-		range = FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid];
-		return 1;
+		return FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid];
 	}
 	return 0;
 }
@@ -940,10 +936,9 @@ stock FCNPC_SetThreat(npcid, playerid, Float:threat) {
 	}
 	return 0;
 }
-stock FCNPC_GetThreat(npcid, playerid, &Float:threat) {
+stock Float:FCNPC_GetThreat(npcid, playerid) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
-		threat = FAI_NPCs[npcid][FAI_NPC_THREAT][playerid];
-		return 1;
+		return FAI_NPCs[npcid][FAI_NPC_THREAT][playerid];
 	}
 	return 0;
 }
