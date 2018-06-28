@@ -9,7 +9,7 @@
  * See CHANGELOG.md included in the release download, or at https://github.com/WoutProvost/FCNPC-A.I./blob/master/CHANGELOG.md if not included.
 
  * Documentation:
- * Every function, callback or define is extensively explained at https://github.com/WoutProvost/FCNPC-A.I./wiki and its various subsections.
+ * Every function, callback or constant is extensively explained at https://github.com/WoutProvost/FCNPC-A.I./wiki and its various subsections.
 */
 
 #if defined _MMO_included
