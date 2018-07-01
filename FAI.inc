@@ -664,7 +664,7 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 {
 	new ret = 1;
 	#if defined FAI_FCNPC_OnTakeDamage
-		ret = FAI_FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss); //The user can override the decision for the dammage to be afflicted to the NPC
+		ret = FAI_FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss); //The user can override the decision for the damage to be afflicted to the NPC
 	#endif
 	if(ret == 1) { //Call after
 		if(FAI_IsValidNPC(npcid)) {
@@ -742,7 +742,7 @@ stock FAI_FCNPC_SetHealth(npcid, Float:health, Float:maxHealth = -1.0) { //Has t
 		}
 		FAI_NPCs[npcid][FAI_NPC_HEALTH] = health;
 		FAI_NPCs[npcid][FAI_NPC_MAX_HEALTH] = maxHealth;
-		if(health == 0.0) { //Should be last, otherwise the health will be reset to 0 after OnDeath is called
+		if(health == 0.0) { //Should be last, otherwise calling respawn in OnDeath will not reset the health to maxHealth but will remain 0
 			if(!FCNPC_IsDead(npcid)) {
 				FCNPC_Kill(npcid);
 			}
