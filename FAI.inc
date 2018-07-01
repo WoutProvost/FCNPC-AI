@@ -139,7 +139,9 @@ static FAI_ScriptInit() {
 	printf("- Version: %s     ", FAI_VERSION);
 	printf("- Author: Freaksken  ");
 	printf("---------------------");
-	HTTP(0, HTTP_GET, "ziggi.org/github/lastrelease.php?owner=WoutProvost&repo=FCNPC-A.I.&elem=tag_name", "", "FAI_OnVersionRequestResponse");
+	#if !defined FCNPC_DISABLE_VERSION_CHECK
+		HTTP(0, HTTP_GET, "ziggi.org/github/lastrelease.php?owner=WoutProvost&repo=FCNPC-A.I.&elem=tag_name", "", "FAI_OnVersionRequestResponse");
+	#endif
 }
 static FAI_ScriptExit() {
 	//Players
@@ -157,19 +159,21 @@ static FAI_ScriptExit() {
 		}
 	}*/
 }
-forward FAI_OnVersionRequestResponse(index, responseCode, data[]);
-public FAI_OnVersionRequestResponse(index, responseCode, data[]) {
-	if(index == 0 && responseCode == 200) {
-		new length = strlen(data);
-		if(length != 0 && data[0] == 'v') {
-			new version[8 + 1];
-			strmid(version, data, 1, length);
-			if(strcmp(version, FAI_VERSION)) {
-				printf("\n*** [FAI] Info: A newer version (v%s) is available at https://github.com/WoutProvost/FCNPC-A.I./releases ***\n", version);
+#if !defined FCNPC_DISABLE_VERSION_CHECK
+	forward FAI_OnVersionRequestResponse(index, responseCode, data[]);
+	public FAI_OnVersionRequestResponse(index, responseCode, data[]) {
+		if(index == 0 && responseCode == 200) {
+			new length = strlen(data);
+			if(length != 0 && data[0] == 'v') {
+				new version[8 + 1];
+				strmid(version, data, 1, length);
+				if(strcmp(version, FAI_VERSION)) {
+					printf("\n*** [FAI] Info: A newer version (v%s) is available at https://github.com/WoutProvost/FCNPC-A.I./releases ***\n", version);
+				}
 			}
 		}
 	}
-}
+#endif
 
 //Players
 forward FAI_CheckPlayersPausedState();
