@@ -740,13 +740,13 @@ stock FAI_FCNPC_SetHealth(npcid, Float:health, Float:maxHealth = -1.0) { //Has t
 		if(health > maxHealth) {
 			maxHealth = health;
 		}
-		if(health == 0.0) {
+		FAI_NPCs[npcid][FAI_NPC_HEALTH] = health;
+		FAI_NPCs[npcid][FAI_NPC_MAX_HEALTH] = maxHealth;
+		if(health == 0.0) { //Should be last, otherwise the health will be reset to 0 after OnDeath is called
 			if(!FCNPC_IsDead(npcid)) {
 				FCNPC_Kill(npcid);
 			}
 		}
-		FAI_NPCs[npcid][FAI_NPC_HEALTH] = health;
-		FAI_NPCs[npcid][FAI_NPC_MAX_HEALTH] = maxHealth;
 		return 1;
 	}
 	return FCNPC_SetHealth(npcid, health);
