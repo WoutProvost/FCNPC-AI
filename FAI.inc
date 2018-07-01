@@ -229,11 +229,9 @@ static FAI_ResetNPC(npcid) {
 	}
 }
 static bool:FAI_HasNPCMeleeWeapon(npcid) {
-	if(FAI_IsValidNPC(npcid)) {
-		new weaponid = FCNPC_GetWeapon(npcid);
-		if(weaponid >= 0 && weaponid <= 15) {
-			return true;
-		}
+	new weaponid = FCNPC_GetWeapon(npcid);
+	if(weaponid >= 0 && weaponid <= 15) {
+		return true;
 	}
 	return false;
 }
@@ -395,17 +393,15 @@ static FAI_ChangeNPCTarget(npcid, newtargetid, reason) {
 	return 0;
 }
 static bool:FAI_IsPlayerInAggroRange(playerid, npcid) {
-	if(FAI_IsValidNPCForPlayer(npcid, playerid)) {
-		new Float:x, Float:y, Float:z;
-		if(!IsPlayerNPC(playerid)) {
-			GetPlayerPos(playerid, x, y, z);
-		} else {
-			FCNPC_GetPosition(playerid, x, y, z);
-		}
-		new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
-		if(FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid] < 0.0 || npcRange <= FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid]) {
-			return true;
-		}
+	new Float:x, Float:y, Float:z;
+	if(!IsPlayerNPC(playerid)) {
+		GetPlayerPos(playerid, x, y, z);
+	} else {
+		FCNPC_GetPosition(playerid, x, y, z);
+	}
+	new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
+	if(FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid] < 0.0 || npcRange <= FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid]) {
+		return true;
 	}
 	return false;
 }
