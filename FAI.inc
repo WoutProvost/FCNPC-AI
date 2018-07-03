@@ -24,7 +24,7 @@
 //========================================FAKE NATIVES========================================
 /*
 //General
-native FAI_UseDestroyNPCsOnExit(bool:use);
+native FAI_UseDestroyNPCsOnExit(bool:use = true);
 native bool:FAI_IsDestroyNPCsOnExitUsed();
 
 //NPCs
@@ -806,7 +806,7 @@ stock Float:FAI_FCNPC_GetHealth(npcid, &Float:maxHealth = 100.0) { //Default val
 
 //========================================FUNCTIONS========================================
 //General
-stock FAI_UseDestroyNPCsOnExit(bool:use) {
+stock FAI_UseDestroyNPCsOnExit(bool:use = true) {
 	FAI_DestroyNPCsOnExit = use;
 	return 1;
 }
