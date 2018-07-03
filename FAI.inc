@@ -23,6 +23,10 @@
 
 //========================================FAKE NATIVES========================================
 /*
+//General
+native FAI_UseDestroyNPCsOnExit(bool:use);
+native bool:FAI_IsDestroyNPCsOnExitUsed();
+
 //NPCs
 native bool:FAI_IsValidNPC(npcid);
 native bool:FAI_IsValidNPCForPlayer(npcid, playerid);
@@ -78,6 +82,9 @@ enum {
 }
 
 //========================================VARIABLES========================================
+//General
+static bool:FAI_DestroyNPCsOnExit = false;
+
 //Players
 static FAI_PauseTickCount[MAX_PLAYERS] = {0, ...};
 static bool:FAI_PlayerPaused[MAX_PLAYERS] = {false, ...};
@@ -121,6 +128,9 @@ static FAI_NPCs[MAX_PLAYERS][FAI_E_NPC];
 //========================================INTERNAL FUNCTIONS========================================
 //General
 static FAI_ScriptInit() {
+	//General
+	FAI_DestroyNPCsOnExit = false;
+
 	//Players
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
 		FAI_PauseTickCount[playerid] = GetTickCount();
@@ -153,11 +163,13 @@ static FAI_ScriptExit() {
 	FAI_PauseTimer = INVALID_TIMER_ID;
 
 	//NPCs
-	/*for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) { //Automatically destroy NPCs on script exit
-		if(FAI_IsValidNPC(npcid)) {
-			FCNPC_Destroy(npcid);
+	if(FAI_DestroyNPCsOnExit) {
+		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) { //Automatically destroy NPCs on script exit
+			if(FAI_IsValidNPC(npcid)) {
+				FCNPC_Destroy(npcid);
+			}
 		}
-	}*/
+	}
 }
 #if !defined FCNPC_DISABLE_VERSION_CHECK
 	forward FAI_OnVersionRequestResponse(index, responseCode, data[]);
@@ -773,6 +785,15 @@ stock Float:FAI_FCNPC_GetHealth(npcid, &Float:maxHealth = 100.0) { //Default val
 #define FCNPC_GetHealth FAI_FCNPC_GetHealth
 
 //========================================FUNCTIONS========================================
+//General
+stock FAI_UseDestroyNPCsOnExit(bool:use) {
+	FAI_DestroyNPCsOnExit = use;
+	return 1;
+}
+stock bool:FAI_IsDestroyNPCsOnExitUsed() {
+	return FAI_DestroyNPCsOnExit;
+}
+
 //NPCs
 forward bool:FAI_IsValidNPC(npcid); //Silence warning 208
 stock bool:FAI_IsValidNPC(npcid) { //Only handle NPCs created in this FS/GM
