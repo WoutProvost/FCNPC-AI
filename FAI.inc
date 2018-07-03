@@ -248,7 +248,7 @@ static bool:FAI_HasNPCMeleeWeapon(npcid) {
 	return false;
 }
 static FAI_UpdateNPCAttackMove(npcid) {
-	if(FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET])) {
+	if(!FCNPC_IsDead(npcid) && FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET])) {
 		new Float:x, Float:y, Float:z;
 		FCNPC_GetPosition(npcid, x, y, z);
 		new Float:attackRange = FAI_NPCs[npcid][FAI_NPC_AIM_AT_RANGE];
@@ -333,51 +333,53 @@ static FAI_ChangeNPCStopAttackMove(npcid) {
 	}
 }
 static FAI_UpdateNPCTarget(npcid) {
-	new newtargetid = INVALID_PLAYER_ID;
-	new reason = FCNPC_EAR_AGGRO;
-	//When the encounter has been started, search for an overaggroing player
-	if(FAI_NPCs[npcid][FAI_NPC_TARGET] != INVALID_PLAYER_ID) {
-		new highestplayerid = FAI_GetHighestThreatPlayer(npcid);
-		//For another player to become the target during the encounter, he must exceed 130% of the current valid target's threat (also accounted for divide by 0), or the current target must be invalid, or the behaviour for the current target is friendly
-		if(highestplayerid != INVALID_PLAYER_ID && (FAI_NPCs[npcid][FAI_NPC_THREAT][FAI_NPCs[npcid][FAI_NPC_TARGET]] == 0.0 || FAI_NPCs[npcid][FAI_NPC_THREAT][highestplayerid] / FAI_NPCs[npcid][FAI_NPC_THREAT][FAI_NPCs[npcid][FAI_NPC_TARGET]] > 1.3
-		|| !FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET]) || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][FAI_NPCs[npcid][FAI_NPC_TARGET]] == FCNPC_BEHAVIOUR_FRIENDLY)) {
-			//Set target to player with highest threat
-			newtargetid = highestplayerid;
-			FAI_ChangeNPCTarget(npcid, newtargetid, reason);
+	if(!FCNPC_IsDead(npcid)) {
+		new newtargetid = INVALID_PLAYER_ID;
+		new reason = FCNPC_EAR_AGGRO;
+		//When the encounter has been started, search for an overaggroing player
+		if(FAI_NPCs[npcid][FAI_NPC_TARGET] != INVALID_PLAYER_ID) {
+			new highestplayerid = FAI_GetHighestThreatPlayer(npcid);
+			//For another player to become the target during the encounter, he must exceed 130% of the current valid target's threat (also accounted for divide by 0), or the current target must be invalid, or the behaviour for the current target is friendly
+			if(highestplayerid != INVALID_PLAYER_ID && (FAI_NPCs[npcid][FAI_NPC_THREAT][FAI_NPCs[npcid][FAI_NPC_TARGET]] == 0.0 || FAI_NPCs[npcid][FAI_NPC_THREAT][highestplayerid] / FAI_NPCs[npcid][FAI_NPC_THREAT][FAI_NPCs[npcid][FAI_NPC_TARGET]] > 1.3
+			|| !FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET]) || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][FAI_NPCs[npcid][FAI_NPC_TARGET]] == FCNPC_BEHAVIOUR_FRIENDLY)) {
+				//Set target to player with highest threat
+				newtargetid = highestplayerid;
+				FAI_ChangeNPCTarget(npcid, newtargetid, reason);
+			}
 		}
-	}
-	//When the encounter hasn't been started, or there is no overaggroing player
-	if(newtargetid == INVALID_PLAYER_ID) {
-		//When there is no target, or if the current target is invalid, or if the behaviour for the current target is friendly
+		//When the encounter hasn't been started, or there is no overaggroing player
+		if(newtargetid == INVALID_PLAYER_ID) {
+			//When there is no target, or if the current target is invalid, or if the behaviour for the current target is friendly
+			if(!FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET]) || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][FAI_NPCs[npcid][FAI_NPC_TARGET]] == FCNPC_BEHAVIOUR_FRIENDLY) {
+				//Set target to closest player
+				newtargetid = FAI_GetClosestPlayer(npcid);
+				if(newtargetid == INVALID_PLAYER_ID) {
+					reason = FCNPC_EOR_NO_VALID_NEW_TARGET;
+				}
+				//Don't do anything when the target doesn't change
+				if(FAI_NPCs[npcid][FAI_NPC_TARGET] != newtargetid) {
+					FAI_ChangeNPCTarget(npcid, newtargetid, reason);
+				}
+			}		
+		}
+
+		//Old code before threat implementation
+		/*
+		//Get new target when there is no target, or if the current target is invalid, or if the behaviour for the current target is friendly
 		if(!FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET]) || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][FAI_NPCs[npcid][FAI_NPC_TARGET]] == FCNPC_BEHAVIOUR_FRIENDLY) {
 			//Set target to closest player
-			newtargetid = FAI_GetClosestPlayer(npcid);
+			new newtargetid = FAI_GetClosestPlayer(npcid);
+			new reason = FCNPC_EAR_AGGRO;
 			if(newtargetid == INVALID_PLAYER_ID) {
 				reason = FCNPC_EOR_NO_VALID_NEW_TARGET;
 			}
-			//Don't do anything when the target doesn't change
-			if(FAI_NPCs[npcid][FAI_NPC_TARGET] != newtargetid) {
-				FAI_ChangeNPCTarget(npcid, newtargetid, reason);
-			}
-		}		
-	}
-
-	//Old code before threat implementation
-	/*
-	//Get new target when there is no target, or if the current target is invalid, or if the behaviour for the current target is friendly
-	if(!FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET]) || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][FAI_NPCs[npcid][FAI_NPC_TARGET]] == FCNPC_BEHAVIOUR_FRIENDLY) {
-		//Set target to closest player
-		new newtargetid = FAI_GetClosestPlayer(npcid);
-		new reason = FCNPC_EAR_AGGRO;
-		if(newtargetid == INVALID_PLAYER_ID) {
-			reason = FCNPC_EOR_NO_VALID_NEW_TARGET;
+			FAI_ChangeNPCTarget(npcid, newtargetid, reason);
 		}
-		FAI_ChangeNPCTarget(npcid, newtargetid, reason);
+		*/
 	}
-	*/
 }
 static FAI_ChangeNPCTarget(npcid, newtargetid, reason) {
-	if(newtargetid == INVALID_PLAYER_ID || FAI_IsValidNPCForPlayer(npcid, newtargetid)) {
+	if(newtargetid == INVALID_PLAYER_ID || (!FCNPC_IsDead(npcid) && FAI_IsValidNPCForPlayer(npcid, newtargetid))) {
 		new oldtargetid = FAI_NPCs[npcid][FAI_NPC_TARGET];
 		if(oldtargetid != newtargetid) {
 			if(oldtargetid != INVALID_PLAYER_ID) {
@@ -423,7 +425,7 @@ static FAI_GetClosestPlayer(npcid) {
 	for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
 		//Only set target if the encounter has already started OR if the behaviour is unfriendly for that player
 		if(FAI_IsValidNPCForPlayer(npcid, playerid) && ((FAI_NPCs[npcid][FAI_NPC_TARGET] != INVALID_PLAYER_ID && FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid] != FCNPC_BEHAVIOUR_FRIENDLY)
-		|| (FAI_NPCs[npcid][FAI_NPC_TARGET] == INVALID_PLAYER_ID && FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid] == FCNPC_BEHAVIOUR_UNFRIENDLY))) {
+		|| (FAI_NPCs[npcid][FAI_NPC_TARGET] == INVALID_PLAYER_ID && FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid] == FCNPC_BEHAVIOUR_UNFRIENDLY))) { //Don't check for death, because won't be called when dead
 			new Float:x, Float:y, Float:z;
 			if(!IsPlayerNPC(playerid)) {
 				GetPlayerPos(playerid, x, y, z);
@@ -444,7 +446,7 @@ static FAI_GetHighestThreatPlayer(npcid) {
 	new Float:highestPlayerThreat = 0.0;
 	for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
 		//Only set target if the player has any threat AND the behaviour is not friendly for that player
-		if(FAI_IsValidNPCForPlayer(npcid, playerid) && FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] > 0.0 && FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid] != FCNPC_BEHAVIOUR_FRIENDLY) {
+		if(FAI_IsValidNPCForPlayer(npcid, playerid) && FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] > 0.0 && FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid] != FCNPC_BEHAVIOUR_FRIENDLY) { //Don't check for death, because won't be called when dead
 			//When there are multiple players with the same threat, the first ID will be used.
 			if(highestPlayer == INVALID_PLAYER_ID || FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] > highestPlayerThreat) {
 				highestPlayerThreat = FAI_NPCs[npcid][FAI_NPC_THREAT][playerid];
@@ -604,7 +606,7 @@ public FCNPC_OnUpdate(npcid)
 		FAI_UpdateNPCAttackMove(npcid); //Call after setting target
 		//Reset threat of recently invalid players
 		for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we also need to reset recently disconnected players
-			if(FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] != 0.0 && !FAI_IsValidNPCForPlayer(npcid, playerid)) {
+			if(FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] != 0.0 && !FAI_IsValidNPCForPlayer(npcid, playerid)) { //Don't check for death, because won't be called when dead
 				FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = 0.0;
 			}
 		}
@@ -801,7 +803,7 @@ stock bool:FAI_IsValidNPC(npcid) { //Only handle NPCs created in this FS/GM
 }
 forward bool:FAI_IsValidNPCForPlayer(npcid, playerid); //Silence warning 208
 stock bool:FAI_IsValidNPCForPlayer(npcid, playerid) {
-	if(FAI_IsValidNPC(npcid) && IsPlayerConnected(playerid) && npcid != playerid && FCNPC_IsSpawned(npcid) && !FCNPC_IsDead(npcid)) {
+	if(FAI_IsValidNPC(npcid) && IsPlayerConnected(playerid) && npcid != playerid && FCNPC_IsSpawned(npcid)) { //Check for death outside this function
 		new npcInterior = FCNPC_GetInterior(npcid);
 		new npcWorld = FCNPC_GetVirtualWorld(npcid);
 		if(!IsPlayerNPC(playerid)) {
