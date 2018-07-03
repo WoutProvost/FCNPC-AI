@@ -239,8 +239,8 @@ static FAI_ResetNPC(npcid) {
 	FAI_NPCs[npcid][FAI_NPC_TARGET] = INVALID_PLAYER_ID;
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
 		FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid] = FCNPC_BEHAVIOUR_FRIENDLY;
-		FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid] = 0.0;
-		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = 0.0;
+		FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid] = 20.0;
+		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = 200.0; //The default SA-MP stream_distance
 		FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = 0.0;
 	}
 }
