@@ -720,15 +720,30 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 						FAI_ChangeNPCTarget(npcid, damagerid, FCNPC_EAR_DAMAGE);
 					}
 				}
-				//Dont damage below 0
-				if(FAI_NPCs[npcid][FAI_NPC_HEALTH] > health_loss) {
-					FAI_NPCs[npcid][FAI_NPC_HEALTH] -= health_loss;
-					ret = 0; //Prevent the damage to be afflicted to the NPC
+
+				new Float:armour = FCNPC_GetArmour(npcid);
+				//Affect only armour
+				if(armour - health_loss >= 0.0) {
+					health_loss = 0.0;
+					ret = 1; //Allow the damage to be afflicted to the NPC, to let the armour decrease
 				}
-				//Make the damager that makes the last shot, kill the NPC
+				//Affect both armour and health, or only health
 				else {
-					FCNPC_SetHealth(npcid, FAI_NPCs[npcid][FAI_NPC_HEALTH]); //Has to be the original function, not the hook! Therefore this code must be put before the native hook!
-					ret = 1; //Allow the dammage to be afflicted to the NPC, which will kill him in this case
+					if(armour != 0.0) {
+						FCNPC_SetArmour(npcid, 0.0);
+						health_loss -= armour;
+					}
+
+					//Dont damage below 0
+					if(FAI_NPCs[npcid][FAI_NPC_HEALTH] > health_loss) {
+						FAI_NPCs[npcid][FAI_NPC_HEALTH] -= health_loss;
+						ret = 0; //Prevent the damage to be afflicted to the NPC
+					}
+					//Make the damager that makes the last shot, kill the NPC
+					else {
+						FCNPC_SetHealth(npcid, FAI_NPCs[npcid][FAI_NPC_HEALTH]); //Has to be the original function, not the hook! Therefore this code must be put before the native hook!
+						ret = 1; //Allow the damage to be afflicted to the NPC, which will kill him in this case
+					}
 				}
 			}
 		}
