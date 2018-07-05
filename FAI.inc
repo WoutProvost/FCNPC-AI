@@ -153,7 +153,7 @@ static FAI_ScriptInit() {
 	printf("- Author: Freaksken  ");
 	printf("---------------------");
 	#if !defined FCNPC_DISABLE_VERSION_CHECK
-		HTTP(0, HTTP_GET, "ziggi.org/github/lastrelease.php?owner=WoutProvost&repo=FCNPC-A.I.&elem=tag_name", "", "FAI_OnVersionRequestResponse");
+		HTTP(0, HTTP_GET, "ziggi.org/github/lastrelease.php?owner=WoutProvost&repo=FCNPC-A.I.&elem=tag_name", "", "FAI_OnVersionRequestResponse"); //CREDITS: ZiGGi https://github.com/ziggi/FCNPC/blob/master/sampsvr_files/FCNPC.inc
 	#endif
 }
 static FAI_ScriptExit() {
