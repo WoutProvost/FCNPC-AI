@@ -4,7 +4,7 @@ FCNPC A.I.
 Credits
 -------
 - [Freaksken](http://forum.sa-mp.com/member.php?u=46764) for the files in this project.
-- [ZiGGi](http://forum.sa-mp.com/member.php?u=36935) for the latest repository release [checker](ziggi.org/github/lastrelease.php).
+- [ZiGGi](http://forum.sa-mp.com/member.php?u=36935) for the latest repository release [checker](http://ziggi.org/github/lastrelease.php).
 - [Y_Less](http://forum.sa-mp.com/member.php?u=29176) for the [strcpy](http://forum.sa-mp.com/showpost.php?p=94960&postcount=2) and the [isnull](http://forum.sa-mp.com/showpost.php?p=94960&postcount=2) functions.
 - samp_svr/include/gl_common.inc for the strtok function.
 - [Vince](http://forum.sa-mp.com/member.php?u=13347) for the [AddThousandsSeparators](http://wiki.sa-mp.com/wiki/AddThousandsSeparators#Definition) function.
