@@ -1,38 +1,19 @@
 FCNPC A.I.
 ==========
+FCNPC A.I. is an include for SA-MP servers that extends on the [FCNPC](http://forum.sa-mp.com/showthread.php?t=428066) plugin by adding a simple targeting and threat artificial intelligence system to the NPCs.
 
-Introduction
-------------
-A SA-MP include that extends on the [FCNPC plugin](http://forum.sa-mp.com/showthread.php?t=428066) by adding an artificial intelligence system to the NPCs.
+The latest version can be found in the [releases section](../../releases).
 
-Created by [Freaksken](http://forum.sa-mp.com/member.php?u=46764).
+If you encounter a bug, create an issue in the [issues section](../../issues) with detailed steps on how to reproduce it.
 
-[Forum thread](http://forum.sa-mp.com/showthread.php?p=3733074) on the [SA-MP forums](http://forum.sa-mp.com/).
+For more elaborate discussions see the [forum thread](http://forum.sa-mp.com/showthread.php?p=3733074).
 
-Documentation
--------------
-The workings of every constant, function, callback or feature is extensively explained on the [wiki](../../wiki).
+See the [wiki](../../wiki) for documentation.
 
-Download
---------
-The latest version can be found on the [releases page](../../releases).
+See the [changelog](./CHANGELOG.md) for a full list of versions and their updates.
 
-Bugs
-----
-Please report any bug with detailed steps on how to reproduce it.
+See the [license](./LICENSE.md) for any legal rules.
 
-Suggestions
------------
-If you have any constructive criticism or suggestions, please [share](http://forum.sa-mp.com/showthread.php?p=3733074) your opinion.
-
-Changelog
----------
-See [changelog](./CHANGELOG.md).
-
-License
--------
-See [license](./LICENSE.md).
-
-Credits
--------
-Many people have (indirectly) contributed to make this system possible. See [credits](./CREDITS.md) to see who.
+Special thanks
+--------------
+Many people have (indirectly) contributed to make this system possible. See the [credits](./CREDITS.md) to see who.

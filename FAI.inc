@@ -59,7 +59,7 @@ forward FCNPC_OnPlayerLoseAggro(playerid, npcid);
 
 //========================================CONSTANTS========================================
 //General
-#define FAI_VERSION							"2.0"
+#define FAI_VERSION							"2.0.0"
 #if !defined INVALID_TIMER_ID
 	#define INVALID_TIMER_ID				-1
 #endif
