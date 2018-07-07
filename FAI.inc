@@ -647,6 +647,7 @@ public FCNPC_OnUpdate(npcid)
 
 public FCNPC_OnRespawn(npcid)
 {
+	//NPCs
 	if(FAI_IsValidNPC(npcid)) {
 		if(FAI_NPCs[npcid][FAI_NPC_HEALTH] == 0.0) {
 			FAI_NPCs[npcid][FAI_NPC_HEALTH] = FAI_NPCs[npcid][FAI_NPC_MAX_HEALTH];
@@ -672,6 +673,7 @@ public FCNPC_OnRespawn(npcid)
 
 public FCNPC_OnDeath(npcid, killerid, weaponid)
 {
+	//NPCs
 	if(FAI_IsValidNPC(npcid)) {
 		FAI_NPCs[npcid][FAI_NPC_HEALTH] = 0.0; //In case the NPC was killed programmatically, or by setting it's health to 0.0, or by getting damaged
 		FAI_ChangeNPCTarget(npcid, INVALID_PLAYER_ID, FCNPC_EOR_NPC_DEATH);
@@ -699,6 +701,7 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 		ret = FAI_FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss); //The user can override the decision for the damage to be afflicted to the NPC
 	#endif
 	if(ret == 1) { //Call after
+		//NPCs
 		if(FAI_IsValidNPC(npcid)) {
 			//2nd part of condition: if the npc is dead, this function can still be called before the OnDeath callback gets called (mainly when shot with fast guns: minigun, ...)
 			//3rd part of condition: damage not inflicted by players (falling, ...)
