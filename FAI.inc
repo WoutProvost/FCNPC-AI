@@ -356,7 +356,7 @@ static FAI_UpdateNPCTarget(npcid) {
 			//When there is no target, or if the current target is invalid, or if the behaviour for the current target is friendly
 			if(!FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET]) || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][FAI_NPCs[npcid][FAI_NPC_TARGET]] == FCNPC_BEHAVIOUR_FRIENDLY || !FAI_IsPlayerInLeashRange(FAI_NPCs[npcid][FAI_NPC_TARGET], npcid)) {
 				//Set target to closest player
-				newtargetid = FAI_GetClosestPlayer(npcid);
+				newtargetid = FAI_GetClosestPlayerInAggroRange(npcid);
 				if(newtargetid == INVALID_PLAYER_ID) {
 					reason = FCNPC_EOR_NO_VALID_NEW_TARGET;
 				}
@@ -372,7 +372,7 @@ static FAI_UpdateNPCTarget(npcid) {
 		//Get new target when there is no target, or if the current target is invalid, or if the behaviour for the current target is friendly
 		if(!FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET]) || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][FAI_NPCs[npcid][FAI_NPC_TARGET]] == FCNPC_BEHAVIOUR_FRIENDLY || !FAI_IsPlayerInLeashRange(FAI_NPCs[npcid][FAI_NPC_TARGET], npcid)) {
 			//Set target to closest player
-			new newtargetid = FAI_GetClosestPlayer(npcid);
+			new newtargetid = FAI_GetClosestPlayerInAggroRange(npcid);
 			new reason = FCNPC_EAR_AGGRO;
 			if(newtargetid == INVALID_PLAYER_ID) {
 				reason = FCNPC_EOR_NO_VALID_NEW_TARGET;
@@ -437,7 +437,7 @@ static bool:FAI_IsPlayerInLeashRange(playerid, npcid) {
 	}
 	return false;
 }
-static FAI_GetClosestPlayer(npcid) {
+static FAI_GetClosestPlayerInAggroRange(npcid) {
 	new closestPlayer = INVALID_PLAYER_ID;
 	new Float:closestPlayerRange = 0.0;
 	for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
