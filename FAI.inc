@@ -146,7 +146,6 @@ static FAI_ScriptInit() {
 		FAI_ResetNPC(npcid);
 	}
 
-	//General
 	printf("---------------------");
 	printf("  FCNPC A.I. loaded  ");
 	printf("- Version: %s     ", FAI_VERSION);
@@ -157,6 +156,9 @@ static FAI_ScriptInit() {
 	#endif
 }
 static FAI_ScriptExit() {
+	//General
+	FAI_DestroyNPCsOnExit = false;
+
 	//Players
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
 		FAI_PauseTickCount[playerid] = 0;
@@ -364,7 +366,7 @@ static FAI_UpdateNPCTarget(npcid) {
 				if(FAI_NPCs[npcid][FAI_NPC_TARGET] != newtargetid) {
 					FAI_ChangeNPCTarget(npcid, newtargetid, reason);
 				}
-			}		
+			}
 		}
 
 		//Old code before threat implementation
@@ -572,6 +574,26 @@ public OnPlayerConnect(playerid) {
 	forward FAI_OnPlayerConnect(playerid);
 #endif
 
+public OnPlayerDisconnect(playerid, reason) {
+	//Players
+	FAI_PauseTickCount[playerid] = 0;
+	FAI_PlayerPaused[playerid] = false;
+	new ret = 1;
+	#if defined FAI_OnPlayerDisconnect
+		ret = FAI_OnPlayerDisconnect(playerid, reason);
+	#endif
+	return ret;
+}
+#if defined _ALS_OnPlayerDisconnect
+	#undef OnPlayerDisconnect
+#else
+	#define _ALS_OnPlayerDisconnect
+#endif
+#define OnPlayerDisconnect FAI_OnPlayerDisconnect
+#if defined FAI_OnPlayerDisconnect
+	forward FAI_OnPlayerDisconnect(playerid, reason);
+#endif
+
 public OnPlayerUpdate(playerid)
 {
 	//Players
@@ -582,7 +604,6 @@ public OnPlayerUpdate(playerid)
 	#endif
 	return ret;
 }
-
 #if defined _ALS_OnPlayerUpdate
 	#undef OnPlayerUpdate
 #else
@@ -705,7 +726,7 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 		if(FAI_IsValidNPC(npcid)) {
 			//2nd part of condition: if the npc is dead, this function can still be called before the OnDeath callback gets called (mainly when shot with fast guns: minigun, ...)
 			//3rd part of condition: damage not inflicted by players (falling, ...)
-			//4th part of condition: necessary to reject invalid damage done: the NPC is visible and thus damagable in other interiors		
+			//4th part of condition: necessary to reject invalid damage done: the NPC is visible and thus damagable in other interiors
 			if(FCNPC_IsSpawned(npcid) && !FCNPC_IsDead(npcid) && (damagerid == INVALID_PLAYER_ID || FAI_IsValidNPCForPlayer(npcid, damagerid))) {
 				//If the behaviour is neutral or unfriendly for that player
 				if(damagerid == INVALID_PLAYER_ID || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][damagerid] != FCNPC_BEHAVIOUR_FRIENDLY) { //Threat won't increase and target won't be set when the behaviour is friendly for that player
@@ -868,7 +889,7 @@ stock FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_DIST_CHECK] = dist_check;
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_STOP_DELAY] = stopdelay;
 		FAI_UpdateNPCAttackMove(npcid);
-		return 1;		
+		return 1;
 	}
 	return 0;
 }
@@ -899,7 +920,7 @@ stock FCNPC_SetAimAtInfo(npcid, Float:range = 20.0, bool:shoot = false, shoot_de
 		FAI_NPCs[npcid][FAI_NPC_AIM_AT_OFFSET_FROM_Y] = offset_from_y;
 		FAI_NPCs[npcid][FAI_NPC_AIM_AT_OFFSET_FROM_Z] = offset_from_z;
 		FAI_UpdateNPCAttackMove(npcid);
-		return 1;		
+		return 1;
 	}
 	return 0;
 }
@@ -925,7 +946,7 @@ stock FCNPC_SetMeleeAttackInfo(npcid, Float:range = 0.5, delay = -1, bool:useFig
 		FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_DELAY] = delay;
 		FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_USE_FIGHT] = useFightStyle;
 		FAI_UpdateNPCAttackMove(npcid);
-		return 1;		
+		return 1;
 	}
 	return 0;
 }
