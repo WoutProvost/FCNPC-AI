@@ -30,7 +30,7 @@ native bool:FAI_IsDestroyNPCsOnExitUsed();
 //NPCs
 native bool:FAI_IsValidNPC(npcid);
 native bool:FAI_IsValidNPCForPlayer(npcid, playerid);
-native FCNPC_SetHealth(npcid, Float:health, Float:maxHealth = 100.0);
+native FCNPC_SetHealth(npcid, Float:health, Float:maxHealth = -1.0);
 native Float:FCNPC_GetHealth(npcid, &Float:maxHealth = 100.0);
 native FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true, Float:dist_offset = 0.0, Float:dist_check = 1.5, stopdelay = 250);
 native FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle, &Float:dist_offset, &Float:dist_check, &stopdelay);
