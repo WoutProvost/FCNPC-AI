@@ -156,9 +156,6 @@ static FAI_ScriptInit() {
 	#endif
 }
 static FAI_ScriptExit() {
-	//General
-	FAI_DestroyNPCsOnExit = false;
-
 	//Players
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
 		FAI_PauseTickCount[playerid] = 0;
@@ -175,6 +172,9 @@ static FAI_ScriptExit() {
 			}
 		}
 	}
+	
+	//General
+	FAI_DestroyNPCsOnExit = false;
 }
 #if !defined FCNPC_DISABLE_VERSION_CHECK
 	forward FAI_OnVersionRequestResponse(index, responseCode, data[]);
