@@ -389,14 +389,14 @@ static FAI_ChangeNPCTarget(npcid, newtargetid, reason) {
 		new oldtargetid = FAI_NPCs[npcid][FAI_NPC_TARGET];
 		if(oldtargetid != newtargetid) {
 			if(oldtargetid != INVALID_PLAYER_ID) {
-				CallRemoteFunction("FCNPC_OnPlayerLoseAggro", "dd", oldtargetid, npcid);
+				CallLocalFunction("FCNPC_OnPlayerLoseAggro", "dd", oldtargetid, npcid);
 			}
 			FAI_NPCs[npcid][FAI_NPC_TARGET] = newtargetid;
 			if(newtargetid != INVALID_PLAYER_ID) {
-				CallRemoteFunction("FCNPC_OnPlayerGetAggro", "dd", newtargetid, npcid);
+				CallLocalFunction("FCNPC_OnPlayerGetAggro", "dd", newtargetid, npcid);
 				FAI_UpdateNPCAttackMove(npcid);
 				if(oldtargetid == INVALID_PLAYER_ID) {
-					CallRemoteFunction("FCNPC_OnEncounterStart", "ddd", npcid, newtargetid, reason);
+					CallLocalFunction("FCNPC_OnEncounterStart", "ddd", npcid, newtargetid, reason);
 				}
 			} else {
 				if(oldtargetid != INVALID_PLAYER_ID) {
@@ -404,7 +404,7 @@ static FAI_ChangeNPCTarget(npcid, newtargetid, reason) {
 						FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = 0.0;
 					}
 					FAI_ChangeNPCStopAttackMove(npcid);
-					CallRemoteFunction("FCNPC_OnEncounterStop", "ddd", npcid, oldtargetid, reason);
+					CallLocalFunction("FCNPC_OnEncounterStop", "ddd", npcid, oldtargetid, reason);
 				}
 			}
 			return 1;
