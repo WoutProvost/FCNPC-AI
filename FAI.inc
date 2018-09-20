@@ -32,8 +32,8 @@ native bool:FAI_IsValidNPC(npcid);
 native bool:FAI_IsValidNPCForPlayer(npcid, playerid);
 native FCNPC_SetHealth(npcid, Float:health, Float:maxHealth = -1.0);
 native Float:FCNPC_GetHealth(npcid, &Float:maxHealth = 100.0);
-native FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true, Float:dist_offset = 0.0, Float:dist_check = 1.5, stopdelay = 250);
-native FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle, &Float:dist_offset, &Float:dist_check, &stopdelay);
+native FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, mode = FCNPC_MOVE_MODE_AUTO, Float:radius = 0.0, bool:setAngle = true, Float:dist_offset = 0.0, Float:dist_check = 1.5, stopdelay = 250);
+native FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &mode, &Float:radius, &bool:setAngle, &Float:dist_offset, &Float:dist_check, &stopdelay);
 native FCNPC_SetAimAtInfo(npcid, Float:range = 20.0, bool:shoot = false, shoot_delay = -1, bool:setAngle = true, Float:offset_x = 0.0, Float:offset_y = 0.0, Float:offset_z = 0.0, Float:offset_from_x = 0.0, Float:offset_from_y = 0.0, Float:offset_from_z = 0.0);
 native FCNPC_GetAimAtInfo(npcid, &Float:range, &bool:shoot, &shoot_delay, &bool:setAngle, &Float:offset_x, &Float:offset_y, &Float:offset_z, &Float:offset_from_x, &Float:offset_from_y, &Float:offset_from_z);
 native FCNPC_SetMeleeAttackInfo(npcid, Float:range = 0.5, delay = -1, bool:useFightStyle = false);
@@ -101,7 +101,7 @@ enum FAI_E_NPC {
 	Float:FAI_NPC_MAX_HEALTH,
 	FAI_NPC_GO_TO_TYPE,
 	Float:FAI_NPC_GO_TO_SPEED,
-	bool:FAI_NPC_GO_TO_USE_MAP_ANDREAS,
+	FAI_NPC_GO_TO_MODE,
 	Float:FAI_NPC_GO_TO_RADIUS,
 	bool:FAI_NPC_GO_TO_SET_ANGLE,
 	Float:FAI_NPC_GO_TO_DIST_OFFSET,
@@ -219,7 +219,7 @@ static FAI_ResetNPC(npcid) {
 	FAI_NPCs[npcid][FAI_NPC_MAX_HEALTH] = 100.0;
 	FAI_NPCs[npcid][FAI_NPC_GO_TO_TYPE] = FCNPC_MOVE_TYPE_AUTO;
 	FAI_NPCs[npcid][FAI_NPC_GO_TO_SPEED] = FCNPC_MOVE_SPEED_AUTO;
-	FAI_NPCs[npcid][FAI_NPC_GO_TO_USE_MAP_ANDREAS] = false;
+	FAI_NPCs[npcid][FAI_NPC_GO_TO_MODE] = FCNPC_MOVE_MODE_AUTO;
 	FAI_NPCs[npcid][FAI_NPC_GO_TO_RADIUS] = 0.0;
 	FAI_NPCs[npcid][FAI_NPC_GO_TO_SET_ANGLE] = true;
 	FAI_NPCs[npcid][FAI_NPC_GO_TO_DIST_OFFSET] = 0.0;
@@ -323,7 +323,7 @@ static FAI_ChangeNPCMove(npcid) {
 	}
 	//So we don't move again when we were already moving to that same player. If moving at another player, this will execute
 	if(!FCNPC_IsMovingAtPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET])) {
-		FCNPC_GoToPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET], FAI_NPCs[npcid][FAI_NPC_GO_TO_TYPE], FAI_NPCs[npcid][FAI_NPC_GO_TO_SPEED], FAI_NPCs[npcid][FAI_NPC_GO_TO_USE_MAP_ANDREAS], FAI_NPCs[npcid][FAI_NPC_GO_TO_RADIUS], FAI_NPCs[npcid][FAI_NPC_GO_TO_SET_ANGLE],
+		FCNPC_GoToPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET], FAI_NPCs[npcid][FAI_NPC_GO_TO_TYPE], FAI_NPCs[npcid][FAI_NPC_GO_TO_SPEED], FAI_NPCs[npcid][FAI_NPC_GO_TO_MODE], FAI_NPCs[npcid][FAI_NPC_GO_TO_RADIUS], FAI_NPCs[npcid][FAI_NPC_GO_TO_SET_ANGLE],
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_DIST_OFFSET], FAI_NPCs[npcid][FAI_NPC_GO_TO_DIST_CHECK], FAI_NPCs[npcid][FAI_NPC_GO_TO_STOP_DELAY]);
 	}
 }
@@ -692,7 +692,7 @@ public FCNPC_OnRespawn(npcid)
 	forward FAI_FCNPC_OnRespawn(npcid);
 #endif
 
-public FCNPC_OnDeath(npcid, killerid, weaponid)
+public FCNPC_OnDeath(npcid, killerid, reason)
 {
 	//NPCs
 	if(FAI_IsValidNPC(npcid)) {
@@ -701,7 +701,7 @@ public FCNPC_OnDeath(npcid, killerid, weaponid)
 	}
 	new ret = 1;
 	#if defined FAI_FCNPC_OnDeath
-		ret = FAI_FCNPC_OnDeath(npcid, killerid, weaponid);
+		ret = FAI_FCNPC_OnDeath(npcid, killerid, reason);
 	#endif
 	return ret;
 }
@@ -712,14 +712,14 @@ public FCNPC_OnDeath(npcid, killerid, weaponid)
 #endif
 #define FCNPC_OnDeath FAI_FCNPC_OnDeath
 #if defined FAI_FCNPC_OnDeath
-	forward FAI_FCNPC_OnDeath(npcid, killerid, weaponid);
+	forward FAI_FCNPC_OnDeath(npcid, killerid, reason);
 #endif
 
-public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss) //Has to remain before hooking the health native!
+public FCNPC_OnTakeDamage(npcid, issuerid, Float:amount, weaponid, bodypart) //Has to remain before hooking the health native!
 {
 	new ret = 1;
 	#if defined FAI_FCNPC_OnTakeDamage
-		ret = FAI_FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss); //The user can override the decision for the damage to be afflicted to the NPC
+		ret = FAI_FCNPC_OnTakeDamage(npcid, issuerid, amount, weaponid, bodypart); //The user can override the decision for the damage to be afflicted to the NPC
 	#endif
 	if(ret == 1) { //Call after
 		//NPCs
@@ -727,12 +727,12 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 			//2nd part of condition: if the npc is dead, this function can still be called before the OnDeath callback gets called (mainly when shot with fast guns: minigun, ...)
 			//3rd part of condition: damage not inflicted by players (falling, ...)
 			//4th part of condition: necessary to reject invalid damage done: the NPC is visible and thus damagable in other interiors
-			if(FCNPC_IsSpawned(npcid) && !FCNPC_IsDead(npcid) && (damagerid == INVALID_PLAYER_ID || FAI_IsValidNPCForPlayer(npcid, damagerid))) {
+			if(FCNPC_IsSpawned(npcid) && !FCNPC_IsDead(npcid) && (issuerid == INVALID_PLAYER_ID || FAI_IsValidNPCForPlayer(npcid, issuerid))) {
 				//If the behaviour is neutral or unfriendly for that player
-				if(damagerid == INVALID_PLAYER_ID || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][damagerid] != FCNPC_BEHAVIOUR_FRIENDLY) { //Threat won't increase and target won't be set when the behaviour is friendly for that player
+				if(issuerid == INVALID_PLAYER_ID || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][issuerid] != FCNPC_BEHAVIOUR_FRIENDLY) { //Threat won't increase and target won't be set when the behaviour is friendly for that player
 					//Increase threat according to damage done
-					if(damagerid != INVALID_PLAYER_ID) {
-						FAI_NPCs[npcid][FAI_NPC_THREAT][damagerid] += health_loss;
+					if(issuerid != INVALID_PLAYER_ID) {
+						FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] += amount;
 					}
 					//If the encounter has been started
 					if(FAI_NPCs[npcid][FAI_NPC_TARGET] != INVALID_PLAYER_ID) {
@@ -740,27 +740,27 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 					}
 					//If the encounter has not been started
 					else {
-						//Set target to damagerid
-						FAI_ChangeNPCTarget(npcid, damagerid, FCNPC_EAR_DAMAGE);
+						//Set target to issuerid
+						FAI_ChangeNPCTarget(npcid, issuerid, FCNPC_EAR_DAMAGE);
 					}
 				}
 
 				new Float:armour = FCNPC_GetArmour(npcid);
 				//Affect only armour
-				if(armour - health_loss >= 0.0) {
-					health_loss = 0.0;
+				if(armour - amount >= 0.0) {
+					amount = 0.0;
 					ret = 1; //Allow the damage to be afflicted to the NPC, to let the armour decrease
 				}
 				//Affect both armour and health, or only health
 				else {
 					if(armour != 0.0) {
 						FCNPC_SetArmour(npcid, 0.0);
-						health_loss -= armour;
+						amount -= armour;
 					}
 
 					//Dont damage below 0
-					if(FAI_NPCs[npcid][FAI_NPC_HEALTH] > health_loss) {
-						FAI_NPCs[npcid][FAI_NPC_HEALTH] -= health_loss;
+					if(FAI_NPCs[npcid][FAI_NPC_HEALTH] > amount) {
+						FAI_NPCs[npcid][FAI_NPC_HEALTH] -= amount;
 						ret = 0; //Prevent the damage to be afflicted to the NPC
 					}
 					//Make the damager that makes the last shot, kill the NPC
@@ -781,7 +781,7 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 #endif
 #define FCNPC_OnTakeDamage FAI_FCNPC_OnTakeDamage
 #if defined FAI_FCNPC_OnTakeDamage
-	forward FAI_FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss);
+	forward FAI_FCNPC_OnTakeDamage(npcid, issuerid, Float:amount, weaponid, bodypart);
 #endif
 
 //========================================HOOKED FUNCTIONS========================================
@@ -878,11 +878,11 @@ stock bool:FAI_IsValidNPCForPlayer(npcid, playerid) {
 	}
 	return false;
 }
-stock FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true, Float:dist_offset = 0.0, Float:dist_check = 1.5, stopdelay = 250) {
+stock FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, mode = FCNPC_MOVE_MODE_AUTO, Float:radius = 0.0, bool:setAngle = true, Float:dist_offset = 0.0, Float:dist_check = 1.5, stopdelay = 250) {
 	if(FAI_IsValidNPC(npcid)) {
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_TYPE] = type;
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_SPEED] = speed;
-		FAI_NPCs[npcid][FAI_NPC_GO_TO_USE_MAP_ANDREAS] = useMapAndreas;
+		FAI_NPCs[npcid][FAI_NPC_GO_TO_MODE] = mode;
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_RADIUS] = radius;
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_SET_ANGLE] = setAngle;
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_DIST_OFFSET] = dist_offset;
@@ -893,11 +893,11 @@ stock FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_
 	}
 	return 0;
 }
-stock FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle, &Float:dist_offset, &Float:dist_check, &stopdelay) {
+stock FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &mode, &Float:radius, &bool:setAngle, &Float:dist_offset, &Float:dist_check, &stopdelay) {
 	if(FAI_IsValidNPC(npcid)) {
 		type = FAI_NPCs[npcid][FAI_NPC_GO_TO_TYPE];
 		speed = FAI_NPCs[npcid][FAI_NPC_GO_TO_SPEED];
-		useMapAndreas = FAI_NPCs[npcid][FAI_NPC_GO_TO_USE_MAP_ANDREAS];
+		mode = FAI_NPCs[npcid][FAI_NPC_GO_TO_MODE];
 		radius = FAI_NPCs[npcid][FAI_NPC_GO_TO_RADIUS];
 		setAngle = FAI_NPCs[npcid][FAI_NPC_GO_TO_SET_ANGLE];
 		dist_offset = FAI_NPCs[npcid][FAI_NPC_GO_TO_DIST_OFFSET];
