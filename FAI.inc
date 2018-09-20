@@ -151,7 +151,7 @@ static FAI_ScriptInit() {
 	printf("- Version: %s     ", FAI_VERSION);
 	printf("- Author: Freaksken  ");
 	printf("---------------------");
-	#if !defined FCNPC_DISABLE_VERSION_CHECK
+	#if !defined FAI_DISABLE_VERSION_CHECK
 		HTTP(0, HTTP_GET, "ziggi.org/github/lastrelease.php?owner=WoutProvost&repo=FCNPC-A.I.&elem=tag_name", "", "FAI_OnVersionRequestResponse"); //CREDITS: ZiGGi https://github.com/ziggi/FCNPC/blob/master/sampsvr_files/FCNPC.inc
 	#endif
 }
@@ -176,7 +176,7 @@ static FAI_ScriptExit() {
 	//General
 	FAI_DestroyNPCsOnExit = false;
 }
-#if !defined FCNPC_DISABLE_VERSION_CHECK
+#if !defined FAI_DISABLE_VERSION_CHECK
 	forward FAI_OnVersionRequestResponse(index, responseCode, data[]);
 	public FAI_OnVersionRequestResponse(index, responseCode, data[]) {
 		if(index == 0 && responseCode == 200) {
