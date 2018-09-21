@@ -49,7 +49,6 @@ native Float:FCNPC_GetLeashRange(npcid, playerid);
 native FCNPC_SetThreat(npcid, playerid, Float:threat);
 native Float:FCNPC_GetThreat(npcid, playerid);
 */
-
 //========================================CALLBACKS========================================
 //NPCs
 forward FCNPC_OnEncounterStart(npcid, firstTarget, reason);
@@ -129,6 +128,11 @@ enum FAI_E_NPC {
 static FAI_NPCs[MAX_PLAYERS][FAI_E_NPC];
 
 //========================================INTERNAL FUNCTIONS========================================
+//Silence warning 208
+forward bool:FAI_IsPlayerInLeashRange(playerid, npcid);
+forward bool:FAI_IsValidNPC(npcid);
+forward bool:FAI_IsValidNPCForPlayer(npcid, playerid);
+
 //General
 static FAI_ScriptInit() {
 	//General
@@ -425,7 +429,6 @@ static bool:FAI_IsPlayerInAggroRange(playerid, npcid) {
 	}
 	return false;
 }
-forward bool:FAI_IsPlayerInLeashRange(playerid, npcid); //Silence warning 208
 static bool:FAI_IsPlayerInLeashRange(playerid, npcid) {
 	new Float:x, Float:y, Float:z;
 	if(!IsPlayerNPC(playerid)) {
@@ -854,11 +857,9 @@ stock bool:FAI_IsDestroyNPCsOnExitUsed() {
 }
 
 //NPCs
-forward bool:FAI_IsValidNPC(npcid); //Silence warning 208
 stock bool:FAI_IsValidNPC(npcid) { //Only handle NPCs created in this FS/GM
 	return npcid >= 0 && npcid < MAX_PLAYERS && FAI_NPCs[npcid][FAI_NPC_VALID];
 }
-forward bool:FAI_IsValidNPCForPlayer(npcid, playerid); //Silence warning 208
 stock bool:FAI_IsValidNPCForPlayer(npcid, playerid) {
 	if(FAI_IsValidNPC(npcid) && IsPlayerConnected(playerid) && npcid != playerid && FCNPC_IsSpawned(npcid)) { //Check for death outside this function
 		new npcInterior = FCNPC_GetInterior(npcid);
