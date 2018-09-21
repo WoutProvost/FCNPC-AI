@@ -3,5 +3,5 @@
 * text=auto
 
 # Programming Language
-*.pwn linguist-language=PAWN
-*.inc linguist-language=PAWN
+*.pwn linguist-language=Pawn
+*.inc linguist-language=Pawn
