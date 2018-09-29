@@ -181,8 +181,8 @@ static FAI_ScriptExit() {
 	FAI_DestroyNPCsOnExit = false;
 }
 #if !defined FAI_DISABLE_VERSION_CHECK
-	forward FAI_OnVersionRequestResponse(index, responseCode, data[]);
-	public FAI_OnVersionRequestResponse(index, responseCode, data[]) {
+	forward FAI_OnVersionRequestResponse(index, responseCode, const data[]);
+	public FAI_OnVersionRequestResponse(index, responseCode, const data[]) {
 		if(index == 0 && responseCode == 200) {
 			new length = strlen(data);
 			if(length != 0 && data[0] == 'v') {
@@ -789,7 +789,7 @@ public FCNPC_OnTakeDamage(npcid, issuerid, Float:amount, weaponid, bodypart) //H
 
 //========================================HOOKED FUNCTIONS========================================
 //NPCs
-stock FAI_FCNPC_Create(name[]) { //Using function hook instead of callback hook, so that this script only handles NPCs created in this FS/GM
+stock FAI_FCNPC_Create(const name[]) { //Using function hook instead of callback hook, so that this script only handles NPCs created in this FS/GM
 	new npcid = FCNPC_Create(name);
 	if(npcid != INVALID_PLAYER_ID) {
 		FAI_NPCs[npcid][FAI_NPC_VALID] = true;
