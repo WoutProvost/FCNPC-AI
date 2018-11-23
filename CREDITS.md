@@ -1,9 +1,4 @@
-FCNPC A.I.
-==========
-
-Credits
--------
-
+# Credits
 - [Freaksken](http://forum.sa-mp.com/member.php?u=46764) for the files in this project.
 - [ZiGGi](http://forum.sa-mp.com/member.php?u=36935) for the stringcopy improvement.
 - [ZiGGi](http://forum.sa-mp.com/member.php?u=36935) for the [GetTickCount overflow fix](https://gist.github.com/ziggi/5d7d8dc42f54531feba7ae924c608e73) and an example on how to use the fix.

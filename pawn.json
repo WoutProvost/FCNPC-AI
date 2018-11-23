@@ -1,0 +1,11 @@
+{
+	"user": "WoutProvost",
+	"repo": "FCNPC-A.I.",
+	"website": "https://forum.sa-mp.com/showthread.php?p=3733074",
+	"entry": "test.pwn",
+	"output": "test.amx",
+	"dependencies": [
+		"sampctl/samp-stdlib",
+		"ziggi/FCNPC"
+	]
+}
