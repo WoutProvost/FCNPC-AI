@@ -1,5 +1,5 @@
-#include "FAI.inc"
+#include "MMO.inc"
 
 main() {
-	//TODO will be done in v2.0
+	//TODO unit tests or general main tests for FAI and MMO
 }

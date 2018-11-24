@@ -17,9 +17,8 @@
 #endif
 #define _FAI_included
 
-#if !defined _FCNPC_included
-	#error Include FCNPC before this include
-#endif
+#include <a_samp>
+#include <FCNPC>
 
 //========================================FAKE NATIVES========================================
 /*

@@ -17,13 +17,9 @@
 #endif
 #define _MMO_included
 
-#if !defined _FCNPC_included
-	#error Include FCNPC before this include
-#endif
-
-#if !defined _FAI_included
-	#error Include FAI before this include
-#endif
+#include <a_samp>
+#include <FCNPC>
+#include "FAI.inc"
 
 //========================================FAKE NATIVES========================================
 /*
