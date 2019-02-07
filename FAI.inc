@@ -31,8 +31,8 @@ native bool:FAI_IsValidNPC(npcid);
 native bool:FAI_IsValidNPCForPlayer(npcid, playerid);
 native FCNPC_SetHealth(npcid, Float:health, Float:maxHealth = -1.0);
 native Float:FCNPC_GetHealth(npcid, &Float:maxHealth = 100.0);
-native FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, mode = FCNPC_MOVE_MODE_AUTO, Float:radius = 0.0, bool:set_angle = true, Float:min_distance = 0.0, Float:dist_check = 1.5, stopdelay = 250);
-native FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &mode, &Float:radius, &bool:set_angle, &Float:min_distance, &Float:dist_check, &stopdelay);
+native FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, mode = FCNPC_MOVE_MODE_AUTO, pathfinding = FCNPC_MOVE_PATHFINDING_AUTO, Float:radius = 0.0, bool:set_angle = true, Float:min_distance = 0.0, Float:dist_check = 1.5, stopdelay = 250);
+native FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &mode, &pathfinding, &Float:radius, &bool:set_angle, &Float:min_distance, &Float:dist_check, &stopdelay);
 native FCNPC_SetAimAtInfo(npcid, Float:range = 20.0, bool:shoot = false, shoot_delay = -1, bool:set_angle = true, Float:offset_x = 0.0, Float:offset_y = 0.0, Float:offset_z = 0.0, Float:offset_from_x = 0.0, Float:offset_from_y = 0.0, Float:offset_from_z = 0.0, between_check_flags = FCNPC_ENTITY_CHECK_ALL);
 native FCNPC_GetAimAtInfo(npcid, &Float:range, &bool:shoot, &shoot_delay, &bool:set_angle, &Float:offset_x, &Float:offset_y, &Float:offset_z, &Float:offset_from_x, &Float:offset_from_y, &Float:offset_from_z, &between_check_flags);
 native FCNPC_SetMeleeAttackInfo(npcid, Float:range = 0.5, delay = -1, bool:fightstyle = false);
@@ -100,6 +100,7 @@ enum FAI_E_NPC {
 	FAI_NPC_GO_TO_TYPE,
 	Float:FAI_NPC_GO_TO_SPEED,
 	FAI_NPC_GO_TO_MODE,
+	FAI_NPC_GO_TO_PATHFINDING,
 	Float:FAI_NPC_GO_TO_RADIUS,
 	bool:FAI_NPC_GO_TO_SET_ANGLE,
 	Float:FAI_NPC_GO_TO_MIN_DISTANCE,
@@ -159,6 +160,7 @@ static FAI_ScriptInit() {
 		HTTP(0, HTTP_GET, "ziggi.org/github/lastrelease.php?owner=WoutProvost&repo=FCNPC-A.I.&elem=tag_name", "", "FAI_OnVersionRequestResponse"); //CREDITS: ZiGGi https://github.com/ziggi/FCNPC/blob/master/sampsvr_files/FCNPC.inc
 	#endif
 }
+
 static FAI_ScriptExit() {
 	//Players
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
@@ -180,6 +182,7 @@ static FAI_ScriptExit() {
 	//General
 	FAI_DestroyNPCsOnExit = false;
 }
+
 #if !defined FAI_DISABLE_VERSION_CHECK
 	forward FAI_OnVersionRequestResponse(index, responseCode, const data[]);
 	public FAI_OnVersionRequestResponse(index, responseCode, const data[]) {
@@ -224,6 +227,7 @@ static FAI_ResetNPC(npcid) {
 	FAI_NPCs[npcid][FAI_NPC_GO_TO_TYPE] = FCNPC_MOVE_TYPE_AUTO;
 	FAI_NPCs[npcid][FAI_NPC_GO_TO_SPEED] = FCNPC_MOVE_SPEED_AUTO;
 	FAI_NPCs[npcid][FAI_NPC_GO_TO_MODE] = FCNPC_MOVE_MODE_AUTO;
+	FAI_NPCs[npcid][FAI_NPC_GO_TO_PATHFINDING] = FCNPC_MOVE_PATHFINDING_AUTO;
 	FAI_NPCs[npcid][FAI_NPC_GO_TO_RADIUS] = 0.0;
 	FAI_NPCs[npcid][FAI_NPC_GO_TO_SET_ANGLE] = true;
 	FAI_NPCs[npcid][FAI_NPC_GO_TO_MIN_DISTANCE] = 0.0;
@@ -251,6 +255,7 @@ static FAI_ResetNPC(npcid) {
 		FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = 0.0;
 	}
 }
+
 static bool:FAI_HasNPCMeleeWeapon(npcid) {
 	new weaponid = FCNPC_GetWeapon(npcid);
 	if(weaponid >= 0 && weaponid <= 15) {
@@ -258,6 +263,7 @@ static bool:FAI_HasNPCMeleeWeapon(npcid) {
 	}
 	return false;
 }
+
 static FAI_UpdateNPCAttackMove(npcid) {
 	if(!FCNPC_IsDead(npcid) && FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET])) {
 		new Float:x, Float:y, Float:z;
@@ -294,6 +300,7 @@ static FAI_UpdateNPCAttackMove(npcid) {
 		}
 	}
 }
+
 static FAI_ChangeNPCAttack(npcid) {
 	if(FCNPC_IsMoving(npcid)) {
 		FCNPC_Stop(npcid);
@@ -319,6 +326,7 @@ static FAI_ChangeNPCAttack(npcid) {
 		}
 	}
 }
+
 static FAI_ChangeNPCMove(npcid) {
 	if(FCNPC_IsAiming(npcid)) {
 		FCNPC_StopAim(npcid);
@@ -328,10 +336,11 @@ static FAI_ChangeNPCMove(npcid) {
 	}
 	//So we don't move again when we were already moving to that same player. If moving at another player, this will execute
 	if(!FCNPC_IsMovingAtPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET])) {
-		FCNPC_GoToPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET], FAI_NPCs[npcid][FAI_NPC_GO_TO_TYPE], FAI_NPCs[npcid][FAI_NPC_GO_TO_SPEED], FAI_NPCs[npcid][FAI_NPC_GO_TO_MODE], FAI_NPCs[npcid][FAI_NPC_GO_TO_RADIUS], FAI_NPCs[npcid][FAI_NPC_GO_TO_SET_ANGLE],
+		FCNPC_GoToPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET], FAI_NPCs[npcid][FAI_NPC_GO_TO_TYPE], FAI_NPCs[npcid][FAI_NPC_GO_TO_SPEED], FAI_NPCs[npcid][FAI_NPC_GO_TO_MODE], FAI_NPCs[npcid][FAI_NPC_GO_TO_PATHFINDING], FAI_NPCs[npcid][FAI_NPC_GO_TO_RADIUS], FAI_NPCs[npcid][FAI_NPC_GO_TO_SET_ANGLE],
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_MIN_DISTANCE], FAI_NPCs[npcid][FAI_NPC_GO_TO_DIST_CHECK], FAI_NPCs[npcid][FAI_NPC_GO_TO_STOP_DELAY]);
 	}
 }
+
 static FAI_ChangeNPCStopAttackMove(npcid) {
 	if(FCNPC_IsMoving(npcid)) {
 		FCNPC_Stop(npcid);
@@ -343,6 +352,7 @@ static FAI_ChangeNPCStopAttackMove(npcid) {
 		FCNPC_StopAttack(npcid);
 	}
 }
+
 static FAI_UpdateNPCTarget(npcid) {
 	if(!FCNPC_IsDead(npcid)) {
 		new newtargetid = INVALID_PLAYER_ID;
@@ -389,6 +399,7 @@ static FAI_UpdateNPCTarget(npcid) {
 		*/
 	}
 }
+
 static FAI_ChangeNPCTarget(npcid, newtargetid, reason) {
 	if(newtargetid == INVALID_PLAYER_ID || (!FCNPC_IsDead(npcid) && FAI_IsValidNPCForPlayer(npcid, newtargetid) && FAI_IsPlayerInLeashRange(newtargetid, npcid))) {
 		new oldtargetid = FAI_NPCs[npcid][FAI_NPC_TARGET];
@@ -417,6 +428,7 @@ static FAI_ChangeNPCTarget(npcid, newtargetid, reason) {
 	}
 	return 0;
 }
+
 static bool:FAI_IsPlayerInAggroRange(playerid, npcid) {
 	new Float:x, Float:y, Float:z;
 	if(!IsPlayerNPC(playerid)) {
@@ -430,6 +442,7 @@ static bool:FAI_IsPlayerInAggroRange(playerid, npcid) {
 	}
 	return false;
 }
+
 static bool:FAI_IsPlayerInLeashRange(playerid, npcid) {
 	new Float:x, Float:y, Float:z;
 	if(!IsPlayerNPC(playerid)) {
@@ -443,6 +456,7 @@ static bool:FAI_IsPlayerInLeashRange(playerid, npcid) {
 	}
 	return false;
 }
+
 static FAI_ClosestPlayerInAggroRange(npcid) {
 	new closestPlayer = INVALID_PLAYER_ID;
 	new Float:closestPlayerRange = 0.0;
@@ -465,6 +479,7 @@ static FAI_ClosestPlayerInAggroRange(npcid) {
 	}
 	return closestPlayer;
 }
+
 static FAI_GetHighestThreatPlayer(npcid) {
 	new highestPlayer = INVALID_PLAYER_ID;
 	new Float:highestPlayerThreat = 0.0;
@@ -501,6 +516,7 @@ static FAI_GetHighestThreatPlayer(npcid) {
 	#if defined FAI_OnFilterScriptInit
 		forward FAI_OnFilterScriptInit();
 	#endif
+
 	public OnFilterScriptExit()
 	{
 		new ret = 1;
@@ -538,6 +554,7 @@ static FAI_GetHighestThreatPlayer(npcid) {
 	#if defined FAI_OnGameModeInit
 		forward FAI_OnGameModeInit();
 	#endif
+
 	public OnGameModeExit()
 	{
 		new ret = 1;
@@ -853,6 +870,7 @@ stock FAI_UseDestroyNPCsOnExit(bool:use = true) {
 	FAI_DestroyNPCsOnExit = use;
 	return 1;
 }
+
 stock bool:FAI_IsDestroyNPCsOnExitUsed() {
 	return FAI_DestroyNPCsOnExit;
 }
@@ -861,6 +879,7 @@ stock bool:FAI_IsDestroyNPCsOnExitUsed() {
 stock bool:FAI_IsValidNPC(npcid) { //Only handle NPCs created in this FS/GM
 	return npcid >= 0 && npcid < MAX_PLAYERS && FAI_NPCs[npcid][FAI_NPC_VALID];
 }
+
 stock bool:FAI_IsValidNPCForPlayer(npcid, playerid) {
 	if(FAI_IsValidNPC(npcid) && IsPlayerConnected(playerid) && npcid != playerid && FCNPC_IsSpawned(npcid)) { //Check for death outside this function
 		new npcInterior = FCNPC_GetInterior(npcid);
@@ -880,11 +899,13 @@ stock bool:FAI_IsValidNPCForPlayer(npcid, playerid) {
 	}
 	return false;
 }
-stock FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, mode = FCNPC_MOVE_MODE_AUTO, Float:radius = 0.0, bool:set_angle = true, Float:min_distance = 0.0, Float:dist_check = 1.5, stopdelay = 250) {
+
+stock FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, mode = FCNPC_MOVE_MODE_AUTO, pathfinding = FCNPC_MOVE_PATHFINDING_AUTO, Float:radius = 0.0, bool:set_angle = true, Float:min_distance = 0.0, Float:dist_check = 1.5, stopdelay = 250) {
 	if(FAI_IsValidNPC(npcid)) {
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_TYPE] = type;
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_SPEED] = speed;
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_MODE] = mode;
+		FAI_NPCs[npcid][FAI_NPC_GO_TO_PATHFINDING] = pathfinding;
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_RADIUS] = radius;
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_SET_ANGLE] = set_angle;
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_MIN_DISTANCE] = min_distance;
@@ -895,11 +916,13 @@ stock FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_
 	}
 	return 0;
 }
-stock FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &mode, &Float:radius, &bool:set_angle, &Float:min_distance, &Float:dist_check, &stopdelay) {
+
+stock FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &mode, &pathfinding, &Float:radius, &bool:set_angle, &Float:min_distance, &Float:dist_check, &stopdelay) {
 	if(FAI_IsValidNPC(npcid)) {
 		type = FAI_NPCs[npcid][FAI_NPC_GO_TO_TYPE];
 		speed = FAI_NPCs[npcid][FAI_NPC_GO_TO_SPEED];
 		mode = FAI_NPCs[npcid][FAI_NPC_GO_TO_MODE];
+		pathfinding = FAI_NPCs[npcid][FAI_NPC_GO_TO_PATHFINDING];
 		radius = FAI_NPCs[npcid][FAI_NPC_GO_TO_RADIUS];
 		set_angle = FAI_NPCs[npcid][FAI_NPC_GO_TO_SET_ANGLE];
 		min_distance = FAI_NPCs[npcid][FAI_NPC_GO_TO_MIN_DISTANCE];
@@ -909,6 +932,7 @@ stock FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &mode, &Float:radius, &bool:
 	}
 	return 0;
 }
+
 stock FCNPC_SetAimAtInfo(npcid, Float:range = 20.0, bool:shoot = false, shoot_delay = -1, bool:set_angle = true, Float:offset_x = 0.0, Float:offset_y = 0.0, Float:offset_z = 0.0, Float:offset_from_x = 0.0, Float:offset_from_y = 0.0, Float:offset_from_z = 0.0, between_check_flags = FCNPC_ENTITY_CHECK_ALL) {
 	if(FAI_IsValidNPC(npcid)) {
 		FAI_NPCs[npcid][FAI_NPC_AIM_AT_RANGE] = range; //Can be negative
@@ -927,6 +951,7 @@ stock FCNPC_SetAimAtInfo(npcid, Float:range = 20.0, bool:shoot = false, shoot_de
 	}
 	return 0;
 }
+
 stock FCNPC_GetAimAtInfo(npcid, &Float:range, &bool:shoot, &shoot_delay, &bool:set_angle, &Float:offset_x, &Float:offset_y, &Float:offset_z, &Float:offset_from_x, &Float:offset_from_y, &Float:offset_from_z, &between_check_flags) {
 	if(FAI_IsValidNPC(npcid)) {
 		range = FAI_NPCs[npcid][FAI_NPC_AIM_AT_RANGE];
@@ -944,6 +969,7 @@ stock FCNPC_GetAimAtInfo(npcid, &Float:range, &bool:shoot, &shoot_delay, &bool:s
 	}
 	return 0;
 }
+
 stock FCNPC_SetMeleeAttackInfo(npcid, Float:range = 0.5, delay = -1, bool:fightstyle = false) {
 	if(FAI_IsValidNPC(npcid)) {
 		FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_RANGE] = range; //Can be negative
@@ -954,6 +980,7 @@ stock FCNPC_SetMeleeAttackInfo(npcid, Float:range = 0.5, delay = -1, bool:fights
 	}
 	return 0;
 }
+
 stock FCNPC_GetMeleeAttackInfo(npcid, &Float:range, &delay, &bool:fightstyle) {
 	if(FAI_IsValidNPC(npcid)) {
 		range = FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_RANGE];
@@ -963,6 +990,7 @@ stock FCNPC_GetMeleeAttackInfo(npcid, &Float:range, &delay, &bool:fightstyle) {
 	}
 	return 0;
 }
+
 stock FCNPC_SetTarget(npcid, playerid) {
 	if(FAI_IsValidNPC(npcid)) {
 		new reason = FCNPC_EAR_EXPLICIT_TARGET_SET;
@@ -973,12 +1001,14 @@ stock FCNPC_SetTarget(npcid, playerid) {
 	}
 	return 0;
 }
+
 stock FCNPC_GetTarget(npcid) {
 	if(FAI_IsValidNPC(npcid)) {
 		return FAI_NPCs[npcid][FAI_NPC_TARGET];
 	}
 	return 0;
 }
+
 stock FCNPC_SetBehaviour(npcid, playerid, behaviour) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
 		if(behaviour == FCNPC_BEHAVIOUR_FRIENDLY || behaviour == FCNPC_BEHAVIOUR_NEUTRAL || behaviour == FCNPC_BEHAVIOUR_UNFRIENDLY) {
@@ -989,12 +1019,14 @@ stock FCNPC_SetBehaviour(npcid, playerid, behaviour) {
 	}
 	return 0;
 }
+
 stock FCNPC_GetBehaviour(npcid, playerid) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
 		return FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid];
 	}
 	return 0;
 }
+
 stock FCNPC_SetAggroRange(npcid, playerid, Float:range) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
 		if(range >= 0.0 && range > FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid]) {
@@ -1006,12 +1038,14 @@ stock FCNPC_SetAggroRange(npcid, playerid, Float:range) {
 	}
 	return 0;
 }
+
 stock Float:FCNPC_GetAggroRange(npcid, playerid) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
 		return FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid];
 	}
 	return 0.0;
 }
+
 stock FCNPC_SetLeashRange(npcid, playerid, Float:range) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
 		if(range >= 0.0 && range < FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid]) {
@@ -1023,12 +1057,14 @@ stock FCNPC_SetLeashRange(npcid, playerid, Float:range) {
 	}
 	return 0;
 }
+
 stock Float:FCNPC_GetLeashRange(npcid, playerid) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
 		return FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid];
 	}
 	return 0.0;
 }
+
 stock FCNPC_SetThreat(npcid, playerid, Float:threat) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
 		if(threat < 0.0) {
@@ -1040,6 +1076,7 @@ stock FCNPC_SetThreat(npcid, playerid, Float:threat) {
 	}
 	return 0;
 }
+
 stock Float:FCNPC_GetThreat(npcid, playerid) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
 		return FAI_NPCs[npcid][FAI_NPC_THREAT][playerid];
