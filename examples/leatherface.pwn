@@ -9,148 +9,55 @@
  * See CHANGELOG.md included in the release download, or at https://github.com/WoutProvost/FCNPC-A.I./blob/master/CHANGELOG.md if not included.
 
  * Documentation:
- * Every function, callback or define is extensively explained at https://github.com/WoutProvost/FCNPC-A.I./wiki and its various subsections.
+ * Every function, callback or constant is extensively explained at https://github.com/WoutProvost/FCNPC-A.I./wiki and its various subsections.
 */
 
 #define FILTERSCRIPT
 
 #include <a_samp>
-//#include <MapAndreas>						//Inlcude MapAndreas before FCNPC and FAI (however, MapAndreas is not used in this script)
+#include <streamer>
 #include <FCNPC>
 #include <FAI>
-#include <streamer>
 
-#define INTERIOR_NORMAL					0
-#define VIRTUAL_WORLD_NORMAL			0
-#define ATTACHED_OBJECT_INDEX			0
-#define AUDIO_STREAM_HALLOWEEN			"http://dl.dropboxusercontent.com/s/oddvow4138cf204/Halloween.mp3"
-#define DEFAULT_WEATHER					10	//Default samp weather
-#define DEFAULT_TIME_H					12	//Default samp time
-#define DEFAULT_TIME_M					0	//Default samp time
+#define COLOR_SP_MAPICON_ENEMY				0xb31a1eff //Red from Single Player mapicon enemy
+#define INTERIOR_NORMAL						0
+#define VIRTUAL_WORLD_NORMAL				0
+#define WEATHER_NORMAL						10	//Default SA-MP weather
+#define TIME_HOUR_NORMAL					12	//Default SA-MP time
+#define TIME_MINUTE_NORMAL					0	//Default SA-MP time
+#define AUDIO_STREAM_HALLOWEEN				"http://dl.dropboxusercontent.com/s/oddvow4138cf204/Halloween.mp3"
+#define AUDIO_STREAM_HALLOWEEN_TIME			173688
 
-new BossLeatherface = INVALID_PLAYER_ID;
-new PlayerInRangeTimer = INVALID_TIMER_ID;
-new AudioStreamCount[MAX_PLAYERS] = {-1, ...};
-new bool:AlreadyInOutRange[MAX_PLAYERS] = {false, ...}; //True = in range, false = not in range
-new Objects[66] = {INVALID_OBJECT_ID,...};
-new IdleCount;
-new DeathCount;
-new bool:AnimationApplied;
-		
+#define ATTACHED_OBJECT_INDEX_MASK			0
+
+new Leatherface = INVALID_PLAYER_ID;
+new Float:SpawnCoords[4] = {-2820.2534, -1530.3491, 140.8438, 324.4991};
+new RespawnTimer = INVALID_TIMER_ID;
+new IdleTimer = INVALID_TIMER_ID;
+new IdleCount = -1;
+new AudioStreamTimer[MAX_PLAYERS] = INVALID_TIMER_ID;
+new Objects[66] = {INVALID_OBJECT_ID, ...};
+new bool:AnimationApplied = false;
+
+//TODO test music on NPC death
+//TODO test player death, but encounter continues
+//TODO any other settings that should be taken into account for above mentioned tests
+
 #if defined FILTERSCRIPT
 public OnFilterScriptInit()
 {
-	BossLeatherface = FAI_Create("BossLeatherface");
-	FAI_SetMaxHealth(BossLeatherface, 2000.0);
-	FAI_SetMoveInfo(BossLeatherface, FCNPC_MOVE_TYPE_SPRINT);
-	FAI_SetMeleeAttackInfo(BossLeatherface, 1.5, -1, false);
-	SetBossAtSpawn(BossLeatherface);
-	PlayerInRangeTimer = SetTimer("CheckPlayerInRange", 100, true);
-	CreateBossObjects();
-	return 1;
-}
+	FAI_UseDestroyNPCsOnExit();
 
-public OnFilterScriptExit()
-{
-	//The include will automatically destroy the spells and NPCs when the script exits
-	//When an NPC gets destroyed, OnPlayerDisconnect will be called, so we can safely put everything that should be destroyed along with the NPC there
-	return 1;
-}
-#endif
-
-public OnPlayerDisconnect(playerid, reason)
-{
-	if(playerid != INVALID_PLAYER_ID) {
-		if(playerid == BossLeatherface) {
-			//FAI_Destroy(BossLeatherface); //We don't need to do this, since the NPC is already disconnecting
-			BossLeatherface = INVALID_PLAYER_ID;
-			KillTimer(PlayerInRangeTimer);
-			PlayerInRangeTimer = INVALID_TIMER_ID;
-			for(new otherplayerid = 0, highestPlayerid = GetPlayerPoolSize(); otherplayerid <= highestPlayerid; otherplayerid++) {
-				if(IsPlayerConnected(otherplayerid) && !IsPlayerNPC(otherplayerid)) {
-					if(AlreadyInOutRange[otherplayerid]) {
-						AlreadyInOutRange[otherplayerid] = false;
-						SetPlayerWeather(otherplayerid, DEFAULT_WEATHER);
-						SetPlayerTime(otherplayerid, DEFAULT_TIME_H, DEFAULT_TIME_M);
-						if(AudioStreamCount[otherplayerid] != -1) {
-							StopAudioStreamForPlayer(otherplayerid);
-							AudioStreamCount[otherplayerid] = -1;
-						}
-					}
-				}
-			}
-			DestroyBossObjects();
-		}
+	Leatherface = FCNPC_Create("Leatherface");
+	SetPlayerColor(Leatherface, COLOR_SP_MAPICON_ENEMY & 0x00); //Alpha values = 00, because we don't want a player icon on the map
+	FCNPC_Spawn(Leatherface, 168, SpawnCoords[0], SpawnCoords[1], SpawnCoords[2]);
+	FCNPC_SetHealth(Leatherface, 2000.0);
+	FCNPC_SetWeapon(Leatherface, WEAPON_CHAINSAW);
+	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize
+		FCNPC_SetBehaviour(Leatherface, playerid, FCNPC_BEHAVIOUR_NEUTRAL);
 	}
-	return 1;
-}
+	Respawn();
 
-public OnPlayerSpawn(playerid)
-{
-	//Preload used animation libraries
-	ApplyAnimation(playerid, "CHAINSAW", "null", 0.0, 0, 0, 0, 0, 0);
-	ApplyAnimation(playerid, "ped", "null", 0.0, 0, 0, 0, 0, 0);
-	return 1;
-}
-
-public FCNPC_OnReachDestination(npcid)
-{
-	if(npcid == BossLeatherface) {
-		if(IdleCount != -1) {
-			new Float:x, Float:y, Float:z;
-			FCNPC_GetPosition(npcid, x, y, z);
-			if(x <= -2812.0 && x >= -2814.0 && y <= -1516.0 && y >= -1518.0 && z <= 141.0 && z >= 139.0) {
-				FCNPC_ApplyAnimation(npcid, "CHAINSAW", "WEAPON_csawlo", 4.1, 0, 1, 1, 0, 0);
-			} else if(x <= -2818.0 && x >= -2820.0 && y <= -1515.0 && y >= -1517.0 && z <= 141.0 && z >= 139.0) {
-				FCNPC_ApplyAnimation(npcid, "CHAINSAW", "WEAPON_csaw", 4.1, 0, 1, 1, 0, 0);
-			} else if(x <= -2819.0 && x >= -2821.0 && y <= -1517.0 && y >= -1519.0 && z <= 141.0 && z >= 139.0) {
-				FCNPC_GoTo(npcid, -2822.3176, -1518.7068, 140.7656, FCNPC_MOVE_TYPE_WALK);
-			} else if(x <= -2816.0 && x >= -2818.0 && y <= -1523.0 && y >= -1525.0 && z <= 141.0 && z >= 139.0) {
-				FCNPC_ApplyAnimation(npcid, "CHAINSAW", "CSAW_G", 4.1, 0, 1, 1, 0, 0);
-			} else if(x <= -2810.0 && x >= -2812.0 && y <= -1523.0 && y >= -1525.0 && z <= 141.0 && z >= 139.0) {
-				FCNPC_GoTo(npcid, -2818.3503, -1530.7013, 140.8438, FCNPC_MOVE_TYPE_WALK);
-			}
-		}
-	}
-	return 1;
-}
-
-public FAI_OnEncounterStart(npcid, bool:reasonShot, firstTarget)
-{
-	if(npcid == BossLeatherface) {
-		IdleCount = -1;
-	}
-	return 1;
-}
-
-public FAI_OnEncounterStop(npcid, bool:reasonDeath, lastTarget)
-{
-	if(npcid == BossLeatherface) {
-		if(!reasonDeath) {
-			SetBossAtSpawn(npcid);
-		} else {
-			//Respawn the NPC somewhere between 5 and 10 minutes (both included)
-			new randomMinutes = random(6) + 5;
-			DeathCount = randomMinutes * 60 * 10;
-			for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
-				if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid)) {
-					if(AlreadyInOutRange[playerid]) {
-						AlreadyInOutRange[playerid] = false;
-						SetPlayerWeather(playerid, DEFAULT_WEATHER);
-						SetPlayerTime(playerid, DEFAULT_TIME_H, DEFAULT_TIME_M);
-						if(AudioStreamCount[playerid] != -1) {
-							StopAudioStreamForPlayer(playerid);
-							AudioStreamCount[playerid] = -1;
-						}
-					}
-				}
-			}
-		}
-	}
-	return 1;
-}
-
-stock CreateBossObjects() {
 	Objects[0] = CreateDynamicObject(2589, -2820.283447, -1515.626831, 137.583969, 176.600158, 2.899999, -15.600064, VIRTUAL_WORLD_NORMAL, INTERIOR_NORMAL);
 	Objects[1] = CreateDynamicObject(2590, -2809.102050, -1519.912963, 142.724533, 180.0, 180.0, 133.0, VIRTUAL_WORLD_NORMAL, INTERIOR_NORMAL);
 	Objects[2] = CreateDynamicObject(2803, -2812.046142, -1530.383300, 140.203887, 0.0, 0.0, -102.500068, VIRTUAL_WORLD_NORMAL, INTERIOR_NORMAL);
@@ -218,162 +125,234 @@ stock CreateBossObjects() {
 	Objects[63] = CreateDynamicObject(3009, -2812.101318, -1517.006835, 139.910110, -86.499885, 106.099937, -52.299839, VIRTUAL_WORLD_NORMAL, INTERIOR_NORMAL);
 	Objects[64] = CreateDynamicObject(3010, -2812.721679, -1516.216552, 140.636306, 1.900001, 100.699928, -105.899925, VIRTUAL_WORLD_NORMAL, INTERIOR_NORMAL);
 	Objects[65] = CreateDynamicObject(3011, -2813.620849, -1516.083129, 139.596343, 27.699987, 91.599990, -107.499984, VIRTUAL_WORLD_NORMAL, INTERIOR_NORMAL);
+	return 1;
 }
 
-stock DestroyBossObjects() {
+public OnFilterScriptExit()
+{
+	ResetPlayers();
+
 	for(new object = 0; object < sizeof(Objects); object++) {
 		DestroyDynamicObject(Objects[object]);
+		Objects[object] = INVALID_OBJECT_ID;
 	}
+	return 1;
+}
+#endif
+
+public OnPlayerDisconnect(playerid, reason)
+{
+	ResetPlayer(playerid);
+	return 1;
 }
 
-forward SetBossAtSpawn(npcid);
-public SetBossAtSpawn(npcid) {
-	if(npcid == BossLeatherface) {
-		SetPlayerColor(npcid, 0xff000000); //Alpha values = 00 because we don't want an additional playericon on the map
-		if(!FCNPC_IsSpawned(npcid)) {
-			FCNPC_Spawn(npcid, 168, -2820.2534, -1530.3491, 140.8438);
-		} else {
-			if(FCNPC_IsDead(npcid)) {
-				FCNPC_Respawn(npcid);
-			}
-			FCNPC_SetSkin(npcid, 168);
-			FCNPC_SetPosition(npcid, -2820.2534, -1530.3491, 140.8438);
+public OnPlayerSpawn(playerid)
+{
+	//Preload used animation libraries
+	ApplyAnimation(playerid, "CHAINSAW", "null", 0.0, 0, 0, 0, 0, 0);
+	ApplyAnimation(playerid, "ped", "null", 0.0, 0, 0, 0, 0, 0);
+	return 1;
+}
+
+public OnPlayerUpdate(playerid)
+{
+	new Float:x, Float:y, Float:z;
+	FCNPC_GetPosition(Leatherface, x, y, z);
+	if(IsPlayerInRangeOfPoint(playerid, 50.0, x, y, z) && FAI_IsValidNPCForPlayer(Leatherface, playerid)) {
+		if(AudioStreamTimer[playerid] == INVALID_TIMER_ID) {
+			PlayAudioStreamForPlayer(playerid, AUDIO_STREAM_HALLOWEEN);
+			AudioStreamTimer[playerid] = SetTimerEx("AudioStream", AUDIO_STREAM_HALLOWEEN_TIME, false, "d", playerid);
+			SetPlayerWeather(playerid, 9);
+			SetPlayerTime(playerid, 0, 0);
 		}
-		FCNPC_SetAngle(npcid, 324.4991);
-		FCNPC_SetInterior(npcid, INTERIOR_NORMAL);
-		FCNPC_SetVirtualWorld(npcid, VIRTUAL_WORLD_NORMAL);
-		FCNPC_SetWeapon(npcid, WEAPON_CHAINSAW);
-		FCNPC_SetHealth(npcid, 100.0);
-		FCNPC_SetArmour(npcid, 0.0);
-		FCNPC_SetInvulnerable(npcid, false);
-		new Float:maxHealth;
-		FAI_GetMaxHealth(npcid, maxHealth);
-		FAI_SetCurrentHealth(npcid, maxHealth);
-		if(IsPlayerAttachedObjectSlotUsed(npcid, ATTACHED_OBJECT_INDEX)) {
-			RemovePlayerAttachedObject(npcid, ATTACHED_OBJECT_INDEX);
-		}
-		SetPlayerAttachedObject(npcid, ATTACHED_OBJECT_INDEX, 19036, 2, 0.086, 0.043, -0.007, 86.100196, 91.500007, 0.0, 1.0, 1.0, 1.0);
-		IdleCount = 0;
-		DeathCount = -1;
-		AnimationApplied = false;
-		StreamerUpdateForValidPlayers(npcid);
+	} else {
+		ResetPlayer(playerid);
 	}
 	return 1;
 }
 
-stock StreamerUpdateForValidPlayers(npcid) {
-	for(new playerid = 0, maxplayerid = GetPlayerPoolSize(); playerid <= maxplayerid; playerid++) {
-		if(FAI_IsValidForPlayer(playerid, npcid)) {
-			Streamer_Update(playerid, STREAMER_TYPE_OBJECT);
+public OnPlayerCommandText(playerid, cmdtext[])
+{
+	if(!strcmp(cmdtext, "/leatherface", true)) {
+		SetPlayerPos(playerid, -2758.957763, -1484.023437, 139.443572);
+		SetPlayerFacingAngle(playerid, 123.269294);
+		SetCameraBehindPlayer(playerid);
+		return 1;
+	}
+	return 0;
+}
+
+public FCNPC_OnDestroy(npcid)
+{
+	if(npcid == Leatherface) {
+		KillTimer(RespawnTimer);
+		RespawnTimer = INVALID_TIMER_ID;
+		KillTimer(IdleTimer);
+		IdleTimer = INVALID_TIMER_ID;
+		RemovePlayerAttachedObject(Leatherface, ATTACHED_OBJECT_INDEX_MASK);
+		Leatherface = INVALID_PLAYER_ID;
+	}
+	return 1;
+}
+
+public FCNPC_OnReachDestination(npcid)
+{
+	if(npcid == Leatherface) {
+		if(IdleCount != -1) {
+			new Float:x, Float:y, Float:z;
+			FCNPC_GetPosition(npcid, x, y, z);
+			if(x <= -2812.0 && x >= -2814.0 && y <= -1516.0 && y >= -1518.0 && z <= 141.0 && z >= 139.0) {
+				FCNPC_ApplyAnimation(npcid, "CHAINSAW", "WEAPON_csawlo", 4.1, 0, 1, 1, 0, 0);
+			} else if(x <= -2818.0 && x >= -2820.0 && y <= -1515.0 && y >= -1517.0 && z <= 141.0 && z >= 139.0) {
+				FCNPC_ApplyAnimation(npcid, "CHAINSAW", "WEAPON_csaw", 4.1, 0, 1, 1, 0, 0);
+			} else if(x <= -2819.0 && x >= -2821.0 && y <= -1517.0 && y >= -1519.0 && z <= 141.0 && z >= 139.0) {
+				FCNPC_GoTo(npcid, -2822.3176, -1518.7068, 140.7656, FCNPC_MOVE_TYPE_WALK);
+			} else if(x <= -2816.0 && x >= -2818.0 && y <= -1523.0 && y >= -1525.0 && z <= 141.0 && z >= 139.0) {
+				FCNPC_ApplyAnimation(npcid, "CHAINSAW", "CSAW_G", 4.1, 0, 1, 1, 0, 0);
+			} else if(x <= -2810.0 && x >= -2812.0 && y <= -1523.0 && y >= -1525.0 && z <= 141.0 && z >= 139.0) {
+				FCNPC_GoTo(npcid, -2818.3503, -1530.7013, 140.8438, FCNPC_MOVE_TYPE_WALK);
+			}
 		}
 	}
 	return 1;
 }
 
-forward CheckPlayerInRange();
-public CheckPlayerInRange() {
-	if(BossLeatherface != INVALID_PLAYER_ID) {
-		if(FCNPC_IsDead(BossLeatherface)) {
-			if(DeathCount != -1) {
-				DeathCount--;
-				if(DeathCount == 0) {
-					SetBossAtSpawn(BossLeatherface);
-				}
-			}
-		} else {
-			if(IdleCount != -1) {
-				IdleCount++;
-				switch(IdleCount) {
-					case 10: {
-						FCNPC_GoTo(BossLeatherface, -2811.7888, -1528.6459, 140.8438, FCNPC_MOVE_TYPE_WALK);
-					}
-					case 100: {
-						FCNPC_GoTo(BossLeatherface, -2813.3208, -1517.8263, 140.8438, FCNPC_MOVE_TYPE_WALK);
-					}
-					case 200: {
-						FCNPC_GoTo(BossLeatherface, -2819.4717, -1516.2056, 140.8438, FCNPC_MOVE_TYPE_WALK);
-					}
-					case 280: {
-						FCNPC_GoTo(BossLeatherface, -2820.0303, -1518.5581, 140.8438, FCNPC_MOVE_TYPE_WALK);
-					}
-					case 340: {
-						FCNPC_GoTo(BossLeatherface, -2811.7930, -1518.4700, 140.8438, FCNPC_MOVE_TYPE_WALK);
-					}
-					case 440: {
-						FCNPC_GoTo(BossLeatherface, -2817.3579, -1524.5388, 140.8438, FCNPC_MOVE_TYPE_WALK);
-					}
-					case 520: {
-						FCNPC_GoTo(BossLeatherface, -2807.3572,- 1524.1216, 140.8438, FCNPC_MOVE_TYPE_WALK);
-					}
-					case 610: {
-						FCNPC_GoTo(BossLeatherface, -2811.8003, -1524.0878, 140.8438, FCNPC_MOVE_TYPE_WALK);
-					}
-					case 730: {
-						IdleCount = 0;
-					}
-				}
-			} else {
-				if(FCNPC_IsMoving(BossLeatherface)) {
-					new Float:attackDistance, delay, bool:useFightStyle;
-					FAI_GetMeleeAttackInfo(BossLeatherface, attackDistance, delay, useFightStyle);
-					new Float:x, Float:y, Float:z;
-					FCNPC_GetPosition(BossLeatherface, x, y, z);
-					new Float:distance = GetPlayerDistanceFromPoint(FAI_GetTarget(BossLeatherface), x, y, z);
-					if(distance > attackDistance + 2.0) {
-						if(!AnimationApplied) {
-							FCNPC_ApplyAnimation(BossLeatherface, "ped", "FightSh_FWD", 4.1, 1, 1, 1, 0, 0);
-							AnimationApplied = true;
-						}
-					}
-					if(distance >= attackDistance && distance <= attackDistance + 2.0) {
-						if(AnimationApplied) {
-							FCNPC_ClearAnimations(BossLeatherface);
-							AnimationApplied = false;
-						}
-					}
-				}
-			}
-			new Float:x, Float:y, Float:z, Float:px, Float:py, Float:pz;
-			FCNPC_GetPosition(BossLeatherface, x, y, z);
+public FCNPC_OnUpdate(npcid)
+{
+	if(npcid == Leatherface) {
+		if(IdleCount != -1) {
 			for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
-				if(FAI_IsValidForPlayer(playerid, BossLeatherface) && !IsPlayerNPC(playerid)) {
-					if(IdleCount != -1) {
-						if(FAI_GetTarget(BossLeatherface) == INVALID_PLAYER_ID) {
-							GetPlayerPos(playerid, px, py, pz);
-							if(px <= -2811.0 && px >= -2821.0 && py <= -1515.0 && py >= -1531.0 && pz <= 143.0 && pz >= 140.0) {
-								FAI_SetTarget(BossLeatherface, playerid);
-							}
-						}
-					}
-					if(IsPlayerInRangeOfPoint(playerid, 50.0, x, y, z)) {
-						if(!AlreadyInOutRange[playerid]) {
-							AlreadyInOutRange[playerid] = true;
-							SetPlayerWeather(playerid, 9);
-							SetPlayerTime(playerid, 0, 0);
-						}
-						if(AudioStreamCount[playerid] == -1) {
-							PlayAudioStreamForPlayer(playerid, AUDIO_STREAM_HALLOWEEN);
-							AudioStreamCount[playerid] = 0;
-						} else {
-							AudioStreamCount[playerid]++;
-							if(AudioStreamCount[playerid] == 1600) {
-								StopAudioStreamForPlayer(playerid);
-								AudioStreamCount[playerid] = -1;
-							}
-						}
-					} else {
-						if(AlreadyInOutRange[playerid]) {
-							AlreadyInOutRange[playerid] = false;
-							SetPlayerWeather(playerid, DEFAULT_WEATHER);
-							SetPlayerTime(playerid, DEFAULT_TIME_H, DEFAULT_TIME_M);
-							if(AudioStreamCount[playerid] != -1) {
-								StopAudioStreamForPlayer(playerid);
-								AudioStreamCount[playerid] = -1;
-							}
-						}
+				if(FAI_IsValidNPCForPlayer(Leatherface, playerid)) {
+					new Float:x, Float:y, Float:z;
+					GetPlayerPos(playerid, x, y, z);
+					if(x <= -2811.0 && x >= -2821.0 && y <= -1515.0 && y >= -1531.0 && z <= 143.0 && z >= 140.0) {
+						FCNPC_SetTarget(Leatherface, playerid);
+						break;
 					}
 				}
 			}
+		} else {
+			if(FCNPC_IsMoving(Leatherface)) {
+				new Float:range, delay, bool:useFightStyle;
+				FCNPC_GetMeleeAttackInfo(Leatherface, range, delay, useFightStyle);
+				new Float:x, Float:y, Float:z;
+				FCNPC_GetPosition(Leatherface, x, y, z);
+				new Float:distance = GetPlayerDistanceFromPoint(FCNPC_GetTarget(Leatherface), x, y, z);
+				if(distance > range + 2.0) {
+					if(!AnimationApplied) {
+						FCNPC_ApplyAnimation(Leatherface, "ped", "FightSh_FWD", 4.1, 1, 1, 1, 0, 0);
+						AnimationApplied = true;
+					}
+				} else if(distance >= range) { //Buffer zone of 2.0
+					if(AnimationApplied) {
+						FCNPC_ClearAnimations(Leatherface);
+						AnimationApplied = false;
+					}
+				}
+			}
+		}
+	}
+	return 1;
+}
+
+public FCNPC_OnEncounterStart(npcid, firstTarget, reason)
+{
+	if(npcid == Leatherface) {
+		KillTimer(IdleTimer);
+		IdleTimer = INVALID_TIMER_ID;
+		IdleCount = -1;
+	}
+	return 1;
+}
+
+public FCNPC_OnEncounterStop(npcid, lastTarget, reason)
+{
+	if(npcid == Leatherface) {
+		if(reason != FCNPC_EOR_NPC_DEATH) {
+			Respawn();
+		} else {
+			RespawnTimer = SetTimer("Respawn", (random(6) + 5) * 60 * 1000, false); //Respawn the NPC somewhere between 5 and 10 minutes (both included)
+		}
+		ResetPlayers();
+	}
+	return 1;
+}
+
+forward Respawn();
+public Respawn() {
+	RemovePlayerAttachedObject(Leatherface, ATTACHED_OBJECT_INDEX_MASK);
+	FCNPC_SetPosition(Leatherface, SpawnCoords[0], SpawnCoords[1], SpawnCoords[2]);
+	FCNPC_SetAngle(Leatherface, SpawnCoords[3]);
+	if(FCNPC_IsDead(Leatherface)) {
+		FCNPC_Respawn(Leatherface);
+	}
+	new Float:maxHealth;
+	FCNPC_GetHealth(Leatherface, maxHealth);
+	FCNPC_SetHealth(Leatherface, maxHealth);
+	SetPlayerAttachedObject(Leatherface, ATTACHED_OBJECT_INDEX_MASK, 19036, 2, 0.086, 0.043, -0.007, 86.100196, 91.500007, 0.0, 1.0, 1.0, 1.0);
+	KillTimer(RespawnTimer);
+	RespawnTimer = INVALID_TIMER_ID;
+	IdleCount = 0;
+	IdleTimer = SetTimer("Idle", 100, true);
+	AnimationApplied = false;
+}
+
+forward Idle();
+public Idle() {
+	IdleCount += 100;
+	switch(IdleCount) {
+		case 1000: {
+			FCNPC_GoTo(Leatherface, -2811.7888, -1528.6459, 140.8438, FCNPC_MOVE_TYPE_WALK);
+		}
+		case 10000: {
+			FCNPC_GoTo(Leatherface, -2813.3208, -1517.8263, 140.8438, FCNPC_MOVE_TYPE_WALK);
+		}
+		case 20000: {
+			FCNPC_GoTo(Leatherface, -2819.4717, -1516.2056, 140.8438, FCNPC_MOVE_TYPE_WALK);
+		}
+		case 28000: {
+			FCNPC_GoTo(Leatherface, -2820.0303, -1518.5581, 140.8438, FCNPC_MOVE_TYPE_WALK);
+		}
+		case 34000: {
+			FCNPC_GoTo(Leatherface, -2811.7930, -1518.4700, 140.8438, FCNPC_MOVE_TYPE_WALK);
+		}
+		case 44000: {
+			FCNPC_GoTo(Leatherface, -2817.3579, -1524.5388, 140.8438, FCNPC_MOVE_TYPE_WALK);
+		}
+		case 52000: {
+			FCNPC_GoTo(Leatherface, -2807.3572,- 1524.1216, 140.8438, FCNPC_MOVE_TYPE_WALK);
+		}
+		case 61000: {
+			FCNPC_GoTo(Leatherface, -2811.8003, -1524.0878, 140.8438, FCNPC_MOVE_TYPE_WALK);
+		}
+		case 73000: {
+			IdleCount = 0;
+		}
+	}
+}
+
+forward AudioStream(playerid);
+public AudioStream(playerid) {
+	StopAudioStreamForPlayer(playerid);
+	KillTimer(AudioStreamTimer[playerid]);
+	PlayAudioStreamForPlayer(playerid, AUDIO_STREAM_HALLOWEEN);
+	AudioStreamTimer[playerid] = SetTimerEx("AudioStream", AUDIO_STREAM_HALLOWEEN_TIME, false, "d", playerid);
+}
+
+ResetPlayer(playerid) {
+	if(AudioStreamTimer[playerid] != INVALID_TIMER_ID) {
+		StopAudioStreamForPlayer(playerid);
+		KillTimer(AudioStreamTimer[playerid]);
+		AudioStreamTimer[playerid] = INVALID_TIMER_ID;
+		SetPlayerWeather(playerid, WEATHER_NORMAL);
+		SetPlayerTime(playerid, TIME_HOUR_NORMAL, TIME_MINUTE_NORMAL);
+	}
+}
+
+ResetPlayers() {
+	for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
+		if(IsPlayerConnected(playerid)) {
+			ResetPlayer(playerid);
 		}
 	}
 }
