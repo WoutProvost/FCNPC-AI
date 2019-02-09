@@ -50,6 +50,7 @@ native Float:FCNPC_GetLeashRange(npcid, playerid);
 native FCNPC_SetThreat(npcid, playerid, Float:threat);
 native Float:FCNPC_GetThreat(npcid, playerid);
 */
+
 //========================================CALLBACKS========================================
 //NPCs
 forward FCNPC_OnEncounterStart(npcid, firstTarget, reason);
