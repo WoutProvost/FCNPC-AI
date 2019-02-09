@@ -41,6 +41,8 @@ native FCNPC_SetTarget(npcid, playerid);
 native FCNPC_GetTarget(npcid);
 native FCNPC_SetBehaviour(npcid, playerid, behaviour);
 native FCNPC_GetBehaviour(npcid, playerid);
+native FCNPC_SetAggroViewingAngle(npcid, playerid, Float:angle);
+native Float:FCNPC_GetAggroViewingAngle(npcid, playerid);
 native FCNPC_SetAggroRange(npcid, playerid, Float:range);
 native Float:FCNPC_GetAggroRange(npcid, playerid);
 native FCNPC_SetLeashRange(npcid, playerid, Float:range);
@@ -122,6 +124,7 @@ enum FAI_E_NPC {
 	bool:FAI_NPC_MELEE_ATTACK_FIGHT_STL, //FAI_NPC_MELEE_ATTACK_FIGHT_STYLE is too long
 	FAI_NPC_TARGET, //Can be changed automatically by the script
 	FAI_NPC_BEHAVIOUR[MAX_PLAYERS],
+	Float:FAI_NPC_AGGRO_VIEWING_ANGLE[MAX_PLAYERS],
 	Float:FAI_NPC_AGGRO_RANGE[MAX_PLAYERS],
 	Float:FAI_NPC_LEASH_RANGE[MAX_PLAYERS],
 	Float:FAI_NPC_THREAT[MAX_PLAYERS] //Can be changed automatically by the script
@@ -250,6 +253,7 @@ static FAI_ResetNPC(npcid) {
 	FAI_NPCs[npcid][FAI_NPC_TARGET] = INVALID_PLAYER_ID;
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
 		FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid] = FCNPC_BEHAVIOUR_FRIENDLY;
+		FAI_NPCs[npcid][FAI_NPC_AGGRO_VIEWING_ANGLE][playerid] = 360.0;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid] = 20.0;
 		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = 200.0; //The default SA-MP stream_distance
 		FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = 0.0;
@@ -372,13 +376,21 @@ static FAI_UpdateNPCTarget(npcid) {
 		if(newtargetid == INVALID_PLAYER_ID) {
 			//When there is no target, or if the current target is invalid, or if the behaviour for the current target is friendly
 			if(!FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET]) || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][FAI_NPCs[npcid][FAI_NPC_TARGET]] == FCNPC_BEHAVIOUR_FRIENDLY || !FAI_IsPlayerInLeashRange(FAI_NPCs[npcid][FAI_NPC_TARGET], npcid)) {
-				//Set target to closest player
-				newtargetid = FAI_ClosestPlayerInAggroRange(npcid);
-				if(newtargetid == INVALID_PLAYER_ID) {
-					reason = FCNPC_EOR_NO_VALID_NEW_TARGET;
+				//When the encounter hasn't been started
+				if(FAI_NPCs[npcid][FAI_NPC_TARGET] == INVALID_PLAYER_ID) {
+					//Set target to closest player in viewing angle
+					newtargetid = FAI_ClosestPlayerInAggroRange(npcid, true);
+				}
+				//When the encounter has been started
+				else {
+					//Set target to closest player
+					newtargetid = FAI_ClosestPlayerInAggroRange(npcid);
 				}
 				//Don't do anything when the target doesn't change
 				if(FAI_NPCs[npcid][FAI_NPC_TARGET] != newtargetid) {
+					if(newtargetid == INVALID_PLAYER_ID) {
+						reason = FCNPC_EOR_NO_VALID_NEW_TARGET;
+					}
 					FAI_ChangeNPCTarget(npcid, newtargetid, reason);
 				}
 			}
@@ -429,6 +441,44 @@ static FAI_ChangeNPCTarget(npcid, newtargetid, reason) {
 	return 0;
 }
 
+static bool:FAI_IsPlayerInAggroViewingAngle(playerid, npcid) {
+	//Get NPC position
+	new Float:xn, Float:yn, Float:zn;
+	FCNPC_GetPosition(npcid, xn, yn, zn);
+
+	//Get player position
+	new Float:xp, Float:yp, Float:zp;
+	if(!IsPlayerNPC(playerid)) {
+		GetPlayerPos(playerid, xp, yp, zp);
+	} else {
+		FCNPC_GetPosition(playerid, xp, yp, zp);
+	}
+
+	//Calculate the angle between these 2 points
+	new Float:angleBetweenPoints = atan2(xp - xn, yp - yn);
+
+	//Get the NPC facing angle adjusted for the weird GTA angle system
+	new Float:npcFacingAngle = 360.0 - FCNPC_GetAngle(npcid);
+
+	//Calculate the smallest difference between these 2 angles as a value bewteen -180.0 and 180.0
+	new Float:angleDifference = angleBetweenPoints - npcFacingAngle;
+	if(angleDifference > 180.0) {
+		angleDifference -= 360.0;
+	}
+	if(angleDifference < -180.0) {
+		angleDifference += 360.0;
+	}
+
+	//Get the absolute value of this angle
+	angleDifference = floatabs(angleDifference);
+
+	//Check if the player is within the aggro viewing angle
+	if(angleDifference <= FAI_NPCs[npcid][FAI_NPC_AGGRO_VIEWING_ANGLE][playerid]/2) {
+		return true;
+	}
+	return false;
+}
+
 static bool:FAI_IsPlayerInAggroRange(playerid, npcid) {
 	new Float:x, Float:y, Float:z;
 	if(!IsPlayerNPC(playerid)) {
@@ -457,7 +507,7 @@ static bool:FAI_IsPlayerInLeashRange(playerid, npcid) {
 	return false;
 }
 
-static FAI_ClosestPlayerInAggroRange(npcid) {
+static FAI_ClosestPlayerInAggroRange(npcid, bool:checkViewingAngle = false) {
 	new closestPlayer = INVALID_PLAYER_ID;
 	new Float:closestPlayerRange = 0.0;
 	for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
@@ -471,7 +521,7 @@ static FAI_ClosestPlayerInAggroRange(npcid) {
 				FCNPC_GetPosition(playerid, x, y, z);
 			}
 			new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
-			if(FAI_IsPlayerInAggroRange(playerid, npcid) && (closestPlayer == INVALID_PLAYER_ID || npcRange < closestPlayerRange)) {
+			if(FAI_IsPlayerInAggroRange(playerid, npcid) && (!checkViewingAngle || FAI_IsPlayerInAggroViewingAngle(playerid, npcid)) && (closestPlayer == INVALID_PLAYER_ID || npcRange < closestPlayerRange)) {
 				closestPlayerRange = npcRange;
 				closestPlayer = playerid;
 			}
@@ -1025,6 +1075,24 @@ stock FCNPC_GetBehaviour(npcid, playerid) {
 		return FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid];
 	}
 	return 0;
+}
+
+stock FCNPC_SetAggroViewingAngle(npcid, playerid, Float:angle) {
+	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
+		if(angle >= 0.0 && angle <= 360.0) {
+			FAI_NPCs[npcid][FAI_NPC_AGGRO_VIEWING_ANGLE][playerid] = angle;
+			FAI_UpdateNPCTarget(npcid);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+stock Float:FCNPC_GetAggroViewingAngle(npcid, playerid) {
+	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
+		return FAI_NPCs[npcid][FAI_NPC_AGGRO_VIEWING_ANGLE][playerid];
+	}
+	return 0.0;
 }
 
 stock FCNPC_SetAggroRange(npcid, playerid, Float:range) {
