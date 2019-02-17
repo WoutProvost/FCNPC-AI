@@ -39,12 +39,6 @@ new AudioStreamTimer[MAX_PLAYERS] = {INVALID_TIMER_ID, ...};
 new Objects[66] = {INVALID_OBJECT_ID, ...};
 new bool:AnimationApplied = false;
 
-//TODO test music on NPC death
-//TODO test music on player death
-//TODO test player death, but encounter continues
-//TODO any other settings that should be taken into account for above mentioned tests
-//TODO do all tests with 1 player and multiple players
-
 #if defined FILTERSCRIPT
 public OnFilterScriptInit()
 {
@@ -153,6 +147,12 @@ public OnPlayerSpawn(playerid)
 	//Preload used animation libraries
 	ApplyAnimation(playerid, "CHAINSAW", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "ped", "null", 0.0, 0, 0, 0, 0, 0);
+	return 1;
+}
+
+public OnPlayerDeath(playerid, killerid, reason)
+{
+	ResetPlayer(playerid);
 	return 1;
 }
 
