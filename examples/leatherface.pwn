@@ -35,13 +35,15 @@ new Float:SpawnCoords[4] = {-2820.2534, -1530.3491, 140.8438, 324.4991};
 new RespawnTimer = INVALID_TIMER_ID;
 new IdleTimer = INVALID_TIMER_ID;
 new IdleCount = -1;
-new AudioStreamTimer[MAX_PLAYERS] = INVALID_TIMER_ID;
+new AudioStreamTimer[MAX_PLAYERS] = {INVALID_TIMER_ID, ...};
 new Objects[66] = {INVALID_OBJECT_ID, ...};
 new bool:AnimationApplied = false;
 
 //TODO test music on NPC death
+//TODO test music on player death
 //TODO test player death, but encounter continues
 //TODO any other settings that should be taken into account for above mentioned tests
+//TODO do all tests with 1 player and multiple players
 
 #if defined FILTERSCRIPT
 public OnFilterScriptInit()
@@ -49,7 +51,7 @@ public OnFilterScriptInit()
 	FAI_UseDestroyNPCsOnExit();
 
 	Leatherface = FCNPC_Create("Leatherface");
-	SetPlayerColor(Leatherface, COLOR_SP_MAPICON_ENEMY & 0x00); //Alpha values = 00, because we don't want a player icon on the map
+	SetPlayerColor(Leatherface, COLOR_SP_MAPICON_ENEMY & 0xffffff00); //Alpha values = 00, because we don't want a player icon on the map
 	FCNPC_Spawn(Leatherface, 168, SpawnCoords[0], SpawnCoords[1], SpawnCoords[2]);
 	FCNPC_SetHealth(Leatherface, 2000.0);
 	FCNPC_SetWeapon(Leatherface, WEAPON_CHAINSAW);
@@ -158,7 +160,7 @@ public OnPlayerUpdate(playerid)
 {
 	new Float:x, Float:y, Float:z;
 	FCNPC_GetPosition(Leatherface, x, y, z);
-	if(IsPlayerInRangeOfPoint(playerid, 50.0, x, y, z) && FAI_IsValidNPCForPlayer(Leatherface, playerid)) {
+	if(IsPlayerInRangeOfPoint(playerid, 50.0, x, y, z) && !FCNPC_IsDead(Leatherface) && FAI_IsValidNPCForPlayer(Leatherface, playerid)) {
 		if(AudioStreamTimer[playerid] == INVALID_TIMER_ID) {
 			PlayAudioStreamForPlayer(playerid, AUDIO_STREAM_HALLOWEEN);
 			AudioStreamTimer[playerid] = SetTimerEx("AudioStream", AUDIO_STREAM_HALLOWEEN_TIME, false, "d", playerid);
@@ -222,7 +224,7 @@ public FCNPC_OnUpdate(npcid)
 	if(npcid == Leatherface) {
 		if(IdleCount != -1) {
 			for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
-				if(FAI_IsValidNPCForPlayer(Leatherface, playerid)) {
+				if(FAI_IsValidNPCForPlayer(Leatherface, playerid)) { //Don't check for death, because won't be called when dead
 					new Float:x, Float:y, Float:z;
 					GetPlayerPos(playerid, x, y, z);
 					if(x <= -2811.0 && x >= -2821.0 && y <= -1515.0 && y >= -1531.0 && z <= 143.0 && z >= 140.0) {
