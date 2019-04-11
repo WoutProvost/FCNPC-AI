@@ -489,16 +489,33 @@ static bool:FAI_IsPlayerInAggroViewingAngle(playerid, npcid) {
 }
 
 static bool:FAI_IsPlayerInAggroLineOfSight(playerid, npcid) {
-	//Get NPC position
-	new Float:xn, Float:yn, Float:zn;
+	//Get NPC position and special action
+	new Float:xn, Float:yn, Float:zn, npcAction;
 	FCNPC_GetPosition(npcid, xn, yn, zn);
+	npcAction = FCNPC_GetSpecialAction(npcid);
 
-	//Get player position
-	new Float:xp, Float:yp, Float:zp;
+	//Get player position and special action
+	new Float:xp, Float:yp, Float:zp, playerAction;
 	if(!IsPlayerNPC(playerid)) {
 		GetPlayerPos(playerid, xp, yp, zp);
+		playerAction = GetPlayerSpecialAction(playerid);
 	} else {
 		FCNPC_GetPosition(playerid, xp, yp, zp);
+		playerAction = FCNPC_GetSpecialAction(playerid);
+	}
+
+	//Adjust height position of the NPC so that the ray will be cast from the shoulder instead of the groin
+	if(npcAction == SPECIAL_ACTION_DUCK) {
+		zn -= 0.2;
+	} else {
+		zn += 0.5;
+	}
+
+	//Adjust height position of the player so that the ray will be cast to the shoulder instead of the groin
+	if(playerAction == SPECIAL_ACTION_DUCK) {
+		zp -= 0.2;
+	} else {
+		zp += 0.5;
 	}
 
 	//Check if a ray cast between the NPC and the player collides with anything
