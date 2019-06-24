@@ -158,14 +158,11 @@ static FAI_ScriptInit() {
 		FAI_ResetNPC(npcid);
 	}
 
-	printf("---------------------");
-	printf("  FCNPC A.I. loaded  ");
-	printf("- Version: %s     ", FAI_VERSION);
-	printf("- Author: Freaksken  ");
-	printf("---------------------");
-	#if !defined FAI_DISABLE_VERSION_CHECK
-		HTTP(0, HTTP_GET, "ziggi.org/github/lastrelease.php?owner=WoutProvost&repo=FCNPC-A.I.&elem=tag_name", "", "FAI_OnVersionRequestResponse"); //CREDITS: ZiGGi https://github.com/ziggi/FCNPC/blob/master/sampsvr_files/FCNPC.inc
-	#endif
+	// printf("---------------------");
+	// printf("  FCNPC A.I. loaded  ");
+	// printf("- Version: %s     ", FAI_VERSION);
+	// printf("- Author: Freaksken  ");
+	// printf("---------------------");
 }
 
 static FAI_ScriptExit() {
@@ -189,22 +186,6 @@ static FAI_ScriptExit() {
 	//General
 	FAI_DestroyNPCsOnExit = false;
 }
-
-#if !defined FAI_DISABLE_VERSION_CHECK
-	forward FAI_OnVersionRequestResponse(index, responseCode, const data[]);
-	public FAI_OnVersionRequestResponse(index, responseCode, const data[]) {
-		if(index == 0 && responseCode == 200) {
-			new length = strlen(data);
-			if(length != 0 && data[0] == 'v') {
-				new version[8 + 1];
-				strmid(version, data, 1, length);
-				if(strcmp(version, FAI_VERSION)) {
-					printf("\n*** [FAI] Info: A newer version (v%s) is available at https://github.com/WoutProvost/FCNPC-A.I./releases ***\n", version);
-				}
-			}
-		}
-	}
-#endif
 
 //Players
 forward FAI_CheckPlayersPausedState();
