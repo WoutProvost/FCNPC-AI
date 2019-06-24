@@ -151,7 +151,7 @@ static FAI_ScriptInit() {
 		FAI_PauseTickCount[playerid] = GetTickCount();
 		FAI_PlayerPaused[playerid] = false;
 	}
-	FAI_PauseTimer = SetTimer("FAI_CheckPlayersPausedState", 1000, 1);
+	FAI_PauseTimer = SetTimer("FAI_CheckPlayersPausedState", 1000, true);
 
 	//NPCs
 	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
