@@ -259,7 +259,7 @@ static FAI_UpdateNPCAttackMove(npcid) {
 		new Float:x, Float:y, Float:z;
 		FCNPC_GetPosition(npcid, x, y, z);
 		new Float:attackRange = FAI_NPCs[npcid][FAI_NPC_AIM_AT_RANGE];
-		if(FAI_HasNPCMeleeWeapon(npcid) || FCNPC_GetAmmo(npcid) == 0) {
+		if(FAI_HasNPCMeleeWeapon(npcid) || (FCNPC_GetAmmo(npcid) == 0 && !FCNPC_IsInfiniteAmmoUsed(npcid))) {
 			attackRange = FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_RANGE];
 		}
 		new bool:canMove = true;
@@ -295,7 +295,7 @@ static FAI_ChangeNPCAttack(npcid) {
 	if(FCNPC_IsMoving(npcid)) {
 		FCNPC_Stop(npcid);
 	}
-	if(!FAI_HasNPCMeleeWeapon(npcid) && FCNPC_GetAmmo(npcid) != 0) {
+	if(!FAI_HasNPCMeleeWeapon(npcid) && (FCNPC_GetAmmo(npcid) != 0 || FCNPC_IsInfiniteAmmoUsed(npcid))) {
 		//In case the npc switched weapons
 		if(FCNPC_IsAttacking(npcid)) {
 			FCNPC_StopAttack(npcid);
@@ -325,7 +325,7 @@ static FAI_ChangeNPCMove(npcid) {
 		FCNPC_StopAttack(npcid);
 	}
 	//In case the npc is out of ammo
-	if(!FAI_HasNPCMeleeWeapon(npcid) && FCNPC_GetAmmo(npcid) == 0) {
+	if(!FAI_HasNPCMeleeWeapon(npcid) && FCNPC_GetAmmo(npcid) == 0 && !FCNPC_IsInfiniteAmmoUsed(npcid)) {
 		FCNPC_SetWeapon(npcid, 0); //Fist weapon
 	}
 	//So we don't move again when we were already moving to that same player. If moving at another player, this will execute
