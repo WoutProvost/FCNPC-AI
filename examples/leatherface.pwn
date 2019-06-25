@@ -16,6 +16,7 @@
 
 #include <a_samp>
 #include <streamer>
+#include <colandreas>
 #include <FCNPC>
 #include <FAI>
 
@@ -50,7 +51,9 @@ public OnFilterScriptInit()
 	FCNPC_SetHealth(Leatherface, 2000.0);
 	FCNPC_SetWeapon(Leatherface, WEAPON_CHAINSAW);
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize
-		FCNPC_SetBehaviour(Leatherface, playerid, FCNPC_BEHAVIOUR_NEUTRAL);
+		FCNPC_SetBehaviour(Leatherface, playerid, FCNPC_BEHAVIOUR_UNFRIENDLY);
+		FCNPC_SetAggroViewingAngle(Leatherface, playerid, 120.0);
+		FCNPC_UseAggroLineOfSight(Leatherface, playerid);
 	}
 	Respawn();
 
@@ -225,11 +228,13 @@ public FCNPC_OnUpdate(npcid)
 		if(IdleCount != -1) {
 			for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
 				if(FAI_IsValidNPCForPlayer(Leatherface, playerid)) { //Don't check for death, because won't be called when dead
-					new Float:x, Float:y, Float:z;
-					GetPlayerPos(playerid, x, y, z);
-					if(x <= -2811.0 && x >= -2821.0 && y <= -1515.0 && y >= -1531.0 && z <= 143.0 && z >= 140.0) {
-						FCNPC_SetTarget(Leatherface, playerid);
-						break;
+					if(GetPlayerSpecialAction(playerid) != SPECIAL_ACTION_DUCK) { //Immediately aggro when entering his hideout, except when crouched
+						new Float:x, Float:y, Float:z;
+						GetPlayerPos(playerid, x, y, z);
+						if(x <= -2811.0 && x >= -2821.0 && y <= -1515.0 && y >= -1531.0 && z <= 143.0 && z >= 140.0) {
+							FCNPC_SetTarget(Leatherface, playerid);
+							break;
+						}
 					}
 				}
 			}
