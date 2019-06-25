@@ -37,6 +37,8 @@ native FCNPC_SetAimAtInfo(npcid, Float:range = 20.0, bool:shoot = false, shoot_d
 native FCNPC_GetAimAtInfo(npcid, &Float:range, &bool:shoot, &shoot_delay, &bool:set_angle, &Float:offset_x, &Float:offset_y, &Float:offset_z, &Float:offset_from_x, &Float:offset_from_y, &Float:offset_from_z, &between_check_flags);
 native FCNPC_SetMeleeAttackInfo(npcid, Float:range = 0.5, delay = -1, bool:fightstyle = false);
 native FCNPC_GetMeleeAttackInfo(npcid, &Float:range, &delay, &bool:fightstyle);
+native FCNPC_SetOutOfAmmoMeleeWeapon(npcid, weaponid);
+native FCNPC_GetOutOfAmmoMeleeWeapon(npcid);
 native FCNPC_SetTarget(npcid, playerid);
 native FCNPC_GetTarget(npcid);
 native FCNPC_SetBehaviour(npcid, playerid, behaviour);
@@ -125,6 +127,7 @@ enum FAI_E_NPC {
 	Float:FAI_NPC_MELEE_ATTACK_RANGE,
 	FAI_NPC_MELEE_ATTACK_DELAY,
 	bool:FAI_NPC_MELEE_ATTACK_FIGHT_STL,
+	FAI_NPC_OUT_OF_AMMO_MELEE_WEAP,
 	FAI_NPC_TARGET, //Can be changed automatically by the script
 	FAI_NPC_BEHAVIOUR[MAX_PLAYERS],
 	Float:FAI_NPC_AGGRO_VIEWING_ANGLE[MAX_PLAYERS],
@@ -235,6 +238,7 @@ static FAI_ResetNPC(npcid) {
 	FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_RANGE] = 0.5;
 	FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_DELAY] = -1;
 	FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_FIGHT_STL] = false;
+	FAI_NPCs[npcid][FAI_NPC_OUT_OF_AMMO_MELEE_WEAP] = 0; //Fist weapon
 	FAI_NPCs[npcid][FAI_NPC_TARGET] = INVALID_PLAYER_ID;
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
 		FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid] = FCNPC_BEHAVIOUR_FRIENDLY;
@@ -246,12 +250,16 @@ static FAI_ResetNPC(npcid) {
 	}
 }
 
-static bool:FAI_HasNPCMeleeWeapon(npcid) {
-	new weaponid = FCNPC_GetWeapon(npcid);
+static bool:FAI_IsMeleeWeapon(weaponid) {
 	if(weaponid >= 0 && weaponid <= 15) {
 		return true;
 	}
 	return false;
+}
+
+static bool:FAI_HasNPCMeleeWeapon(npcid) {
+	new weaponid = FCNPC_GetWeapon(npcid);
+	return FAI_IsMeleeWeapon(weaponid);
 }
 
 static FAI_UpdateNPCAttackMove(npcid) {
@@ -326,7 +334,7 @@ static FAI_ChangeNPCMove(npcid) {
 	}
 	//In case the npc is out of ammo
 	if(!FAI_HasNPCMeleeWeapon(npcid) && FCNPC_GetAmmo(npcid) == 0 && !FCNPC_IsInfiniteAmmoUsed(npcid)) {
-		FCNPC_SetWeapon(npcid, 0); //Fist weapon
+		FCNPC_SetWeapon(npcid, FAI_NPCs[npcid][FAI_NPC_OUT_OF_AMMO_MELEE_WEAP]);
 	}
 	//So we don't move again when we were already moving to that same player. If moving at another player, this will execute
 	if(!FCNPC_IsMovingAtPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET])) {
@@ -1067,6 +1075,22 @@ stock FCNPC_GetMeleeAttackInfo(npcid, &Float:range, &delay, &bool:fightstyle) {
 		delay = FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_DELAY];
 		fightstyle = FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_FIGHT_STL];
 		return 1;
+	}
+	return 0;
+}
+
+stock FCNPC_SetOutOfAmmoMeleeWeapon(npcid, weaponid) {
+	if(FAI_IsValidNPC(npcid) && FAI_IsMeleeWeapon(weaponid)) {
+		FAI_NPCs[npcid][FAI_NPC_OUT_OF_AMMO_MELEE_WEAP] = weaponid;
+		FAI_UpdateNPCAttackMove(npcid);
+		return 1;
+	}
+	return 0;
+}
+
+stock FCNPC_GetOutOfAmmoMeleeWeapon(npcid) {
+	if(FAI_IsValidNPC(npcid)) {
+		return FAI_NPCs[npcid][FAI_NPC_OUT_OF_AMMO_MELEE_WEAP];
 	}
 	return 0;
 }
