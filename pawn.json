@@ -1,7 +1,7 @@
 {
 	"user": "WoutProvost",
 	"repo": "FCNPC-A.I.",
-	"website": "https://forum.sa-mp.com/showthread.php?p=3733074",
+	"website": "https://github.com/WoutProvost/FCNPC-A.I.",
 	"entry": "test.pwn",
 	"output": "test.amx",
 	"dependencies": [
