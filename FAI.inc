@@ -508,7 +508,7 @@ static bool:FAI_IsPlayerInAggroLineOfSight(playerid, npcid) {
 	}
 
 	//Check if a ray cast between the NPC and the player collides with anything
-	#if defined COLANDREAS
+	#if defined _colandreas_included
 		new Float:xc, Float:yc, Float:zc;
 		if(CA_RayCastLine(xn, yn, zn, xp, yp, zp, xc, yc, zc) != 0) {
 			return false;
