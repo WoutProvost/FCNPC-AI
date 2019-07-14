@@ -53,6 +53,9 @@ native FCNPC_SetLeashRange(npcid, playerid, Float:range);
 native Float:FCNPC_GetLeashRange(npcid, playerid);
 native FCNPC_SetThreat(npcid, playerid, Float:threat);
 native Float:FCNPC_GetThreat(npcid, playerid);
+
+//Debug
+native FAI_ToggleRangeDebugging(npcid, playerid, FAI_E_DEBUG_RANGE:ranges);
 */
 
 //========================================CALLBACKS========================================
@@ -86,6 +89,16 @@ enum {
 	FCNPC_BEHAVIOUR_FRIENDLY,
 	FCNPC_BEHAVIOUR_NEUTRAL,
 	FCNPC_BEHAVIOUR_UNFRIENDLY
+}
+
+//Debug
+enum FAI_E_DEBUG_RANGE (<<=1) {
+	FAI_DEBUG_RANGE_ALL = -1,
+	FAI_DEBUG_RANGE_NONE = 0,
+	FAI_DEBUG_AIM_AT_RANGE = 1,
+	FAI_DEBUG_MELEE_ATTACK_RANGE,
+	FAI_DEBUG_AGGRO_RANGE,
+	FAI_DEBUG_LEASH_RANGE
 }
 
 //========================================VARIABLES========================================
@@ -138,6 +151,10 @@ enum FAI_E_NPC {
 }
 static FAI_NPCs[MAX_PLAYERS][FAI_E_NPC];
 
+//Debug
+static FAI_E_DEBUG_RANGE:FAI_DebugRanges[MAX_PLAYERS] = {FAI_DEBUG_RANGE_NONE, ...};
+static FAI_DebugPlayerID[MAX_PLAYERS] = INVALID_PLAYER_ID;
+
 //========================================INTERNAL FUNCTIONS========================================
 //Silence warning 208
 forward bool:FAI_IsPlayerInLeashRange(playerid, npcid);
@@ -159,7 +176,7 @@ static FAI_ScriptInit() {
 	//NPCs
 	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
 		FAI_ResetNPC(npcid);
-	}
+	}	
 
 	// printf("---------------------");
 	// printf("  FCNPC A.I. loaded  ");
@@ -248,6 +265,10 @@ static FAI_ResetNPC(npcid) {
 		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = 200.0; //The default SA-MP stream_distance
 		FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = 0.0;
 	}
+
+	//Debug
+	FAI_DebugRanges[npcid] = FAI_DEBUG_RANGE_NONE;
+	FAI_DebugPlayerID[npcid] = INVALID_PLAYER_ID;
 }
 
 static bool:FAI_IsMeleeWeapon(weaponid) {
@@ -584,6 +605,35 @@ static FAI_GetHighestThreatPlayer(npcid) {
 	return highestPlayer;
 }
 
+//Debug
+static FAI_ToggleDebugRangeObjects(npcid) {
+	new Float:iScale = 1.0, Float:radius = 50.0; //Radius of modelid is 50.0
+	if(FAI_DebugRanges[npcid] & FAI_DEBUG_AIM_AT_RANGE && FAI_NPCs[npcid][FAI_NPC_AIM_AT_RANGE] > 0.0) { //Yellow
+		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_AIM_AT_RANGE];
+		SetPlayerAttachedObject(npcid, 0, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFFFFFF00);
+	} else {
+		RemovePlayerAttachedObject(npcid, 0);
+	}
+	if(FAI_DebugRanges[npcid] & FAI_DEBUG_MELEE_ATTACK_RANGE && FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_RANGE] > 0.0) { //Purple
+		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_RANGE];
+		SetPlayerAttachedObject(npcid, 1, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFF800080);
+	} else {
+		RemovePlayerAttachedObject(npcid, 1);
+	}
+	if(FAI_DebugRanges[npcid] & FAI_DEBUG_AGGRO_RANGE && FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][FAI_DebugPlayerID[npcid]] > 0.0) { //Red
+		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][FAI_DebugPlayerID[npcid]];
+		SetPlayerAttachedObject(npcid, 2, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFFFF0000);
+	} else {
+		RemovePlayerAttachedObject(npcid, 2);
+	}
+	if(FAI_DebugRanges[npcid] & FAI_DEBUG_LEASH_RANGE && FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][FAI_DebugPlayerID[npcid]] > 0.0) { //Green
+		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][FAI_DebugPlayerID[npcid]];
+		SetPlayerAttachedObject(npcid, 3, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFF00FF00);
+	} else {
+		RemovePlayerAttachedObject(npcid, 3);
+	}
+}
+
 //========================================HOOKED CALLBACKS========================================
 #if defined FILTERSCRIPT
 	public OnFilterScriptInit()
@@ -775,6 +825,29 @@ public FCNPC_OnUpdate(npcid)
 	forward FAI_FCNPC_OnUpdate(npcid);
 #endif
 
+public FCNPC_OnSpawn(npcid)
+{
+	//NPCs
+	if(FAI_IsValidNPC(npcid)) {
+		//Debug
+		FAI_ToggleDebugRangeObjects(npcid);
+	}
+	new ret = 1;
+	#if defined FAI_FCNPC_OnSpawn
+		ret = FAI_FCNPC_OnSpawn(npcid);
+	#endif
+	return ret;
+}
+#if defined _ALS_FCNPC_OnSpawn
+	#undef FCNPC_OnSpawn
+#else
+	#define _ALS_FCNPC_OnSpawn
+#endif
+#define FCNPC_OnSpawn FAI_FCNPC_OnSpawn
+#if defined FAI_FCNPC_OnSpawn
+	forward FAI_FCNPC_OnSpawn(npcid);
+#endif
+
 public FCNPC_OnRespawn(npcid)
 {
 	//NPCs
@@ -784,6 +857,9 @@ public FCNPC_OnRespawn(npcid)
 		} else {
 			FAI_ChangeNPCTarget(npcid, INVALID_PLAYER_ID, FCNPC_EOR_NPC_RESPAWN);
 		}
+
+		//Debug
+		FAI_ToggleDebugRangeObjects(npcid);
 	}
 	new ret = 1;
 	#if defined FAI_FCNPC_OnRespawn
@@ -1219,4 +1295,15 @@ stock Float:FCNPC_GetThreat(npcid, playerid) {
 		return FAI_NPCs[npcid][FAI_NPC_THREAT][playerid];
 	}
 	return 0.0;
+}
+
+//Debug
+stock FAI_ToggleRangeDebugging(npcid, playerid, FAI_E_DEBUG_RANGE:ranges) {
+	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
+		FAI_DebugRanges[npcid] = ranges;
+		FAI_DebugPlayerID[npcid] = playerid;
+		FAI_ToggleDebugRangeObjects(npcid);
+		return 1;
+	}
+	return 0;
 }
