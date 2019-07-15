@@ -98,7 +98,9 @@ enum FAI_E_DEBUG_RANGE (<<=1) {
 	FAI_DEBUG_AIM_AT_RANGE = 1,
 	FAI_DEBUG_MELEE_ATTACK_RANGE,
 	FAI_DEBUG_AGGRO_RANGE,
-	FAI_DEBUG_LEASH_RANGE
+	FAI_DEBUG_LEASH_RANGE,
+	FAI_DEBUG_FACING_ANGLE,
+	FAI_DEBUG_VIEWING_ANGLE
 }
 
 //========================================VARIABLES========================================
@@ -481,7 +483,7 @@ static bool:FAI_IsPlayerInAggroViewingAngle(playerid, npcid) {
 	//Get the NPC facing angle adjusted for the weird GTA angle system
 	new Float:npcFacingAngle = 360.0 - FCNPC_GetAngle(npcid);
 
-	//Calculate the smallest difference between these 2 angles as a value bewteen -180.0 and 180.0
+	//Calculate the smallest difference between these 2 angles as a value between -180.0 and 180.0
 	new Float:angleDifference = angleBetweenPoints - npcFacingAngle;
 	if(angleDifference > 180.0) {
 		angleDifference -= 360.0;
@@ -633,6 +635,18 @@ static FAI_ToggleDebugRangeObjects(npcid) {
 		SetPlayerAttachedObject(npcid, 3, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFF00FF00);
 	} else {
 		RemovePlayerAttachedObject(npcid, 3);
+	}
+	if(FAI_DebugRanges[npcid] & FAI_DEBUG_FACING_ANGLE) { //Red
+		SetPlayerAttachedObject(npcid, 4, 18643, 1, .fRotZ = 90.0);
+	} else {
+		RemovePlayerAttachedObject(npcid, 4);
+	}
+	if(FAI_DebugRanges[npcid] & FAI_DEBUG_VIEWING_ANGLE) { //Green
+		SetPlayerAttachedObject(npcid, 5, 19083, 1, .fRotX = FAI_NPCs[npcid][FAI_NPC_AGGRO_VIEWING_ANGLE]/2, .fRotZ = 90.0);
+		SetPlayerAttachedObject(npcid, 6, 19083, 1, .fRotX = -FAI_NPCs[npcid][FAI_NPC_AGGRO_VIEWING_ANGLE]/2, .fRotZ = 90.0);
+	} else {
+		RemovePlayerAttachedObject(npcid, 5);
+		RemovePlayerAttachedObject(npcid, 6);
 	}
 }
 
@@ -1091,6 +1105,9 @@ stock FCNPC_SetAimAtInfo(npcid, Float:range = 20.0, bool:shoot = false, shoot_de
 		FAI_NPCs[npcid][FAI_NPC_AIM_AT_BTWN_CHECK_MODE] = between_check_mode;
 		FAI_NPCs[npcid][FAI_NPC_AIM_AT_BTWN_CHECK_FLAGS] = between_check_flags;
 		FAI_UpdateNPCAttackMove(npcid);
+
+		//Debug
+		FAI_ToggleDebugRangeObjects(npcid);
 		return 1;
 	}
 	return 0;
@@ -1121,6 +1138,9 @@ stock FCNPC_SetMeleeAttackInfo(npcid, Float:range = 0.5, delay = -1, bool:fights
 		FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_DELAY] = delay;
 		FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_FIGHT_STL] = fightstyle;
 		FAI_UpdateNPCAttackMove(npcid);
+
+		//Debug
+		FAI_ToggleDebugRangeObjects(npcid);
 		return 1;
 	}
 	return 0;
@@ -1193,6 +1213,9 @@ stock FCNPC_SetAggroViewingAngle(npcid, playerid, Float:angle) {
 		if(angle >= 0.0 && angle <= 360.0) {
 			FAI_NPCs[npcid][FAI_NPC_AGGRO_VIEWING_ANGLE][playerid] = angle;
 			FAI_UpdateNPCTarget(npcid);
+
+			//Debug
+			FAI_ToggleDebugRangeObjects(npcid);
 			return 1;
 		}
 	}
@@ -1228,6 +1251,9 @@ stock FCNPC_SetAggroRange(npcid, playerid, Float:range) {
 		}
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid] = range; //Can be negative
 		FAI_UpdateNPCTarget(npcid);
+
+		//Debug
+		FAI_ToggleDebugRangeObjects(npcid);
 		return 1;
 	}
 	return 0;
@@ -1247,6 +1273,9 @@ stock FCNPC_SetLeashRange(npcid, playerid, Float:range) {
 		}
 		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = range; //Can be negative
 		FAI_UpdateNPCTarget(npcid);
+
+		//Debug
+		FAI_ToggleDebugRangeObjects(npcid);
 		return 1;
 	}
 	return 0;
