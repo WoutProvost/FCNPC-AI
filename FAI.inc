@@ -43,8 +43,8 @@ native FCNPC_SetTarget(npcid, playerid);
 native FCNPC_GetTarget(npcid);
 native FCNPC_SetBehaviour(npcid, playerid, behaviour);
 native FCNPC_GetBehaviour(npcid, playerid);
-native FCNPC_SetAggroViewingAngle(npcid, playerid, Float:angle);
-native Float:FCNPC_GetAggroViewingAngle(npcid, playerid);
+native FCNPC_SetAggroViewingAngle(npcid, playerid, Float:angle, Float:vangle = 360.0);
+native Float:FCNPC_GetAggroViewingAngle(npcid, playerid, &Float:vangle = 360.0);
 native FCNPC_UseAggroLineOfSight(npcid, playerid, bool:use = true);
 native bool:FCNPC_IsAggroLineOfSightUsed(npcid, playerid);
 native FCNPC_SetAggroRange(npcid, playerid, Float:range);
@@ -100,7 +100,8 @@ enum FAI_E_DEBUG_RANGE (<<=1) {
 	FAI_DEBUG_AGGRO_RANGE,
 	FAI_DEBUG_LEASH_RANGE,
 	FAI_DEBUG_FACING_ANGLE,
-	FAI_DEBUG_VIEWING_ANGLE
+	FAI_DEBUG_HOR_VIEWING_ANGLE,
+	FAI_DEBUG_VER_VIEWING_ANGLE
 }
 
 //========================================VARIABLES========================================
@@ -146,7 +147,8 @@ enum FAI_E_NPC {
 	FAI_NPC_OUT_OF_AMMO_MELEE_WEAP,
 	FAI_NPC_TARGET, //Can be changed automatically by the script
 	FAI_NPC_BEHAVIOUR[MAX_PLAYERS],
-	Float:FAI_NPC_AGGRO_VIEWING_ANGLE[MAX_PLAYERS],
+	Float:FAI_NPC_AGGRO_HOR_VIEWING_ANGLE[MAX_PLAYERS],
+	Float:FAI_NPC_AGGRO_VER_VIEWING_ANGLE[MAX_PLAYERS],
 	bool:FAI_NPC_AGGRO_LINE_OF_SIGHT[MAX_PLAYERS],
 	Float:FAI_NPC_AGGRO_RANGE[MAX_PLAYERS],
 	Float:FAI_NPC_LEASH_RANGE[MAX_PLAYERS],
@@ -263,7 +265,8 @@ static FAI_ResetNPC(npcid) {
 	FAI_NPCs[npcid][FAI_NPC_TARGET] = INVALID_PLAYER_ID;
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
 		FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid] = FCNPC_BEHAVIOUR_FRIENDLY;
-		FAI_NPCs[npcid][FAI_NPC_AGGRO_VIEWING_ANGLE][playerid] = 360.0;
+		FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][playerid] = 360.0;
+		FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][playerid] = 360.0;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_LINE_OF_SIGHT][playerid] = false;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid] = 20.0;
 		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = 200.0; //The default SA-MP stream_distance
@@ -496,7 +499,7 @@ static bool:FAI_IsPlayerInAggroViewingAngle(playerid, npcid) {
 	angleDifference = floatabs(angleDifference);
 
 	//Check if the player is within the aggro viewing angle
-	if(angleDifference <= FAI_NPCs[npcid][FAI_NPC_AGGRO_VIEWING_ANGLE][playerid]/2) {
+	if(angleDifference <= FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][playerid]/2) {
 		return true;
 	}
 	return false;
@@ -641,12 +644,19 @@ static FAI_ToggleDebugRangeObjects(npcid) {
 	} else {
 		RemovePlayerAttachedObject(npcid, 4);
 	}
-	if(FAI_DebugRanges[npcid] & FAI_DEBUG_VIEWING_ANGLE) { //Green
-		SetPlayerAttachedObject(npcid, 5, 19083, 1, .fRotX = FAI_NPCs[npcid][FAI_NPC_AGGRO_VIEWING_ANGLE]/2, .fRotZ = 90.0);
-		SetPlayerAttachedObject(npcid, 6, 19083, 1, .fRotX = -FAI_NPCs[npcid][FAI_NPC_AGGRO_VIEWING_ANGLE]/2, .fRotZ = 90.0);
+	if(FAI_DebugRanges[npcid] & FAI_DEBUG_HOR_VIEWING_ANGLE) { //Green
+		SetPlayerAttachedObject(npcid, 5, 19083, 1, .fRotX = FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE]/2, .fRotZ = 90.0);
+		SetPlayerAttachedObject(npcid, 6, 19083, 1, .fRotX = -FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE]/2, .fRotZ = 90.0);
 	} else {
 		RemovePlayerAttachedObject(npcid, 5);
 		RemovePlayerAttachedObject(npcid, 6);
+	}
+	if(FAI_DebugRanges[npcid] & FAI_DEBUG_VER_VIEWING_ANGLE) { //Blue
+		SetPlayerAttachedObject(npcid, 7, 19080, 1, .fRotZ = 90.0 + FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE]/2);
+		SetPlayerAttachedObject(npcid, 8, 19080, 1, .fRotZ = 90.0 - FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE]/2);
+	} else {
+		RemovePlayerAttachedObject(npcid, 7);
+		RemovePlayerAttachedObject(npcid, 8);
 	}
 }
 
@@ -1208,10 +1218,11 @@ stock FCNPC_GetBehaviour(npcid, playerid) {
 	return 0;
 }
 
-stock FCNPC_SetAggroViewingAngle(npcid, playerid, Float:angle) {
+stock FCNPC_SetAggroViewingAngle(npcid, playerid, Float:angle, Float:vangle = 360.0) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
-		if(angle >= 0.0 && angle <= 360.0) {
-			FAI_NPCs[npcid][FAI_NPC_AGGRO_VIEWING_ANGLE][playerid] = angle;
+		if(angle >= 0.0 && angle <= 360.0 && vangle >= 0.0 && vangle <= 360.0) {
+			FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][playerid] = angle;
+			FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][playerid] = vangle;
 			FAI_UpdateNPCTarget(npcid);
 
 			//Debug
@@ -1222,9 +1233,10 @@ stock FCNPC_SetAggroViewingAngle(npcid, playerid, Float:angle) {
 	return 0;
 }
 
-stock Float:FCNPC_GetAggroViewingAngle(npcid, playerid) {
+stock Float:FCNPC_GetAggroViewingAngle(npcid, playerid, &Float:vangle = 360.0) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
-		return FAI_NPCs[npcid][FAI_NPC_AGGRO_VIEWING_ANGLE][playerid];
+		vangle = FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][playerid];
+		return FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][playerid];
 	}
 	return 0.0;
 }
