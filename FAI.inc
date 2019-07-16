@@ -31,12 +31,12 @@ native bool:FAI_IsValidNPC(npcid);
 native bool:FAI_IsValidNPCForPlayer(npcid, playerid);
 native FCNPC_SetHealth(npcid, Float:health, Float:max = -1.0);
 native Float:FCNPC_GetHealth(npcid, &Float:max = 100.0);
-native FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, mode = FCNPC_MOVE_MODE_AUTO, pathfinding = FCNPC_MOVE_PATHFINDING_AUTO, Float:radius = 0.0, bool:set_angle = true, Float:min_distance = 0.0, Float:dist_check = 1.5, stopdelay = 250);
-native FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &mode, &pathfinding, &Float:radius, &bool:set_angle, &Float:min_distance, &Float:dist_check, &stopdelay);
+native FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, mode = FCNPC_MOVE_MODE_AUTO, pathfinding = FCNPC_MOVE_PATHFINDING_AUTO, Float:radius = 0.0, bool:set_angle = true, Float:min_distance = 0.0, Float:dist_check = 1.5, stop_delay = 250);
+native FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &mode, &pathfinding, &Float:radius, &bool:set_angle, &Float:min_distance, &Float:dist_check, &stop_delay);
 native FCNPC_SetAimAtInfo(npcid, Float:range = 20.0, bool:shoot = false, shoot_delay = -1, bool:set_angle = true, Float:offset_x = 0.0, Float:offset_y = 0.0, Float:offset_z = 0.0, Float:offset_from_x = 0.0, Float:offset_from_y = 0.0, Float:offset_from_z = 0.0, between_check_mode = FCNPC_ENTITY_MODE_AUTO, between_check_flags = FCNPC_ENTITY_CHECK_ALL);
 native FCNPC_GetAimAtInfo(npcid, &Float:range, &bool:shoot, &shoot_delay, &bool:set_angle, &Float:offset_x, &Float:offset_y, &Float:offset_z, &Float:offset_from_x, &Float:offset_from_y, &Float:offset_from_z, &between_check_mode, &between_check_flags);
-native FCNPC_SetMeleeAttackInfo(npcid, Float:range = 0.5, delay = -1, bool:fightstyle = false);
-native FCNPC_GetMeleeAttackInfo(npcid, &Float:range, &delay, &bool:fightstyle);
+native FCNPC_SetMeleeAttackInfo(npcid, Float:range = 0.5, delay = -1, bool:fighting_style = false);
+native FCNPC_GetMeleeAttackInfo(npcid, &Float:range, &delay, &bool:fighting_style);
 native FCNPC_SetOutOfAmmoMeleeWeapon(npcid, weaponid);
 native FCNPC_GetOutOfAmmoMeleeWeapon(npcid);
 native FCNPC_SetTarget(npcid, playerid);
@@ -60,8 +60,8 @@ native FAI_ToggleRangeDebugging(npcid, playerid, FAI_E_DEBUG_RANGE:ranges);
 
 //========================================CALLBACKS========================================
 //NPCs
-forward FCNPC_OnEncounterStart(npcid, firstTarget, reason);
-forward FCNPC_OnEncounterStop(npcid, lastTarget, reason);
+forward FCNPC_OnEncounterStart(npcid, firsttargetid, reason);
+forward FCNPC_OnEncounterStop(npcid, lasttargetid, reason);
 forward FCNPC_OnPlayerGetAggro(playerid, npcid);
 forward FCNPC_OnPlayerLoseAggro(playerid, npcid);
 
@@ -1067,7 +1067,7 @@ stock bool:FAI_IsValidNPCForPlayer(npcid, playerid) {
 	return false;
 }
 
-stock FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, mode = FCNPC_MOVE_MODE_AUTO, pathfinding = FCNPC_MOVE_PATHFINDING_AUTO, Float:radius = 0.0, bool:set_angle = true, Float:min_distance = 0.0, Float:dist_check = 1.5, stopdelay = 250) {
+stock FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, mode = FCNPC_MOVE_MODE_AUTO, pathfinding = FCNPC_MOVE_PATHFINDING_AUTO, Float:radius = 0.0, bool:set_angle = true, Float:min_distance = 0.0, Float:dist_check = 1.5, stop_delay = 250) {
 	if(FAI_IsValidNPC(npcid)) {
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_TYPE] = type;
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_SPEED] = speed;
@@ -1077,14 +1077,14 @@ stock FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_SET_ANGLE] = set_angle;
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_MIN_DISTANCE] = min_distance;
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_DIST_CHECK] = dist_check;
-		FAI_NPCs[npcid][FAI_NPC_GO_TO_STOP_DELAY] = stopdelay;
+		FAI_NPCs[npcid][FAI_NPC_GO_TO_STOP_DELAY] = stop_delay;
 		FAI_UpdateNPCAttackMove(npcid);
 		return 1;
 	}
 	return 0;
 }
 
-stock FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &mode, &pathfinding, &Float:radius, &bool:set_angle, &Float:min_distance, &Float:dist_check, &stopdelay) {
+stock FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &mode, &pathfinding, &Float:radius, &bool:set_angle, &Float:min_distance, &Float:dist_check, &stop_delay) {
 	if(FAI_IsValidNPC(npcid)) {
 		type = FAI_NPCs[npcid][FAI_NPC_GO_TO_TYPE];
 		speed = FAI_NPCs[npcid][FAI_NPC_GO_TO_SPEED];
@@ -1094,7 +1094,7 @@ stock FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &mode, &pathfinding, &Float:
 		set_angle = FAI_NPCs[npcid][FAI_NPC_GO_TO_SET_ANGLE];
 		min_distance = FAI_NPCs[npcid][FAI_NPC_GO_TO_MIN_DISTANCE];
 		dist_check = FAI_NPCs[npcid][FAI_NPC_GO_TO_DIST_CHECK];
-		stopdelay = FAI_NPCs[npcid][FAI_NPC_GO_TO_STOP_DELAY];
+		stop_delay = FAI_NPCs[npcid][FAI_NPC_GO_TO_STOP_DELAY];
 		return 1;
 	}
 	return 0;
@@ -1142,11 +1142,11 @@ stock FCNPC_GetAimAtInfo(npcid, &Float:range, &bool:shoot, &shoot_delay, &bool:s
 	return 0;
 }
 
-stock FCNPC_SetMeleeAttackInfo(npcid, Float:range = 0.5, delay = -1, bool:fightstyle = false) {
+stock FCNPC_SetMeleeAttackInfo(npcid, Float:range = 0.5, delay = -1, bool:fighting_style = false) {
 	if(FAI_IsValidNPC(npcid)) {
 		FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_RANGE] = range; //Can be negative
 		FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_DELAY] = delay;
-		FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_FIGHT_STL] = fightstyle;
+		FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_FIGHT_STL] = fighting_style;
 		FAI_UpdateNPCAttackMove(npcid);
 
 		//Debug
@@ -1156,11 +1156,11 @@ stock FCNPC_SetMeleeAttackInfo(npcid, Float:range = 0.5, delay = -1, bool:fights
 	return 0;
 }
 
-stock FCNPC_GetMeleeAttackInfo(npcid, &Float:range, &delay, &bool:fightstyle) {
+stock FCNPC_GetMeleeAttackInfo(npcid, &Float:range, &delay, &bool:fighting_style) {
 	if(FAI_IsValidNPC(npcid)) {
 		range = FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_RANGE];
 		delay = FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_DELAY];
-		fightstyle = FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_FIGHT_STL];
+		fighting_style = FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_FIGHT_STL];
 		return 1;
 	}
 	return 0;

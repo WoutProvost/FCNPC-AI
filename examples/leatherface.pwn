@@ -262,7 +262,7 @@ public FCNPC_OnUpdate(npcid)
 	return 1;
 }
 
-public FCNPC_OnEncounterStart(npcid, firstTarget, reason)
+public FCNPC_OnEncounterStart(npcid, firsttargetid, reason)
 {
 	if(npcid == Leatherface) {
 		KillTimer(IdleTimer);
@@ -272,7 +272,7 @@ public FCNPC_OnEncounterStart(npcid, firstTarget, reason)
 	return 1;
 }
 
-public FCNPC_OnEncounterStop(npcid, lastTarget, reason)
+public FCNPC_OnEncounterStop(npcid, lasttargetid, reason)
 {
 	if(npcid == Leatherface) {
 		if(reason != FCNPC_EOR_NPC_DEATH) {
