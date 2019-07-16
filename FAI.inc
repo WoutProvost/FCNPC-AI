@@ -29,8 +29,8 @@ native bool:FAI_IsDestroyNPCsOnExitUsed();
 //NPCs
 native bool:FAI_IsValidNPC(npcid);
 native bool:FAI_IsValidNPCForPlayer(npcid, playerid);
-native FCNPC_SetHealth(npcid, Float:health, Float:maxHealth = -1.0);
-native Float:FCNPC_GetHealth(npcid, &Float:maxHealth = 100.0);
+native FCNPC_SetHealth(npcid, Float:health, Float:max = -1.0);
+native Float:FCNPC_GetHealth(npcid, &Float:max = 100.0);
 native FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, mode = FCNPC_MOVE_MODE_AUTO, pathfinding = FCNPC_MOVE_PATHFINDING_AUTO, Float:radius = 0.0, bool:set_angle = true, Float:min_distance = 0.0, Float:dist_check = 1.5, stopdelay = 250);
 native FCNPC_GetGoToInfo(npcid, &type, &Float:speed, &mode, &pathfinding, &Float:radius, &bool:set_angle, &Float:min_distance, &Float:dist_check, &stopdelay);
 native FCNPC_SetAimAtInfo(npcid, Float:range = 20.0, bool:shoot = false, shoot_delay = -1, bool:set_angle = true, Float:offset_x = 0.0, Float:offset_y = 0.0, Float:offset_z = 0.0, Float:offset_from_x = 0.0, Float:offset_from_y = 0.0, Float:offset_from_z = 0.0, between_check_mode = FCNPC_ENTITY_MODE_AUTO, between_check_flags = FCNPC_ENTITY_CHECK_ALL);
@@ -988,20 +988,20 @@ stock FAI_FCNPC_Create(const name[]) { //Using function hook instead of callback
 #endif
 #define FCNPC_Create FAI_FCNPC_Create
 
-stock FAI_FCNPC_SetHealth(npcid, Float:health, Float:maxHealth = -1.0) { //Has to remain after hooking the damage callback!
+stock FAI_FCNPC_SetHealth(npcid, Float:health, Float:max = -1.0) { //Has to remain after hooking the damage callback!
 	if(FAI_IsValidNPC(npcid)) {
 		if(health < 0.0) {
 			health = 0.0;
 		}
-		if(maxHealth < 0.0) { //Keep previous maxHealth when using a negative value
-			maxHealth = FAI_NPCs[npcid][FAI_NPC_MAX_HEALTH];
+		if(max < 0.0) { //Keep previous max health when using a negative value
+			max = FAI_NPCs[npcid][FAI_NPC_MAX_HEALTH];
 		}
-		if(health > maxHealth) {
-			maxHealth = health;
+		if(health > max) {
+			max = health;
 		}
 		FAI_NPCs[npcid][FAI_NPC_HEALTH] = health;
-		FAI_NPCs[npcid][FAI_NPC_MAX_HEALTH] = maxHealth;
-		if(health == 0.0) { //Should be last, otherwise calling respawn in OnDeath will not reset the health to maxHealth but will remain 0
+		FAI_NPCs[npcid][FAI_NPC_MAX_HEALTH] = max;
+		if(health == 0.0) { //Should be last, otherwise calling respawn in OnDeath will not reset the health to max health but will remain 0
 			if(!FCNPC_IsDead(npcid)) {
 				FCNPC_Kill(npcid);
 			}
@@ -1017,9 +1017,9 @@ stock FAI_FCNPC_SetHealth(npcid, Float:health, Float:maxHealth = -1.0) { //Has t
 #endif
 #define FCNPC_SetHealth FAI_FCNPC_SetHealth
 
-stock Float:FAI_FCNPC_GetHealth(npcid, &Float:maxHealth = 100.0) { //Default value can be anything, since it will be ignored anyway
+stock Float:FAI_FCNPC_GetHealth(npcid, &Float:max = 100.0) { //Default value can be anything, since it will be ignored anyway
 	if(FAI_IsValidNPC(npcid)) {
-		maxHealth = FAI_NPCs[npcid][FAI_NPC_MAX_HEALTH];
+		max = FAI_NPCs[npcid][FAI_NPC_MAX_HEALTH];
 		return FAI_NPCs[npcid][FAI_NPC_HEALTH];
 	}
 	return FCNPC_GetHealth(npcid);
