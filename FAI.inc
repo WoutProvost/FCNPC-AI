@@ -522,10 +522,9 @@ static bool:FAI_IsPlayerInAggroLineOfSight(playerid, npcid) {
 	}
 
 	//Adjust height position of the NPC so that the ray will be cast from the shoulder instead of the groin
+	new Float:offset_from_z = 0.5;
 	if(npcAction == SPECIAL_ACTION_DUCK) {
-		zn -= 0.2;
-	} else {
-		zn += 0.5;
+		offset_from_z -= 0.2;
 	}
 
 	//Adjust height position of the player so that the ray will be cast to the shoulder instead of the groin
@@ -536,12 +535,12 @@ static bool:FAI_IsPlayerInAggroLineOfSight(playerid, npcid) {
 	}
 
 	//Check if a ray cast between the NPC and the player collides with anything
-	#if defined _colandreas_included
-		new Float:xc, Float:yc, Float:zc;
-		if(CA_RayCastLine(xn, yn, zn, xp, yp, zp, xc, yc, zc) != 0) {
-			return false;
-		}
-	#endif
+	new Float:range = GetPlayerDistanceFromPoint(npcid, xp, yp, zp);
+	new entity_id;
+	FCNPC_GetClosestEntityInBetween(npcid, xp, yp, zp, range, FCNPC_ENTITY_MODE_COLANDREAS, FCNPC_ENTITY_CHECK_ALL, 0.0, 0.0, offset_from_z, entity_id);
+	if(entity_id != 0xFFFF) {
+		return false;
+	}
 	return true;
 }
 
