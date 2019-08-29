@@ -53,7 +53,6 @@ native FCNPC_SetLeashRange(npcid, playerid, Float:range);
 native Float:FCNPC_GetLeashRange(npcid, playerid);
 native FCNPC_SetThreat(npcid, playerid, Float:threat);
 native Float:FCNPC_GetThreat(npcid, playerid);
-native FCNPC_TriggerSound(npcid, Float:x, Float:y, Float:z);
 
 //Debug
 native FAI_ToggleRangeDebugging(npcid, playerid, FAI_E_DEBUG_RANGE:ranges);
@@ -1335,14 +1334,6 @@ stock Float:FCNPC_GetThreat(npcid, playerid) {
 		return FAI_NPCs[npcid][FAI_NPC_THREAT][playerid];
 	}
 	return 0.0;
-}
-
-stock FCNPC_TriggerSound(npcid, Float:x, Float:y, Float:z) {
-	if(FAI_IsValidNPC(npcid)) {
-		//TODO
-		return 1;
-	}
-	return 0;
 }
 
 //Debug
