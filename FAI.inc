@@ -75,16 +75,16 @@ forward FCNPC_OnPlayerLoseAggro(playerid, npcid);
 
 //NPCs
 enum {
-	FCNPC_EAR_DAMAGE,
-	FCNPC_EAR_AGGRO,
-	FCNPC_EAR_EXPLICIT_TARGET_SET
+	FCNPC_OEA_DAMAGE,
+	FCNPC_OEA_AGGRO,
+	FCNPC_OEA_EXPLICIT_TARGET_SET
 }
 enum {
-	FCNPC_EOR_NPC_DEATH,
-	FCNPC_EOR_NPC_RESPAWN,
-	FCNPC_EOR_NPC_DESTROY,
-	FCNPC_EOR_NO_VALID_NEW_TARGET,
-	FCNPC_EOR_EXPLICIT_TARGET_SET
+	FCNPC_OEO_NPC_DEATH,
+	FCNPC_OEO_NPC_RESPAWN,
+	FCNPC_OEO_NPC_DESTROY,
+	FCNPC_OEO_NO_VALID_NEW_TARGET,
+	FCNPC_OEO_EXPLICIT_TARGET_SET
 }
 enum FCNPC_E_BEHAVIOUR {
 	FCNPC_BEHAVIOUR_FRIENDLY,
@@ -395,7 +395,7 @@ static FAI_ChangeNPCStopAttackMove(npcid) {
 static FAI_UpdateNPCTarget(npcid) {
 	if(!FCNPC_IsDead(npcid)) {
 		new newtargetid = INVALID_PLAYER_ID;
-		new reason = FCNPC_EAR_AGGRO;
+		new reason = FCNPC_OEA_AGGRO;
 		//When the encounter has been started, search for an overaggroing player
 		if(FAI_NPCs[npcid][FAI_NPC_TARGET] != INVALID_PLAYER_ID) {
 			new highestplayerid = FAI_GetHighestThreatPlayer(npcid);
@@ -424,7 +424,7 @@ static FAI_UpdateNPCTarget(npcid) {
 				//Don't do anything when the target doesn't change
 				if(FAI_NPCs[npcid][FAI_NPC_TARGET] != newtargetid) {
 					if(newtargetid == INVALID_PLAYER_ID) {
-						reason = FCNPC_EOR_NO_VALID_NEW_TARGET;
+						reason = FCNPC_OEO_NO_VALID_NEW_TARGET;
 					}
 					FAI_ChangeNPCTarget(npcid, newtargetid, reason);
 				}
@@ -437,9 +437,9 @@ static FAI_UpdateNPCTarget(npcid) {
 		if(!FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET]) || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][FAI_NPCs[npcid][FAI_NPC_TARGET]] == FCNPC_BEHAVIOUR_FRIENDLY || !FAI_IsPlayerInLeashRange(FAI_NPCs[npcid][FAI_NPC_TARGET], npcid)) {
 			//Set target to closest player
 			new newtargetid = FAI_ClosestPlayerInAggroSghtRng(npcid);
-			new reason = FCNPC_EAR_AGGRO;
+			new reason = FCNPC_OEA_AGGRO;
 			if(newtargetid == INVALID_PLAYER_ID) {
-				reason = FCNPC_EOR_NO_VALID_NEW_TARGET;
+				reason = FCNPC_OEO_NO_VALID_NEW_TARGET;
 			}
 			FAI_ChangeNPCTarget(npcid, newtargetid, reason);
 		}
@@ -814,7 +814,7 @@ public FCNPC_OnDestroy(npcid) //This will both handle NPCs being destroyed progr
 {
 	//NPCs
 	if(FAI_IsValidNPC(npcid)) {
-		FAI_ChangeNPCTarget(npcid, INVALID_PLAYER_ID, FCNPC_EOR_NPC_DESTROY);
+		FAI_ChangeNPCTarget(npcid, INVALID_PLAYER_ID, FCNPC_OEO_NPC_DESTROY);
 		FAI_ResetNPC(npcid);
 	}
 	new ret = 1;
@@ -869,7 +869,7 @@ public FCNPC_OnRespawn(npcid)
 		if(FAI_NPCs[npcid][FAI_NPC_HEALTH] == 0.0) {
 			FAI_NPCs[npcid][FAI_NPC_HEALTH] = FAI_NPCs[npcid][FAI_NPC_MAX_HEALTH];
 		} else {
-			FAI_ChangeNPCTarget(npcid, INVALID_PLAYER_ID, FCNPC_EOR_NPC_RESPAWN);
+			FAI_ChangeNPCTarget(npcid, INVALID_PLAYER_ID, FCNPC_OEO_NPC_RESPAWN);
 		}
 
 		//Debug
@@ -897,7 +897,7 @@ public FCNPC_OnDeath(npcid, killerid, reason)
 	//NPCs
 	if(FAI_IsValidNPC(npcid)) {
 		FAI_NPCs[npcid][FAI_NPC_HEALTH] = 0.0; //In case the NPC was killed programmatically, or by setting it's health to 0.0, or by getting damaged
-		FAI_ChangeNPCTarget(npcid, INVALID_PLAYER_ID, FCNPC_EOR_NPC_DEATH);
+		FAI_ChangeNPCTarget(npcid, INVALID_PLAYER_ID, FCNPC_OEO_NPC_DEATH);
 	}
 	new ret = 1;
 	#if defined FAI_FCNPC_OnDeath
@@ -941,7 +941,7 @@ public FCNPC_OnTakeDamage(npcid, issuerid, Float:amount, weaponid, bodypart) //H
 					//If the encounter has not been started
 					else {
 						//Set target to issuerid
-						FAI_ChangeNPCTarget(npcid, issuerid, FCNPC_EAR_DAMAGE);
+						FAI_ChangeNPCTarget(npcid, issuerid, FCNPC_OEA_DAMAGE);
 					}
 				}
 
@@ -1198,9 +1198,9 @@ stock FCNPC_GetOutOfAmmoMeleeWeapon(npcid) {
 
 stock FCNPC_SetTarget(npcid, playerid) {
 	if(FAI_IsValidNPC(npcid)) {
-		new reason = FCNPC_EAR_EXPLICIT_TARGET_SET;
+		new reason = FCNPC_OEA_EXPLICIT_TARGET_SET;
 		if(playerid == INVALID_PLAYER_ID) {
-			reason = FCNPC_EOR_EXPLICIT_TARGET_SET;
+			reason = FCNPC_OEO_EXPLICIT_TARGET_SET;
 		}
 		return FAI_ChangeNPCTarget(npcid, playerid, reason); //Can be INVALID_PLAYER_ID
 	}
