@@ -47,15 +47,19 @@ native FCNPC_SetAggroViewingAngle(npcid, playerid, Float:angle, Float:vangle = 3
 native Float:FCNPC_GetAggroViewingAngle(npcid, playerid, &Float:vangle = 360.0);
 native FCNPC_UseAggroLineOfSight(npcid, playerid, bool:use = true);
 native bool:FCNPC_IsAggroLineOfSightUsed(npcid, playerid);
-native FCNPC_SetAggroRange(npcid, playerid, Float:range);
-native Float:FCNPC_GetAggroRange(npcid, playerid);
+native FCNPC_SetAggroSightRange(npcid, playerid, Float:range);
+native Float:FCNPC_GetAggroSightRange(npcid, playerid);
+native FCNPC_SetAggroHearingRange(npcid, playerid, Float:range);
+native Float:FCNPC_GetAggroHearingRange(npcid, playerid);
 native FCNPC_SetLeashRange(npcid, playerid, Float:range);
 native Float:FCNPC_GetLeashRange(npcid, playerid);
 native FCNPC_SetThreat(npcid, playerid, Float:threat);
 native Float:FCNPC_GetThreat(npcid, playerid);
+native FCNPC_TriggerSound(npcid, Float:x, Float:y, Float:z);
 
 //Debug
 native FAI_ToggleRangeDebugging(npcid, playerid, FAI_E_DEBUG_RANGE:ranges);
+native FAI_ToggleAngleDebugging(npcid, playerid, FAI_E_DEBUG_ANGLE:angles);
 */
 
 //========================================CALLBACKS========================================
@@ -97,9 +101,14 @@ enum FAI_E_DEBUG_RANGE (<<=1) {
 	FAI_DEBUG_RANGE_NONE = 0,
 	FAI_DEBUG_AIM_AT_RANGE = 1,
 	FAI_DEBUG_MELEE_ATTACK_RANGE,
-	FAI_DEBUG_AGGRO_RANGE,
-	FAI_DEBUG_LEASH_RANGE,
-	FAI_DEBUG_FACING_ANGLE,
+	FAI_DEBUG_AGGRO_SIGHT_RANGE,
+	FAI_DEBUG_AGGRO_HEARING_RANGE,
+	FAI_DEBUG_LEASH_RANGE
+}
+enum FAI_E_DEBUG_ANGLE (<<=1) {
+	FAI_DEBUG_ANGLE_ALL = -1,
+	FAI_DEBUG_ANGLE_NONE = 0,
+	FAI_DEBUG_FACING_ANGLE = 1,
 	FAI_DEBUG_HOR_VIEWING_ANGLE,
 	FAI_DEBUG_VER_VIEWING_ANGLE
 }
@@ -150,7 +159,8 @@ enum FAI_E_NPC {
 	Float:FAI_NPC_AGGRO_HOR_VIEWING_ANGLE[MAX_PLAYERS],
 	Float:FAI_NPC_AGGRO_VER_VIEWING_ANGLE[MAX_PLAYERS],
 	bool:FAI_NPC_AGGRO_LINE_OF_SIGHT[MAX_PLAYERS],
-	Float:FAI_NPC_AGGRO_RANGE[MAX_PLAYERS],
+	Float:FAI_NPC_AGGRO_SIGHT_RANGE[MAX_PLAYERS],
+	Float:FAI_NPC_AGGRO_HEARING_RANGE[MAX_PLAYERS],
 	Float:FAI_NPC_LEASH_RANGE[MAX_PLAYERS],
 	Float:FAI_NPC_THREAT[MAX_PLAYERS] //Can be changed automatically by the script
 }
@@ -158,7 +168,9 @@ static FAI_NPCs[MAX_PLAYERS][FAI_E_NPC];
 
 //Debug
 static FAI_E_DEBUG_RANGE:FAI_DebugRanges[MAX_PLAYERS] = {FAI_DEBUG_RANGE_NONE, ...};
-static FAI_DebugPlayerID[MAX_PLAYERS] = INVALID_PLAYER_ID;
+static FAI_DebugRangesPlayerID[MAX_PLAYERS] = INVALID_PLAYER_ID;
+static FAI_E_DEBUG_ANGLE:FAI_DebugAngles[MAX_PLAYERS] = {FAI_DEBUG_ANGLE_NONE, ...};
+static FAI_DebugAnglesPlayerID[MAX_PLAYERS] = INVALID_PLAYER_ID;
 
 //========================================INTERNAL FUNCTIONS========================================
 //Silence warning 208
@@ -268,14 +280,17 @@ static FAI_ResetNPC(npcid) {
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][playerid] = 360.0;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][playerid] = 360.0;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_LINE_OF_SIGHT][playerid] = false;
-		FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid] = 20.0;
+		FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid] = 20.0;
+		FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid] = 40.0;
 		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = 200.0; //The default SA-MP stream_distance
 		FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = 0.0;
 	}
 
 	//Debug
 	FAI_DebugRanges[npcid] = FAI_DEBUG_RANGE_NONE;
-	FAI_DebugPlayerID[npcid] = INVALID_PLAYER_ID;
+	FAI_DebugRangesPlayerID[npcid] = INVALID_PLAYER_ID;
+	FAI_DebugAngles[npcid] = FAI_DEBUG_ANGLE_NONE;
+	FAI_DebugAnglesPlayerID[npcid] = INVALID_PLAYER_ID;
 }
 
 static bool:FAI_IsMeleeWeapon(weaponid) {
@@ -405,12 +420,12 @@ static FAI_UpdateNPCTarget(npcid) {
 				//When the encounter hasn't been started
 				if(FAI_NPCs[npcid][FAI_NPC_TARGET] == INVALID_PLAYER_ID) {
 					//Set target to closest player in viewing angle and line of sight
-					newtargetid = FAI_ClosestPlayerInAggroRange(npcid, true, true);
+					newtargetid = FAI_ClosestPlayerInAggroSghtRng(npcid, true, true);
 				}
 				//When the encounter has been started
 				else {
 					//Set target to closest player
-					newtargetid = FAI_ClosestPlayerInAggroRange(npcid);
+					newtargetid = FAI_ClosestPlayerInAggroSghtRng(npcid);
 				}
 				//Don't do anything when the target doesn't change
 				if(FAI_NPCs[npcid][FAI_NPC_TARGET] != newtargetid) {
@@ -427,7 +442,7 @@ static FAI_UpdateNPCTarget(npcid) {
 		//Get new target when there is no target, or if the current target is invalid, or if the behaviour for the current target is friendly
 		if(!FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET]) || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][FAI_NPCs[npcid][FAI_NPC_TARGET]] == FCNPC_BEHAVIOUR_FRIENDLY || !FAI_IsPlayerInLeashRange(FAI_NPCs[npcid][FAI_NPC_TARGET], npcid)) {
 			//Set target to closest player
-			new newtargetid = FAI_ClosestPlayerInAggroRange(npcid);
+			new newtargetid = FAI_ClosestPlayerInAggroSghtRng(npcid);
 			new reason = FCNPC_EAR_AGGRO;
 			if(newtargetid == INVALID_PLAYER_ID) {
 				reason = FCNPC_EOR_NO_VALID_NEW_TARGET;
@@ -544,7 +559,7 @@ static bool:FAI_IsPlayerInAggroLineOfSight(playerid, npcid) {
 	return true;
 }
 
-static bool:FAI_IsPlayerInAggroRange(playerid, npcid) {
+static bool:FAI_IsPlayerInAggroSightRange(playerid, npcid) {
 	new Float:x, Float:y, Float:z;
 	if(!IsPlayerNPC(playerid)) {
 		GetPlayerPos(playerid, x, y, z);
@@ -552,7 +567,15 @@ static bool:FAI_IsPlayerInAggroRange(playerid, npcid) {
 		FCNPC_GetPosition(playerid, x, y, z);
 	}
 	new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
-	if(FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid] < 0.0 || npcRange <= FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid]) {
+	if(FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid] < 0.0 || npcRange <= FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid]) {
+		return true;
+	}
+	return false;
+}
+
+static bool:FAI_IsSoundInAggroHearingRange(npcid, Float:x, Float:y, Float:z) {
+	new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
+	if(FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid] < 0.0 || npcRange <= FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid]) {
 		return true;
 	}
 	return false;
@@ -572,7 +595,7 @@ static bool:FAI_IsPlayerInLeashRange(playerid, npcid) {
 	return false;
 }
 
-static FAI_ClosestPlayerInAggroRange(npcid, bool:checkViewingAngle = false, bool:checkLineOfSight = false) {
+static FAI_ClosestPlayerInAggroSghtRng(npcid, bool:checkViewingAngle = false, bool:checkLineOfSight = false) {
 	new closestPlayer = INVALID_PLAYER_ID;
 	new Float:closestPlayerRange = 0.0;
 	for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
@@ -586,7 +609,7 @@ static FAI_ClosestPlayerInAggroRange(npcid, bool:checkViewingAngle = false, bool
 				FCNPC_GetPosition(playerid, x, y, z);
 			}
 			new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
-			if(FAI_IsPlayerInAggroRange(playerid, npcid) && (!checkViewingAngle || FAI_IsPlayerInAggroViewingAngle(playerid, npcid)) && (!checkLineOfSight || !FAI_NPCs[npcid][FAI_NPC_AGGRO_LINE_OF_SIGHT][playerid] || FAI_IsPlayerInAggroLineOfSight(playerid, npcid)) && (closestPlayer == INVALID_PLAYER_ID || npcRange < closestPlayerRange)) {
+			if(FAI_IsPlayerInAggroSightRange(playerid, npcid) && (!checkViewingAngle || FAI_IsPlayerInAggroViewingAngle(playerid, npcid)) && (!checkLineOfSight || !FAI_NPCs[npcid][FAI_NPC_AGGRO_LINE_OF_SIGHT][playerid] || FAI_IsPlayerInAggroLineOfSight(playerid, npcid)) && (closestPlayer == INVALID_PLAYER_ID || npcRange < closestPlayerRange)) {
 				closestPlayerRange = npcRange;
 				closestPlayer = playerid;
 			}
@@ -626,36 +649,45 @@ static FAI_ToggleDebugRangeObjects(npcid) {
 	} else {
 		RemovePlayerAttachedObject(npcid, 1);
 	}
-	if(FAI_DebugRanges[npcid] & FAI_DEBUG_AGGRO_RANGE && FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][FAI_DebugPlayerID[npcid]] > 0.0) { //Red
-		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][FAI_DebugPlayerID[npcid]];
+	if(FAI_DebugRanges[npcid] & FAI_DEBUG_AGGRO_SIGHT_RANGE && FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][FAI_DebugRangesPlayerID[npcid]] > 0.0) { //Red
+		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][FAI_DebugRangesPlayerID[npcid]];
 		SetPlayerAttachedObject(npcid, 2, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFFFF0000);
 	} else {
 		RemovePlayerAttachedObject(npcid, 2);
 	}
-	if(FAI_DebugRanges[npcid] & FAI_DEBUG_LEASH_RANGE && FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][FAI_DebugPlayerID[npcid]] > 0.0) { //Green
-		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][FAI_DebugPlayerID[npcid]];
-		SetPlayerAttachedObject(npcid, 3, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFF00FF00);
+	if(FAI_DebugRanges[npcid] & FAI_DEBUG_AGGRO_HEARING_RANGE && FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][FAI_DebugRangesPlayerID[npcid]] > 0.0) { //Black
+		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][FAI_DebugRangesPlayerID[npcid]];
+		SetPlayerAttachedObject(npcid, 3, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFF000000);
 	} else {
 		RemovePlayerAttachedObject(npcid, 3);
 	}
-	if(FAI_DebugRanges[npcid] & FAI_DEBUG_FACING_ANGLE) { //Red
-		SetPlayerAttachedObject(npcid, 4, 18643, 1, .fRotZ = 90.0);
+	if(FAI_DebugRanges[npcid] & FAI_DEBUG_LEASH_RANGE && FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][FAI_DebugRangesPlayerID[npcid]] > 0.0) { //Green
+		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][FAI_DebugRangesPlayerID[npcid]];
+		SetPlayerAttachedObject(npcid, 4, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFF00FF00);
 	} else {
 		RemovePlayerAttachedObject(npcid, 4);
 	}
-	if(FAI_DebugRanges[npcid] & FAI_DEBUG_HOR_VIEWING_ANGLE) { //Green
-		SetPlayerAttachedObject(npcid, 5, 19083, 1, .fRotX = FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE]/2, .fRotZ = 90.0);
-		SetPlayerAttachedObject(npcid, 6, 19083, 1, .fRotX = -FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE]/2, .fRotZ = 90.0);
+}
+
+static FAI_ToggleDebugAngleObjects(npcid) {
+	if(FAI_DebugAngles[npcid] & FAI_DEBUG_FACING_ANGLE) { //Red
+		SetPlayerAttachedObject(npcid, 0, 18643, 1, .fRotZ = 90.0);
 	} else {
-		RemovePlayerAttachedObject(npcid, 5);
-		RemovePlayerAttachedObject(npcid, 6);
+		RemovePlayerAttachedObject(npcid, 0);
 	}
-	if(FAI_DebugRanges[npcid] & FAI_DEBUG_VER_VIEWING_ANGLE) { //Blue
-		SetPlayerAttachedObject(npcid, 7, 19080, 1, .fRotZ = 90.0 + FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE]/2);
-		SetPlayerAttachedObject(npcid, 8, 19080, 1, .fRotZ = 90.0 - FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE]/2);
+	if(FAI_DebugAngles[npcid] & FAI_DEBUG_HOR_VIEWING_ANGLE) { //Green
+		SetPlayerAttachedObject(npcid, 1, 19083, 1, .fRotX = FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0);
+		SetPlayerAttachedObject(npcid, 2, 19083, 1, .fRotX = -FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0);
 	} else {
-		RemovePlayerAttachedObject(npcid, 7);
-		RemovePlayerAttachedObject(npcid, 8);
+		RemovePlayerAttachedObject(npcid, 1);
+		RemovePlayerAttachedObject(npcid, 2);
+	}
+	if(FAI_DebugAngles[npcid] & FAI_DEBUG_VER_VIEWING_ANGLE) { //Blue
+		SetPlayerAttachedObject(npcid, 3, 19080, 1, .fRotZ = 90.0 - FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
+		SetPlayerAttachedObject(npcid, 4, 19080, 1, .fRotZ = 90.0 + FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
+	} else {
+		RemovePlayerAttachedObject(npcid, 3);
+		RemovePlayerAttachedObject(npcid, 4);
 	}
 }
 
@@ -862,6 +894,7 @@ public FCNPC_OnRespawn(npcid)
 
 		//Debug
 		FAI_ToggleDebugRangeObjects(npcid);
+		FAI_ToggleDebugAngleObjects(npcid);
 	}
 	new ret = 1;
 	#if defined FAI_FCNPC_OnRespawn
@@ -1117,6 +1150,7 @@ stock FCNPC_SetAimAtInfo(npcid, Float:range = 20.0, bool:shoot = false, shoot_de
 
 		//Debug
 		FAI_ToggleDebugRangeObjects(npcid);
+		FAI_ToggleDebugAngleObjects(npcid);
 		return 1;
 	}
 	return 0;
@@ -1150,6 +1184,7 @@ stock FCNPC_SetMeleeAttackInfo(npcid, Float:range = 0.5, delay = -1, bool:fighti
 
 		//Debug
 		FAI_ToggleDebugRangeObjects(npcid);
+		FAI_ToggleDebugAngleObjects(npcid);
 		return 1;
 	}
 	return 0;
@@ -1226,6 +1261,7 @@ stock FCNPC_SetAggroViewingAngle(npcid, playerid, Float:angle, Float:vangle = 36
 
 			//Debug
 			FAI_ToggleDebugRangeObjects(npcid);
+			FAI_ToggleDebugAngleObjects(npcid);
 			return 1;
 		}
 	}
@@ -1255,38 +1291,67 @@ stock bool:FCNPC_IsAggroLineOfSightUsed(npcid, playerid) {
 	}
 }
 
-stock FCNPC_SetAggroRange(npcid, playerid, Float:range) {
+stock FCNPC_SetAggroSightRange(npcid, playerid, Float:range) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
 		if(range >= 0.0 && range > FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid]) {
 			range = FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid];
 		}
-		FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid] = range; //Can be negative
+		FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid] = range; //Can be negative
 		FAI_UpdateNPCTarget(npcid);
 
 		//Debug
 		FAI_ToggleDebugRangeObjects(npcid);
+		FAI_ToggleDebugAngleObjects(npcid);
 		return 1;
 	}
 	return 0;
 }
 
-stock Float:FCNPC_GetAggroRange(npcid, playerid) {
+stock Float:FCNPC_GetAggroSightRange(npcid, playerid) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
-		return FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid];
+		return FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid];
+	}
+	return 0.0;
+}
+
+stock FCNPC_SetAggroHearingRange(npcid, playerid, Float:range) {
+	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
+		if(range >= 0.0 && range > FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid]) {
+			range = FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid];
+		}
+		FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid] = range; //Can be negative
+		FAI_UpdateNPCTarget(npcid);
+
+		//Debug
+		FAI_ToggleDebugRangeObjects(npcid);
+		FAI_ToggleDebugAngleObjects(npcid);
+		return 1;
+	}
+	return 0;
+}
+
+stock Float:FCNPC_GetAggroHearingRange(npcid, playerid) {
+	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
+		return FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid];
 	}
 	return 0.0;
 }
 
 stock FCNPC_SetLeashRange(npcid, playerid, Float:range) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
-		if(range >= 0.0 && range < FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid]) {
-			range = FAI_NPCs[npcid][FAI_NPC_AGGRO_RANGE][playerid];
+		if(range >= 0.0 && (range < FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid] || range < FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid])) {
+			if(FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid] >= FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid]) {
+				range = FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid];
+			} else {
+				range = FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid];
+			}
 		}
 		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = range; //Can be negative
 		FAI_UpdateNPCTarget(npcid);
 
 		//Debug
 		FAI_ToggleDebugRangeObjects(npcid);
+		FAI_ToggleDebugAngleObjects(npcid);
 		return 1;
 	}
 	return 0;
@@ -1318,12 +1383,34 @@ stock Float:FCNPC_GetThreat(npcid, playerid) {
 	return 0.0;
 }
 
+stock FCNPC_TriggerSound(npcid, Float:x, Float:y, Float:z) {
+	if(FAI_IsValidNPC(npcid)) {
+		//TODO
+		return 1;
+	}
+	return 0;
+}
+
 //Debug
 stock FAI_ToggleRangeDebugging(npcid, playerid, FAI_E_DEBUG_RANGE:ranges) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
+		FAI_DebugAngles[npcid] = FAI_DEBUG_ANGLE_NONE; //Not enough attached object slots to show both ranges and angles
+		FAI_ToggleDebugAngleObjects(npcid);
 		FAI_DebugRanges[npcid] = ranges;
-		FAI_DebugPlayerID[npcid] = playerid;
+		FAI_DebugRangesPlayerID[npcid] = playerid;
 		FAI_ToggleDebugRangeObjects(npcid);
+		return 1;
+	}
+	return 0;
+}
+
+stock FAI_ToggleAngleDebugging(npcid, playerid, FAI_E_DEBUG_ANGLE:angles) {
+	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
+		FAI_DebugRanges[npcid] = FAI_DEBUG_RANGE_NONE; //Not enough attached object slots to show both ranges and angles
+		FAI_ToggleDebugRangeObjects(npcid);
+		FAI_DebugAngles[npcid] = angles;
+		FAI_DebugAnglesPlayerID[npcid] = playerid;
+		FAI_ToggleDebugAngleObjects(npcid);
 		return 1;
 	}
 	return 0;
