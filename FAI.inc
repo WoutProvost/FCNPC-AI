@@ -41,8 +41,8 @@ native FCNPC_SetOutOfAmmoMeleeWeapon(npcid, weaponid);
 native FCNPC_GetOutOfAmmoMeleeWeapon(npcid);
 native FCNPC_SetTarget(npcid, playerid);
 native FCNPC_GetTarget(npcid);
-native FCNPC_SetBehaviour(npcid, playerid, behaviour);
-native FCNPC_GetBehaviour(npcid, playerid);
+native FCNPC_SetBehaviour(npcid, playerid, FCNPC_E_BEHAVIOUR:behaviour);
+native FCNPC_E_BEHAVIOUR:FCNPC_GetBehaviour(npcid, playerid);
 native FCNPC_SetAggroViewingAngle(npcid, playerid, Float:angle, Float:vangle = 360.0);
 native Float:FCNPC_GetAggroViewingAngle(npcid, playerid, &Float:vangle = 360.0);
 native FCNPC_UseAggroLineOfSight(npcid, playerid, bool:use = true);
@@ -86,7 +86,7 @@ enum {
 	FCNPC_EOR_NO_VALID_NEW_TARGET,
 	FCNPC_EOR_EXPLICIT_TARGET_SET
 }
-enum {
+enum FCNPC_E_BEHAVIOUR {
 	FCNPC_BEHAVIOUR_FRIENDLY,
 	FCNPC_BEHAVIOUR_NEUTRAL,
 	FCNPC_BEHAVIOUR_UNFRIENDLY
@@ -151,7 +151,7 @@ enum FAI_E_NPC {
 	bool:FAI_NPC_MELEE_ATTACK_FIGHT_STL,
 	FAI_NPC_OUT_OF_AMMO_MELEE_WEAP,
 	FAI_NPC_TARGET, //Can be changed automatically by the script
-	FAI_NPC_BEHAVIOUR[MAX_PLAYERS],
+	FCNPC_E_BEHAVIOUR:FAI_NPC_BEHAVIOUR[MAX_PLAYERS],
 	Float:FAI_NPC_AGGRO_HOR_VIEWING_ANGLE[MAX_PLAYERS],
 	Float:FAI_NPC_AGGRO_VER_VIEWING_ANGLE[MAX_PLAYERS],
 	bool:FAI_NPC_AGGRO_LINE_OF_SIGHT[MAX_PLAYERS],
@@ -1214,9 +1214,9 @@ stock FCNPC_GetTarget(npcid) {
 	return 0;
 }
 
-stock FCNPC_SetBehaviour(npcid, playerid, behaviour) {
+stock FCNPC_SetBehaviour(npcid, playerid, FCNPC_E_BEHAVIOUR:behaviour) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
-		if(behaviour == FCNPC_BEHAVIOUR_FRIENDLY || behaviour == FCNPC_BEHAVIOUR_NEUTRAL || behaviour == FCNPC_BEHAVIOUR_UNFRIENDLY) {
+		if(behaviour >= FCNPC_E_BEHAVIOUR:0 && behaviour < FCNPC_E_BEHAVIOUR) {
 			FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid] = behaviour;
 			FAI_UpdateNPCTarget(npcid);
 			return 1;
@@ -1225,7 +1225,7 @@ stock FCNPC_SetBehaviour(npcid, playerid, behaviour) {
 	return 0;
 }
 
-stock FCNPC_GetBehaviour(npcid, playerid) {
+stock FCNPC_E_BEHAVIOUR:FCNPC_GetBehaviour(npcid, playerid) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
 		return FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid];
 	}
