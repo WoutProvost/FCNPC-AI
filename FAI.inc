@@ -49,8 +49,6 @@ native FCNPC_UseAggroLineOfSight(npcid, playerid, bool:use = true);
 native bool:FCNPC_IsAggroLineOfSightUsed(npcid, playerid);
 native FCNPC_SetAggroSightRange(npcid, playerid, Float:range);
 native Float:FCNPC_GetAggroSightRange(npcid, playerid);
-native FCNPC_SetAggroHearingRange(npcid, playerid, Float:range);
-native Float:FCNPC_GetAggroHearingRange(npcid, playerid);
 native FCNPC_SetLeashRange(npcid, playerid, Float:range);
 native Float:FCNPC_GetLeashRange(npcid, playerid);
 native FCNPC_SetThreat(npcid, playerid, Float:threat);
@@ -102,7 +100,6 @@ enum FAI_E_DEBUG_RANGE (<<=1) {
 	FAI_DEBUG_AIM_AT_RANGE = 1,
 	FAI_DEBUG_MELEE_ATTACK_RANGE,
 	FAI_DEBUG_AGGRO_SIGHT_RANGE,
-	FAI_DEBUG_AGGRO_HEARING_RANGE,
 	FAI_DEBUG_LEASH_RANGE
 }
 enum FAI_E_DEBUG_ANGLE (<<=1) {
@@ -160,7 +157,6 @@ enum FAI_E_NPC {
 	Float:FAI_NPC_AGGRO_VER_VIEWING_ANGLE[MAX_PLAYERS],
 	bool:FAI_NPC_AGGRO_LINE_OF_SIGHT[MAX_PLAYERS],
 	Float:FAI_NPC_AGGRO_SIGHT_RANGE[MAX_PLAYERS],
-	Float:FAI_NPC_AGGRO_HEARING_RANGE[MAX_PLAYERS],
 	Float:FAI_NPC_LEASH_RANGE[MAX_PLAYERS],
 	Float:FAI_NPC_THREAT[MAX_PLAYERS] //Can be changed automatically by the script
 }
@@ -281,7 +277,6 @@ static FAI_ResetNPC(npcid) {
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][playerid] = 360.0;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_LINE_OF_SIGHT][playerid] = false;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid] = 20.0;
-		FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid] = 40.0;
 		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = 200.0; //The default SA-MP stream_distance
 		FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = 0.0;
 	}
@@ -573,14 +568,6 @@ static bool:FAI_IsPlayerInAggroSightRange(playerid, npcid) {
 	return false;
 }
 
-static bool:FAI_IsSoundInAggroHearingRange(playerid, npcid, Float:x, Float:y, Float:z) {
-	new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
-	if(FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid] < 0.0 || npcRange <= FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid]) {
-		return true;
-	}
-	return false;
-}
-
 static bool:FAI_IsPlayerInLeashRange(playerid, npcid) {
 	new Float:x, Float:y, Float:z;
 	if(!IsPlayerNPC(playerid)) {
@@ -654,12 +641,6 @@ static FAI_ToggleDebugRangeObjects(npcid) {
 		SetPlayerAttachedObject(npcid, 2, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFFFF0000);
 	} else {
 		RemovePlayerAttachedObject(npcid, 2);
-	}
-	if(FAI_DebugRanges[npcid] & FAI_DEBUG_AGGRO_HEARING_RANGE && FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][FAI_DebugRangesPlayerID[npcid]] > 0.0) { //Black
-		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][FAI_DebugRangesPlayerID[npcid]];
-		SetPlayerAttachedObject(npcid, 3, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFF000000);
-	} else {
-		RemovePlayerAttachedObject(npcid, 3);
 	}
 	if(FAI_DebugRanges[npcid] & FAI_DEBUG_LEASH_RANGE && FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][FAI_DebugRangesPlayerID[npcid]] > 0.0) { //Green
 		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][FAI_DebugRangesPlayerID[npcid]];
@@ -1314,37 +1295,10 @@ stock Float:FCNPC_GetAggroSightRange(npcid, playerid) {
 	return 0.0;
 }
 
-stock FCNPC_SetAggroHearingRange(npcid, playerid, Float:range) {
-	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
-		if(range >= 0.0 && range > FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid]) {
-			range = FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid];
-		}
-		FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid] = range; //Can be negative
-		FAI_UpdateNPCTarget(npcid);
-
-		//Debug
-		FAI_ToggleDebugRangeObjects(npcid);
-		FAI_ToggleDebugAngleObjects(npcid);
-		return 1;
-	}
-	return 0;
-}
-
-stock Float:FCNPC_GetAggroHearingRange(npcid, playerid) {
-	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
-		return FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid];
-	}
-	return 0.0;
-}
-
 stock FCNPC_SetLeashRange(npcid, playerid, Float:range) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
-		if(range >= 0.0 && (range < FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid] || range < FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid])) {
-			if(FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid] >= FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid]) {
-				range = FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid];
-			} else {
-				range = FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid];
-			}
+		if(range >= 0.0 && range < FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid]) {
+			range = FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid];
 		}
 		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = range; //Can be negative
 		FAI_UpdateNPCTarget(npcid);
