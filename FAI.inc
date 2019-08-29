@@ -573,7 +573,7 @@ static bool:FAI_IsPlayerInAggroSightRange(playerid, npcid) {
 	return false;
 }
 
-static bool:FAI_IsSoundInAggroHearingRange(npcid, Float:x, Float:y, Float:z) {
+static bool:FAI_IsSoundInAggroHearingRange(playerid, npcid, Float:x, Float:y, Float:z) {
 	new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
 	if(FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid] < 0.0 || npcRange <= FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_RANGE][playerid]) {
 		return true;
