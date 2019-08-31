@@ -16,7 +16,6 @@
 
 #include <a_samp>
 #include <streamer>
-#include <colandreas>
 #include <FCNPC>
 #include <FAI>
 
@@ -275,7 +274,7 @@ public FCNPC_OnEncounterStart(npcid, firsttargetid, reason)
 public FCNPC_OnEncounterStop(npcid, lasttargetid, reason)
 {
 	if(npcid == Leatherface) {
-		if(reason != FCNPC_EOR_NPC_DEATH) {
+		if(reason != FCNPC_OEO_NPC_DEATH) {
 			Respawn();
 		} else {
 			RespawnTimer = SetTimer("Respawn", (random(6) + 5) * 60 * 1000, false); //Respawn the NPC somewhere between 5 and 10 minutes (both included)
