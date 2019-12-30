@@ -1,5 +1,5 @@
 # FCNPC-A.I.
-[![sampctl](https://shields.southcla.ws/badge/sampctl-FCNPC--A.I.-2f2f2f.svg?style=for-the-badge)](https://github.com/WoutProvost/FCNPC-A.I.)
+[![sampctl](https://img.shields.io/badge/sampctl-FCNPC--A.I.-2f2f2f.svg?style=for-the-badge)](https://github.com/WoutProvost/FCNPC-A.I.)
 [![Latest Release](https://img.shields.io/github/release/WoutProvost/FCNPC-A.I..svg?label=latest%20release)](https://github.com/WoutProvost/FCNPC-A.I./releases)
 [![Total Downloads](https://img.shields.io/github/downloads/WoutProvost/FCNPC-A.I./total.svg?label=total%20downloads)](http://www.somsubhra.com/github-release-stats/?username=WoutProvost&repository=FCNPC-A.I.)
 [![License](https://img.shields.io/github/license/WoutProvost/FCNPC-A.I..svg)](https://github.com/WoutProvost/FCNPC-A.I./blob/master/LICENSE.md)
