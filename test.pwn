@@ -1,5 +1,5 @@
-#include "MMO.inc"
+#include "FCNPC-AI.inc"
 
 main() {
-	//TODO unit tests or general main tests for FAI and MMO
+	//TODO unit tests or general main tests
 }

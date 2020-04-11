@@ -1,27 +1,23 @@
-# FCNPC-A.I.
-[![sampctl](https://img.shields.io/badge/sampctl-FCNPC--A.I.-2f2f2f.svg?style=for-the-badge)](https://github.com/WoutProvost/FCNPC-A.I.)
-[![Latest Release](https://img.shields.io/github/release/WoutProvost/FCNPC-A.I..svg?label=latest%20release)](https://github.com/WoutProvost/FCNPC-A.I./releases)
-[![Total Downloads](https://img.shields.io/github/downloads/WoutProvost/FCNPC-A.I./total.svg?label=total%20downloads)](http://www.somsubhra.com/github-release-stats/?username=WoutProvost&repository=FCNPC-A.I.)
-[![License](https://img.shields.io/github/license/WoutProvost/FCNPC-A.I..svg)](https://github.com/WoutProvost/FCNPC-A.I./blob/master/LICENSE.md)
-[![Build Status](https://travis-ci.com/WoutProvost/FCNPC-A.I..svg?branch=master)](https://travis-ci.com/WoutProvost/FCNPC-A.I.)
+# FCNPC-AI
+[![sampctl](https://img.shields.io/badge/sampctl-FCNPC--AI-2f2f2f.svg?style=for-the-badge)](https://github.com/WoutProvost/FCNPC-AI)
+[![Latest Release](https://img.shields.io/github/release/WoutProvost/FCNPC-AI.svg?label=latest%20release)](https://github.com/WoutProvost/FCNPC-AI/releases)
+[![Total Downloads](https://img.shields.io/github/downloads/WoutProvost/FCNPC-AI/total.svg?label=total%20downloads)](https://www.somsubhra.com/github-release-stats/?username=WoutProvost&repository=FCNPC-AI)
+[![License](https://img.shields.io/github/license/WoutProvost/FCNPC-AI.svg)](https://github.com/WoutProvost/FCNPC-AI/blob/master/LICENSE.md)
+[![Build Status](https://travis-ci.com/WoutProvost/FCNPC-AI.svg?branch=master)](https://travis-ci.com/WoutProvost/FCNPC-AI)
 
-FCNPC-A.I. is an include for SA-MP servers that extends on the [FCNPC](https://github.com/ziggi/FCNPC) plugin by adding a simple targeting and threat artificial intelligence system to the NPCs. See the [changelog](./CHANGELOG.md) for a full list of versions and their updates and the [license](./LICENSE.md) for any legal rules.
+FCNPC-AI is an include for SA-MP servers that extends on the [FCNPC](https://github.com/ziggi/FCNPC) plugin by adding a simple targeting and threat artificial intelligence system to the NPCs. See the [changelog](./CHANGELOG.md) for a full list of versions and their updates and the [license](./LICENSE.md) for any legal rules.
 
-If you encounter a bug, create an issue in the [issues section](../../issues) with detailed steps on how to reproduce it. For more elaborate discussions or script examples, see the [forum thread](http://forum.sa-mp.com/showthread.php?p=3733074).
+If you encounter a bug, create an issue in the [issues section](../../issues) with detailed steps on how to reproduce it. For more elaborate discussions or script examples, see the [SA-MP forum thread](https://forum.sa-mp.com/showthread.php?p=3733074).
 
 ## Installation
 Simply install to your project:
 ```bash
-sampctl package install WoutProvost/FCNPC-A.I.
+sampctl package install WoutProvost/FCNPC-AI
 ```
 
 Include in your code and begin using the library:
 ```pawn
-// When you only need the A.I. functionality
-#include <FAI>
-
-// When you also need the MMO functionality (textdraws, spells, ...)
-#include <MMO>
+#include <FCNPC-AI>
 ```
 
 ## Usage

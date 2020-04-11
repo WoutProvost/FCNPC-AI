@@ -1,21 +1,21 @@
 /*
  * License:
- * See LICENSE.md included in the release download, or at https://github.com/WoutProvost/FCNPC-A.I./blob/master/LICENSE.md if not included.
+ * See LICENSE.md included in the release download, or at https://github.com/WoutProvost/FCNPC-AI/blob/master/LICENSE.md if not included.
 
  * Credits:
- * See CREDITS.md included in the release download, or at https://github.com/WoutProvost/FCNPC-A.I./blob/master/CREDITS.md if not included.
+ * See CREDITS.md included in the release download, or at https://github.com/WoutProvost/FCNPC-AI/blob/master/CREDITS.md if not included.
 
  * Changelog:
- * See CHANGELOG.md included in the release download, or at https://github.com/WoutProvost/FCNPC-A.I./blob/master/CHANGELOG.md if not included.
+ * See CHANGELOG.md included in the release download, or at https://github.com/WoutProvost/FCNPC-AI/blob/master/CHANGELOG.md if not included.
 
  * Documentation:
- * Every function, callback or constant is extensively explained at https://github.com/WoutProvost/FCNPC-A.I./wiki and its various subsections.
+ * Every function, callback or constant is extensively explained at https://github.com/WoutProvost/FCNPC-AI/wiki and its various subsections.
 */
 
-#if defined _FAI_included
+#if defined _FCNPC-AI_included
 	#endinput
 #endif
-#define _FAI_included
+#define _FCNPC-AI_included
 
 #include <a_samp>
 #include <FCNPC>
@@ -191,7 +191,7 @@ static FAI_ScriptInit() {
 	}	
 
 	// printf("---------------------");
-	// printf("  FCNPC A.I. loaded  ");
+	// printf("  FCNPC-AI loaded    ");
 	// printf("- Version: %s     ", FAI_VERSION);
 	// printf("- Author: Freaksken  ");
 	// printf("---------------------");

@@ -1,15 +1,15 @@
 /*
  * License:
- * See LICENSE.md included in the release download, or at https://github.com/WoutProvost/FCNPC-A.I./blob/master/LICENSE.md if not included.
+ * See LICENSE.md included in the release download, or at https://github.com/WoutProvost/FCNPC-AI/blob/master/LICENSE.md if not included.
 
  * Credits:
- * See CREDITS.md included in the release download, or at https://github.com/WoutProvost/FCNPC-A.I./blob/master/CREDITS.md if not included.
+ * See CREDITS.md included in the release download, or at https://github.com/WoutProvost/FCNPC-AI/blob/master/CREDITS.md if not included.
 
  * Changelog:
- * See CHANGELOG.md included in the release download, or at https://github.com/WoutProvost/FCNPC-A.I./blob/master/CHANGELOG.md if not included.
+ * See CHANGELOG.md included in the release download, or at https://github.com/WoutProvost/FCNPC-AI/blob/master/CHANGELOG.md if not included.
 
  * Documentation:
- * Every function, callback or constant is extensively explained at https://github.com/WoutProvost/FCNPC-A.I./wiki and its various subsections.
+ * Every function, callback or constant is extensively explained at https://github.com/WoutProvost/FCNPC-AI/wiki and its various subsections.
 */
 
 #define FILTERSCRIPT
@@ -17,7 +17,7 @@
 #include <a_samp>
 #include <streamer>
 #include <FCNPC>
-#include <FAI>
+#include <FCNPC-AI>
 
 #define COLOR_SP_MAPICON_ENEMY				0xb31a1eff //Red from Single Player mapicon enemy
 #define INTERIOR_NORMAL						0
