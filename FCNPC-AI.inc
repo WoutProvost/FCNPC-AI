@@ -12,10 +12,10 @@
  * Every function, callback or constant is extensively explained at https://github.com/WoutProvost/FCNPC-AI/wiki and its various subsections.
 */
 
-#if defined _FCNPC-AI_included
+#if defined _FCNPC_AI_included
 	#endinput
 #endif
-#define _FCNPC-AI_included
+#define _FCNPC_AI_included
 
 #include <a_samp>
 #include <FCNPC>
