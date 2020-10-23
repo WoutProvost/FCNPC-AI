@@ -1,9 +1,6 @@
 # FCNPC-AI
 [![sampctl](https://img.shields.io/badge/sampctl-FCNPC--AI-2f2f2f.svg?style=for-the-badge)](https://github.com/WoutProvost/FCNPC-AI)
-[![Latest Release](https://img.shields.io/github/release/WoutProvost/FCNPC-AI.svg?label=latest%20release)](https://github.com/WoutProvost/FCNPC-AI/releases)
 [![Total Downloads](https://img.shields.io/github/downloads/WoutProvost/FCNPC-AI/total.svg?label=total%20downloads)](https://www.somsubhra.com/github-release-stats/?username=WoutProvost&repository=FCNPC-AI)
-[![License](https://img.shields.io/github/license/WoutProvost/FCNPC-AI.svg)](https://github.com/WoutProvost/FCNPC-AI/blob/master/LICENSE.md)
-[![Build Status](https://travis-ci.com/WoutProvost/FCNPC-AI.svg?branch=master)](https://travis-ci.com/WoutProvost/FCNPC-AI)
 
 FCNPC-AI is an include for SA-MP servers that extends on the [FCNPC](https://github.com/ziggi/FCNPC) plugin by adding a simple targeting and threat artificial intelligence system to the NPCs. For an MMO-like heads-up display system, see [FCNPC-MMO](https://github.com/WoutProvost/FCNPC-MMO). See the [changelog](./CHANGELOG.md) for a full list of versions and their updates.
 
