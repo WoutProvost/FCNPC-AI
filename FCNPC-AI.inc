@@ -97,6 +97,11 @@ enum FAI_E_DEBUG_ANGLE (<<=1) {
 //General
 static bool:FAI_DestroyNPCsOnExit = false;
 
+//Players	
+static FAI_PauseTickCount[MAX_PLAYERS] = {0, ...};	
+static bool:FAI_PlayerPaused[MAX_PLAYERS] = {false, ...};	
+static FAI_PauseTimer = INVALID_TIMER_ID;
+
 //NPCs
 enum FAI_E_NPC {
 	//Can't be set by the user
@@ -157,6 +162,13 @@ static FAI_ScriptInit() {
 	//General
 	FAI_DestroyNPCsOnExit = false;
 
+	//Players	
+	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables	
+		FAI_PauseTickCount[playerid] = GetTickCount();	
+		FAI_PlayerPaused[playerid] = false;	
+	}	
+	FAI_PauseTimer = SetTimer("FAI_CheckPlayersPausedState", 1000, true);
+
 	//NPCs
 	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
 		FAI_ResetNPC(npcid);
@@ -170,6 +182,14 @@ static FAI_ScriptInit() {
 }
 
 static FAI_ScriptExit() {
+	//Players	
+	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables	
+		FAI_PauseTickCount[playerid] = 0;	
+		FAI_PlayerPaused[playerid] = false;	
+	}	
+	KillTimer(FAI_PauseTimer);	
+	FAI_PauseTimer = INVALID_TIMER_ID;
+
 	//NPCs
 	if(FAI_DestroyNPCsOnExit) {
 		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) { //Automatically destroy NPCs on script exit
@@ -181,6 +201,25 @@ static FAI_ScriptExit() {
 	
 	//General
 	FAI_DestroyNPCsOnExit = false;
+}
+
+//Players	
+forward FAI_CheckPlayersPausedState();	
+public FAI_CheckPlayersPausedState() {	
+	for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {	
+		new playerState = GetPlayerState(playerid);	
+		if(IsPlayerConnected(playerid) && playerState != PLAYER_STATE_WASTED && playerState != PLAYER_STATE_NONE) { //OnPlayerUpdate isn't called when the player is initializing, dead or in class selection	
+			new bool:playerInGame = true;	
+			if(GetTickCount() - FAI_PauseTickCount[playerid] > 2000) {	
+				playerInGame = false;	
+			}	
+			if(!playerInGame && !FAI_PlayerPaused[playerid]) {	
+				FAI_PlayerPaused[playerid] = true;	
+			} else if(playerInGame && FAI_PlayerPaused[playerid]) {	
+				FAI_PlayerPaused[playerid] = false;	
+			}	
+		}	
+	}	
 }
 
 //NPCs
@@ -680,6 +719,69 @@ static FAI_ToggleDebugAngleObjects(npcid) {
 	#endif
 #endif
 
+public OnPlayerConnect(playerid) {	
+	//Players	
+	FAI_PauseTickCount[playerid] = GetTickCount();	
+	FAI_PlayerPaused[playerid] = false;	
+
+	new ret = 1;	
+	#if defined FAI_OnPlayerConnect	
+		ret = FAI_OnPlayerConnect(playerid);	
+	#endif	
+	return ret;	
+}	
+#if defined _ALS_OnPlayerConnect	
+	#undef OnPlayerConnect	
+#else	
+	#define _ALS_OnPlayerConnect	
+#endif	
+#define OnPlayerConnect FAI_OnPlayerConnect	
+#if defined FAI_OnPlayerConnect	
+	forward FAI_OnPlayerConnect(playerid);	
+#endif	
+
+public OnPlayerDisconnect(playerid, reason) {	
+	//Players	
+	FAI_PauseTickCount[playerid] = 0;	
+	FAI_PlayerPaused[playerid] = false;	
+
+	new ret = 1;	
+	#if defined FAI_OnPlayerDisconnect	
+		ret = FAI_OnPlayerDisconnect(playerid, reason);	
+	#endif	
+	return ret;	
+}	
+#if defined _ALS_OnPlayerDisconnect	
+	#undef OnPlayerDisconnect	
+#else	
+	#define _ALS_OnPlayerDisconnect	
+#endif	
+#define OnPlayerDisconnect FAI_OnPlayerDisconnect	
+#if defined FAI_OnPlayerDisconnect	
+	forward FAI_OnPlayerDisconnect(playerid, reason);	
+#endif	
+
+public OnPlayerUpdate(playerid)	
+{	
+	//Players	
+	FAI_PauseTickCount[playerid] = GetTickCount();	
+
+	new ret = 1;	
+	#if defined FAI_OnPlayerUpdate	
+		ret = FAI_OnPlayerUpdate(playerid);	
+	#endif	
+	return ret;	
+}	
+#if defined _ALS_OnPlayerUpdate	
+	#undef OnPlayerUpdate	
+#else	
+	#define _ALS_OnPlayerUpdate	
+#endif	
+#define OnPlayerUpdate FAI_OnPlayerUpdate	
+#if defined FAI_OnPlayerUpdate	
+	forward FAI_OnPlayerUpdate(playerid);	
+#endif
+
 public FCNPC_OnDestroy(npcid) //This will both handle NPCs being destroyed programmatically and NPCs being disconnected (kicked/banned)
 {
 	//NPCs
@@ -943,7 +1045,7 @@ stock bool:FAI_IsValidNPCForPlayer(npcid, playerid) {
 		if(!IsPlayerNPC(playerid)) {
 			new playerState = GetPlayerState(playerid);
 			if(GetPlayerInterior(playerid) == npcInterior && GetPlayerVirtualWorld(playerid) == npcWorld && playerState != PLAYER_STATE_NONE && playerState != PLAYER_STATE_WASTED
-			&& playerState != PLAYER_STATE_SPAWNED && playerState != PLAYER_STATE_SPECTATING && !IsPlayerPaused(playerid)) {
+			&& playerState != PLAYER_STATE_SPAWNED && playerState != PLAYER_STATE_SPECTATING && !FAI_PlayerPaused[playerid]) {
 				return true;
 			}
 		} else {
