@@ -5,6 +5,7 @@
 	"output": "test.amx",
 	"dependencies": [
 		"sampctl/samp-stdlib",
-		"ziggi/FCNPC"
+		"ziggi/FCNPC",
+		"WoutProvost/samp-util"
 	]
 }

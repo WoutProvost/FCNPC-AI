@@ -5,6 +5,7 @@
 
 #include <a_samp>
 #include <FCNPC>
+#include <util>
 
 //========================================FAKE NATIVES========================================
 /*
@@ -54,10 +55,7 @@ forward FCNPC_OnPlayerLoseAggro(playerid, npcid);
 
 //========================================CONSTANTS========================================
 //General
-#define FAI_VERSION							"2.0.0"
-#if !defined INVALID_TIMER_ID
-	#define INVALID_TIMER_ID				-1
-#endif
+#define FCNPC_AI_VERSION					"2.0.0"
 
 //NPCs
 enum {
@@ -98,11 +96,6 @@ enum FAI_E_DEBUG_ANGLE (<<=1) {
 //========================================VARIABLES========================================
 //General
 static bool:FAI_DestroyNPCsOnExit = false;
-
-//Players
-static FAI_PauseTickCount[MAX_PLAYERS] = {0, ...};
-static bool:FAI_PlayerPaused[MAX_PLAYERS] = {false, ...};
-static FAI_PauseTimer = INVALID_TIMER_ID;
 
 //NPCs
 enum FAI_E_NPC {
@@ -164,34 +157,19 @@ static FAI_ScriptInit() {
 	//General
 	FAI_DestroyNPCsOnExit = false;
 
-	//Players
-	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
-		FAI_PauseTickCount[playerid] = GetTickCount();
-		FAI_PlayerPaused[playerid] = false;
-	}
-	FAI_PauseTimer = SetTimer("FAI_CheckPlayersPausedState", 1000, true);
-
 	//NPCs
 	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
 		FAI_ResetNPC(npcid);
-	}	
+	}
 
 	// printf("---------------------");
 	// printf("  FCNPC-AI loaded    ");
-	// printf("- Version: %s     ", FAI_VERSION);
+	// printf("- Version: %s     ", FCNPC_AI_VERSION);
 	// printf("- Author: Freaksken  ");
 	// printf("---------------------");
 }
 
 static FAI_ScriptExit() {
-	//Players
-	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize, because we need to reset all variables
-		FAI_PauseTickCount[playerid] = 0;
-		FAI_PlayerPaused[playerid] = false;
-	}
-	KillTimer(FAI_PauseTimer);
-	FAI_PauseTimer = INVALID_TIMER_ID;
-
 	//NPCs
 	if(FAI_DestroyNPCsOnExit) {
 		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) { //Automatically destroy NPCs on script exit
@@ -203,25 +181,6 @@ static FAI_ScriptExit() {
 	
 	//General
 	FAI_DestroyNPCsOnExit = false;
-}
-
-//Players
-forward FAI_CheckPlayersPausedState();
-public FAI_CheckPlayersPausedState() {
-	for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
-		new playerState = GetPlayerState(playerid);
-		if(IsPlayerConnected(playerid) && playerState != PLAYER_STATE_WASTED && playerState != PLAYER_STATE_NONE) { //OnPlayerUpdate isn't called when the player is initializing, dead or in class selection
-			new bool:playerInGame = true;
-			if(GetTickCount() - FAI_PauseTickCount[playerid] > 2000) {
-				playerInGame = false;
-			}
-			if(!playerInGame && !FAI_PlayerPaused[playerid]) {
-				FAI_PlayerPaused[playerid] = true;
-			} else if(playerInGame && FAI_PlayerPaused[playerid]) {
-				FAI_PlayerPaused[playerid] = false;
-			}
-		}
-	}
 }
 
 //NPCs
@@ -273,16 +232,9 @@ static FAI_ResetNPC(npcid) {
 	FAI_DebugAnglesPlayerID[npcid] = INVALID_PLAYER_ID;
 }
 
-static bool:FAI_IsMeleeWeapon(weaponid) {
-	if(weaponid >= 0 && weaponid <= 15) {
-		return true;
-	}
-	return false;
-}
-
 static bool:FAI_HasNPCMeleeWeapon(npcid) {
 	new weaponid = FCNPC_GetWeapon(npcid);
-	return FAI_IsMeleeWeapon(weaponid);
+	return IsMeleeWeapon(weaponid);
 }
 
 static FAI_UpdateNPCAttackMove(npcid) {
@@ -418,20 +370,6 @@ static FAI_UpdateNPCTarget(npcid) {
 				}
 			}
 		}
-
-		//Old code before threat implementation
-		/*
-		//Get new target when there is no target, or if the current target is invalid, or if the behaviour for the current target is friendly
-		if(!FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET]) || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][FAI_NPCs[npcid][FAI_NPC_TARGET]] == FCNPC_BEHAVIOUR_FRIENDLY || !FAI_IsPlayerInLeashRange(FAI_NPCs[npcid][FAI_NPC_TARGET], npcid)) {
-			//Set target to closest player
-			new newtargetid = FAI_ClosestPlayerInAggroSghtRng(npcid);
-			new reason = FCNPC_OEA_AGGRO;
-			if(newtargetid == INVALID_PLAYER_ID) {
-				reason = FCNPC_OEO_NO_VALID_NEW_TARGET;
-			}
-			FAI_ChangeNPCTarget(npcid, newtargetid, reason);
-		}
-		*/
 	}
 }
 
@@ -742,69 +680,6 @@ static FAI_ToggleDebugAngleObjects(npcid) {
 	#endif
 #endif
 
-public OnPlayerConnect(playerid) {
-	//Players
-	FAI_PauseTickCount[playerid] = GetTickCount();
-	FAI_PlayerPaused[playerid] = false;
-
-	new ret = 1;
-	#if defined FAI_OnPlayerConnect
-		ret = FAI_OnPlayerConnect(playerid);
-	#endif
-	return ret;
-}
-#if defined _ALS_OnPlayerConnect
-	#undef OnPlayerConnect
-#else
-	#define _ALS_OnPlayerConnect
-#endif
-#define OnPlayerConnect FAI_OnPlayerConnect
-#if defined FAI_OnPlayerConnect
-	forward FAI_OnPlayerConnect(playerid);
-#endif
-
-public OnPlayerDisconnect(playerid, reason) {
-	//Players
-	FAI_PauseTickCount[playerid] = 0;
-	FAI_PlayerPaused[playerid] = false;
-
-	new ret = 1;
-	#if defined FAI_OnPlayerDisconnect
-		ret = FAI_OnPlayerDisconnect(playerid, reason);
-	#endif
-	return ret;
-}
-#if defined _ALS_OnPlayerDisconnect
-	#undef OnPlayerDisconnect
-#else
-	#define _ALS_OnPlayerDisconnect
-#endif
-#define OnPlayerDisconnect FAI_OnPlayerDisconnect
-#if defined FAI_OnPlayerDisconnect
-	forward FAI_OnPlayerDisconnect(playerid, reason);
-#endif
-
-public OnPlayerUpdate(playerid)
-{
-	//Players
-	FAI_PauseTickCount[playerid] = GetTickCount();
-
-	new ret = 1;
-	#if defined FAI_OnPlayerUpdate
-		ret = FAI_OnPlayerUpdate(playerid);
-	#endif
-	return ret;
-}
-#if defined _ALS_OnPlayerUpdate
-	#undef OnPlayerUpdate
-#else
-	#define _ALS_OnPlayerUpdate
-#endif
-#define OnPlayerUpdate FAI_OnPlayerUpdate
-#if defined FAI_OnPlayerUpdate
-	forward FAI_OnPlayerUpdate(playerid);
-#endif
-
 public FCNPC_OnDestroy(npcid) //This will both handle NPCs being destroyed programmatically and NPCs being disconnected (kicked/banned)
 {
 	//NPCs
@@ -1068,7 +943,7 @@ stock bool:FAI_IsValidNPCForPlayer(npcid, playerid) {
 		if(!IsPlayerNPC(playerid)) {
 			new playerState = GetPlayerState(playerid);
 			if(GetPlayerInterior(playerid) == npcInterior && GetPlayerVirtualWorld(playerid) == npcWorld && playerState != PLAYER_STATE_NONE && playerState != PLAYER_STATE_WASTED
-			&& playerState != PLAYER_STATE_SPAWNED && playerState != PLAYER_STATE_SPECTATING && !FAI_PlayerPaused[playerid]) {
+			&& playerState != PLAYER_STATE_SPAWNED && playerState != PLAYER_STATE_SPECTATING && !IsPlayerPaused(playerid)) {
 				return true;
 			}
 		} else {
@@ -1241,7 +1116,7 @@ stock FCNPC_GetMeleeAttackInfo(npcid, playerid, &Float:range, &delay, &bool:figh
 
 stock FCNPC_SetOutOfAmmoMeleeWeapon(npcid, weaponid, playerid = -1) {
 	if(FAI_IsValidNPC(npcid) && playerid >= -1 && playerid < MAX_PLAYERS) {
-		if(FAI_IsMeleeWeapon(weaponid)) {
+		if(IsMeleeWeapon(weaponid)) {
 			if(playerid != -1) {
 				FAI_NPCs[npcid][FAI_NPC_OUT_OF_AMMO_MELEE_WEAP][playerid] = weaponid;
 			} else {
