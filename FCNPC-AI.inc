@@ -208,7 +208,7 @@ forward FAI_CheckPlayersPausedState();
 public FAI_CheckPlayersPausedState() {	
 	for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {	
 		new playerState = GetPlayerState(playerid);	
-		if(IsPlayerConnected(playerid) && playerState != PLAYER_STATE_WASTED && playerState != PLAYER_STATE_NONE) { //OnPlayerUpdate isn't called when the player is initializing, dead or in class selection	
+		if(IsPlayerConnected(playerid) && !IsPlayerNPC(playerid) && playerState != PLAYER_STATE_WASTED && playerState != PLAYER_STATE_NONE) { //OnPlayerUpdate isn't called when the player is initializing, dead or in class selection	
 			new bool:playerInGame = true;	
 			if(GetTickCount() - FAI_PauseTickCount[playerid] > 2000) {	
 				playerInGame = false;	
