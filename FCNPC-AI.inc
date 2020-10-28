@@ -1318,13 +1318,16 @@ stock bool:FCNPC_IsAggroLineOfSightUsed(npcid, playerid) {
 
 stock FCNPC_SetAggroSightRange(npcid, Float:range, playerid = -1) {
 	if(FAI_IsValidNPC(npcid) && playerid >= -1 && playerid < MAX_PLAYERS) {
-		if(range >= 0.0 && range > FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid]) {
-			range = FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid];
-		}
 		if(playerid != -1) {
+			if(range >= 0.0 && range > FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid]) {
+				range = FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid];
+			}
 			FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid] = range; //Can be negative
 		} else {
 			for(new playerid1 = 0; playerid1 < MAX_PLAYERS; playerid1++) { //Don't use GetPlayerPoolSize, because we need to set all variables
+				if(range >= 0.0 && range > FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid1]) {
+					range = FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid1];
+				}
 				FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid1] = range; //Can be negative
 			}
 		}
@@ -1347,13 +1350,16 @@ stock Float:FCNPC_GetAggroSightRange(npcid, playerid) {
 
 stock FCNPC_SetLeashRange(npcid, Float:range, playerid = -1) {
 	if(FAI_IsValidNPC(npcid) && playerid >= -1 && playerid < MAX_PLAYERS) {
-		if(range >= 0.0 && range < FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid]) {
-			range = FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid];
-		}
 		if(playerid != -1) {
+			if(range >= 0.0 && range < FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid]) {
+				range = FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid];
+			}
 			FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = range; //Can be negative
 		} else {
-			for(new playerid1 = 0; playerid1 < MAX_PLAYERS; playerid1++) { //Don't use GetPlayerPoolSize, because we need to set all variables
+			for(new playerid1 = 0; playerid1 < MAX_PLAYERS; playerid1++) { //Don't use GetPlayerPoolSize, because we need to set all variables				
+				if(range >= 0.0 && range < FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid1]) {
+					range = FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid1];
+				}
 				FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid1] = range; //Can be negative
 			}
 		}
