@@ -43,7 +43,9 @@ native Float:FCNPC_GetThreat(npcid, playerid);
 
 //Debug
 native FAI_ToggleRangeDebugging(npcid, playerid, FAI_E_DEBUG_RANGE:ranges);
+native FAI_E_DEBUG_RANGE:FAI_GetRangeDebugging(npcid);
 native FAI_ToggleAngleDebugging(npcid, playerid, FAI_E_DEBUG_ANGLE:angles);
+native FAI_E_DEBUG_ANGLE:FAI_GetAngleDebugging(npcid);
 */
 
 //========================================CALLBACKS========================================
@@ -1418,6 +1420,13 @@ stock FAI_ToggleRangeDebugging(npcid, playerid, FAI_E_DEBUG_RANGE:ranges) {
 	return 0;
 }
 
+stock FAI_E_DEBUG_RANGE:FAI_GetRangeDebugging(npcid) {
+	if(FAI_IsValidNPC(npcid)) {
+		return FAI_DebugRanges[npcid];
+	}
+	return FAI_DEBUG_RANGE_NONE;
+}
+
 stock FAI_ToggleAngleDebugging(npcid, playerid, FAI_E_DEBUG_ANGLE:angles) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
 		FAI_DebugRanges[npcid] = FAI_DEBUG_RANGE_NONE; //Not enough attached object slots to show both ranges and angles
@@ -1428,4 +1437,11 @@ stock FAI_ToggleAngleDebugging(npcid, playerid, FAI_E_DEBUG_ANGLE:angles) {
 		return 1;
 	}
 	return 0;
+}
+
+stock FAI_E_DEBUG_ANGLE:FAI_GetAngleDebugging(npcid) {
+	if(FAI_IsValidNPC(npcid)) {
+		return FAI_DebugAngles[npcid];
+	}
+	return FAI_DEBUG_ANGLE_NONE;
 }
