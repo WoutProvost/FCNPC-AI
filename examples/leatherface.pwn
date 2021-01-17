@@ -8,9 +8,9 @@
 #define COLOR_SP_MAPICON_ENEMY				0xb31a1eff // Red from Single Player mapicon enemy
 #define INTERIOR_NORMAL						0
 #define VIRTUAL_WORLD_NORMAL				0
-#define WEATHER_NORMAL						10	// Default SA-MP weather
-#define TIME_HOUR_NORMAL					12	// Default SA-MP time
-#define TIME_MINUTE_NORMAL					0	// Default SA-MP time
+#define WEATHER_NORMAL						10 // Default SA-MP weather
+#define TIME_HOUR_NORMAL					12 // Default SA-MP time
+#define TIME_MINUTE_NORMAL					0 // Default SA-MP time
 #define AUDIO_STREAM_HALLOWEEN				"http://dl.dropboxusercontent.com/s/oddvow4138cf204/Halloween.mp3"
 #define AUDIO_STREAM_HALLOWEEN_TIME			173688
 
@@ -212,8 +212,10 @@ public FCNPC_OnUpdate(npcid)
 	if(npcid == Leatherface) {
 		if(IdleCount != -1) {
 			for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
-				if(FAI_IsValidNPCForPlayer(Leatherface, playerid)) { // Don't check for death, because won't be called when dead
-					if(GetPlayerSpecialAction(playerid) != SPECIAL_ACTION_DUCK) { // Immediately aggro when entering his hideout, except when crouched
+				// Don't check for death, because won't be called when dead
+				if(FAI_IsValidNPCForPlayer(Leatherface, playerid)) {
+					// Immediately aggro when entering his hideout, except when crouched
+					if(GetPlayerSpecialAction(playerid) != SPECIAL_ACTION_DUCK) {
 						new Float:x, Float:y, Float:z;
 						GetPlayerPos(playerid, x, y, z);
 						if(x <= -2811.0 && x >= -2821.0 && y <= -1515.0 && y >= -1531.0 && z <= 143.0 && z >= 140.0) {
@@ -263,7 +265,8 @@ public FCNPC_OnEncounterStop(npcid, lasttargetid, reason)
 		if(reason != FCNPC_OEO_NPC_DEATH) {
 			Respawn();
 		} else {
-			RespawnTimer = SetTimer("Respawn", (random(6) + 5) * 60 * 1000, false); // Respawn the NPC somewhere between 5 and 10 minutes (both included)
+			// Respawn the NPC somewhere between 5 and 10 minutes (both included)
+			RespawnTimer = SetTimer("Respawn", (random(6) + 5) * 60 * 1000, false);
 		}
 		ResetPlayers();
 	}
