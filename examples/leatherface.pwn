@@ -5,12 +5,12 @@
 #include <FCNPC>
 #include <FCNPC-AI>
 
-#define COLOR_SP_MAPICON_ENEMY				0xb31a1eff //Red from Single Player mapicon enemy
+#define COLOR_SP_MAPICON_ENEMY				0xb31a1eff // Red from Single Player mapicon enemy
 #define INTERIOR_NORMAL						0
 #define VIRTUAL_WORLD_NORMAL				0
-#define WEATHER_NORMAL						10	//Default SA-MP weather
-#define TIME_HOUR_NORMAL					12	//Default SA-MP time
-#define TIME_MINUTE_NORMAL					0	//Default SA-MP time
+#define WEATHER_NORMAL						10	// Default SA-MP weather
+#define TIME_HOUR_NORMAL					12	// Default SA-MP time
+#define TIME_MINUTE_NORMAL					0	// Default SA-MP time
 #define AUDIO_STREAM_HALLOWEEN				"http://dl.dropboxusercontent.com/s/oddvow4138cf204/Halloween.mp3"
 #define AUDIO_STREAM_HALLOWEEN_TIME			173688
 
@@ -31,11 +31,11 @@ public OnFilterScriptInit()
 	FAI_UseDestroyNPCsOnExit();
 
 	Leatherface = FCNPC_Create("Leatherface");
-	SetPlayerColor(Leatherface, COLOR_SP_MAPICON_ENEMY & 0xffffff00); //Alpha values = 00, because we don't want a player icon on the map
+	SetPlayerColor(Leatherface, COLOR_SP_MAPICON_ENEMY & 0xffffff00); // Alpha values = 00, because we don't want a player icon on the map
 	FCNPC_Spawn(Leatherface, 168, SpawnCoords[0], SpawnCoords[1], SpawnCoords[2]);
 	FCNPC_SetHealth(Leatherface, 2000.0);
 	FCNPC_SetWeapon(Leatherface, WEAPON_CHAINSAW);
-	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) { //Don't use GetPlayerPoolSize
+	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) {
 		FCNPC_SetBehaviour(Leatherface, playerid, FCNPC_BEHAVIOUR_UNFRIENDLY);
 		FCNPC_SetAggroViewingAngle(Leatherface, playerid, 120.0);
 		FCNPC_UseAggroLineOfSight(Leatherface, playerid);
@@ -132,7 +132,7 @@ public OnPlayerDisconnect(playerid, reason)
 
 public OnPlayerSpawn(playerid)
 {
-	//Preload used animation libraries
+	// Preload used animation libraries
 	ApplyAnimation(playerid, "CHAINSAW", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "ped", "null", 0.0, 0, 0, 0, 0, 0);
 	return 1;
@@ -212,8 +212,8 @@ public FCNPC_OnUpdate(npcid)
 	if(npcid == Leatherface) {
 		if(IdleCount != -1) {
 			for(new playerid = 0, highestPlayerid = GetPlayerPoolSize(); playerid <= highestPlayerid; playerid++) {
-				if(FAI_IsValidNPCForPlayer(Leatherface, playerid)) { //Don't check for death, because won't be called when dead
-					if(GetPlayerSpecialAction(playerid) != SPECIAL_ACTION_DUCK) { //Immediately aggro when entering his hideout, except when crouched
+				if(FAI_IsValidNPCForPlayer(Leatherface, playerid)) { // Don't check for death, because won't be called when dead
+					if(GetPlayerSpecialAction(playerid) != SPECIAL_ACTION_DUCK) { // Immediately aggro when entering his hideout, except when crouched
 						new Float:x, Float:y, Float:z;
 						GetPlayerPos(playerid, x, y, z);
 						if(x <= -2811.0 && x >= -2821.0 && y <= -1515.0 && y >= -1531.0 && z <= 143.0 && z >= 140.0) {
@@ -235,7 +235,7 @@ public FCNPC_OnUpdate(npcid)
 						FCNPC_ApplyAnimation(Leatherface, "ped", "FightSh_FWD", 4.1, 1, 1, 1, 0, 0);
 						AnimationApplied = true;
 					}
-				} else if(distance >= range) { //Buffer zone of 2.0
+				} else if(distance >= range) { // Buffer zone of 2.0
 					if(AnimationApplied) {
 						FCNPC_ClearAnimations(Leatherface);
 						AnimationApplied = false;
@@ -263,7 +263,7 @@ public FCNPC_OnEncounterStop(npcid, lasttargetid, reason)
 		if(reason != FCNPC_OEO_NPC_DEATH) {
 			Respawn();
 		} else {
-			RespawnTimer = SetTimer("Respawn", (random(6) + 5) * 60 * 1000, false); //Respawn the NPC somewhere between 5 and 10 minutes (both included)
+			RespawnTimer = SetTimer("Respawn", (random(6) + 5) * 60 * 1000, false); // Respawn the NPC somewhere between 5 and 10 minutes (both included)
 		}
 		ResetPlayers();
 	}
