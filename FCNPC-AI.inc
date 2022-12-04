@@ -30,8 +30,8 @@ native FCNPC_SetOutOfAmmoMeleeWeapon(npcid, weaponid, playerid = -1);
 native FCNPC_GetOutOfAmmoMeleeWeapon(npcid, playerid);
 native FCNPC_SetBehaviour(npcid, FCNPC_E_BEHAVIOUR:behaviour, playerid = -1);
 native FCNPC_E_BEHAVIOUR:FCNPC_GetBehaviour(npcid, playerid);
-native FCNPC_SetAggroViewingAngle(npcid, Float:angle, Float:vangle = 360.0, playerid = -1);
-native Float:FCNPC_GetAggroViewingAngle(npcid, playerid, &Float:vangle = 360.0);
+native FCNPC_SetAggroViewingAngle(npcid, Float:angle, Float:vangle = 180.0, playerid = -1);
+native Float:FCNPC_GetAggroViewingAngle(npcid, playerid, &Float:vangle = 180.0);
 native FCNPC_UseAggroLineOfSight(npcid, bool:use = true, playerid = -1);
 native bool:FCNPC_IsAggroLineOfSightUsed(npcid, playerid);
 native FCNPC_SetAggroSightRange(npcid, Float:range, playerid = -1);
@@ -261,7 +261,7 @@ static FAI_ResetNPC(npcid) {
 		FAI_NPCs[npcid][FAI_NPC_OUT_OF_AMMO_MELEE_WEAP][playerid] = 0; // Fist weapon
 		FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid] = FCNPC_BEHAVIOUR_FRIENDLY;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][playerid] = 360.0;
-		FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][playerid] = 360.0;
+		FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][playerid] = 180.0;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_LINE_OF_SIGHT][playerid] = false;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid] = 20.0;
 		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = 200.0; // The default SA-MP stream_distance
@@ -458,26 +458,38 @@ static bool:FAI_IsPlayerInAggroViewingAngle(playerid, npcid) {
 		FCNPC_GetPosition(playerid, xp, yp, zp);
 	}
 
-	// Calculate the angle between these 2 points
-	new Float:angleBetweenPoints = atan2(xp - xn, yp - yn);
+	// ===== HORIZONTAL VIEWING ANGLE =====
+	// Get the NPC horizontal facing angle adjusted for the weird GTA angle system
+	new Float:npcHorizontalFacingAngle = FCNPC_GetAngle(npcid) + 90.0;
 
-	// Get the NPC facing angle adjusted for the weird GTA angle system
-	new Float:npcFacingAngle = 360.0 - FCNPC_GetAngle(npcid);
+	// Calculate the angle between these 2 points in the horizontal plane
+	new Float:horizontalAngleBetweenPoints = atan2(yp - yn, xp - xn);
 
 	// Calculate the smallest difference between these 2 angles as a value between -180.0 and 180.0
-	new Float:angleDifference = angleBetweenPoints - npcFacingAngle;
-	if(angleDifference > 180.0) {
-		angleDifference -= 360.0;
+	new Float:horizontalAngleDifference = horizontalAngleBetweenPoints - npcHorizontalFacingAngle;
+	if(horizontalAngleDifference > 180.0) {
+		horizontalAngleDifference -= 360.0;
 	}
-	if(angleDifference < -180.0) {
-		angleDifference += 360.0;
+	if(horizontalAngleDifference < -180.0) {
+		horizontalAngleDifference += 360.0;
 	}
 
 	// Get the absolute value of this angle
-	angleDifference = floatabs(angleDifference);
+	horizontalAngleDifference = floatabs(horizontalAngleDifference);
 
-	// Check if the player is within the aggro viewing angle
-	if(angleDifference <= FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][playerid]/2) {
+	// ===== VERTICAL VIEWING ANGLE =====
+	// Calculate the Euclidean distance in the horizontal plane
+	new Float:horizontalDistance = VectorSize(xp - xn, yp - yn, 0.0);
+
+	// Calculate the angle between these 2 points in the vertical plane as a value between -90.0 and 90.0
+	// The game only has the ability to rotate the NPC along the vertical axis, so the NPC vertical facing angle is always 0.0, so we don't need to subtract it from the calculated angle
+	new Float:verticalAngleBetweenPoints = atan2(zp - zn, horizontalDistance);
+
+	// Get the absolute value of this angle
+	verticalAngleBetweenPoints = floatabs(verticalAngleBetweenPoints);
+
+	// Check if the player is within the horizontal and vertical aggro viewing angles
+	if(horizontalAngleDifference <= FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][playerid]/2 && verticalAngleBetweenPoints <= FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][playerid]/2) {
 		return true;
 	}
 	return false;
@@ -1295,9 +1307,9 @@ stock FCNPC_E_BEHAVIOUR:FCNPC_GetBehaviour(npcid, playerid) {
 	return 0;
 }
 
-stock FCNPC_SetAggroViewingAngle(npcid, Float:angle, Float:vangle = 360.0, playerid = -1) {
+stock FCNPC_SetAggroViewingAngle(npcid, Float:angle, Float:vangle = 180.0, playerid = -1) {
 	if(FAI_IsValidNPC(npcid) && playerid >= -1 && playerid < MAX_PLAYERS) {
-		if(angle >= 0.0 && angle <= 360.0 && vangle >= 0.0 && vangle <= 360.0) {
+		if(angle >= 0.0 && angle <= 360.0 && vangle >= 0.0 && vangle <= 180.0) {
 			if(playerid != -1) {
 				FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][playerid] = angle;
 				FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][playerid] = vangle;
@@ -1318,7 +1330,7 @@ stock FCNPC_SetAggroViewingAngle(npcid, Float:angle, Float:vangle = 360.0, playe
 	return 0;
 }
 
-stock Float:FCNPC_GetAggroViewingAngle(npcid, playerid, &Float:vangle = 360.0) {
+stock Float:FCNPC_GetAggroViewingAngle(npcid, playerid, &Float:vangle = 180.0) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
 		vangle = FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][playerid];
 		return FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][playerid];
