@@ -91,8 +91,7 @@ enum FAI_E_DEBUG_ANGLE (<<=1) {
 	FAI_DEBUG_ANGLE_ALL = -1,
 	FAI_DEBUG_ANGLE_NONE = 0,
 	FAI_DEBUG_FACING_ANGLE = 1,
-	FAI_DEBUG_HOR_VIEWING_ANGLE,
-	FAI_DEBUG_VER_VIEWING_ANGLE
+	FAI_DEBUG_VIEWING_ANGLE
 }
 
 // ========================================VARIABLES========================================
@@ -638,17 +637,14 @@ static FAI_ToggleDebugAngleObjects(npcid) {
 	} else {
 		RemovePlayerAttachedObject(npcid, 0);
 	}
-	if(FAI_DebugAngles[npcid] & FAI_DEBUG_HOR_VIEWING_ANGLE) { // Green
-		SetPlayerAttachedObject(npcid, 1, 19083, 1, .fRotX = FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0);
-		SetPlayerAttachedObject(npcid, 2, 19083, 1, .fRotX = -FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0);
+	if(FAI_DebugAngles[npcid] & FAI_DEBUG_VIEWING_ANGLE) { // Green
+		SetPlayerAttachedObject(npcid, 1, 19083, 1, .fRotX = FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 - FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
+		SetPlayerAttachedObject(npcid, 2, 19083, 1, .fRotX = -FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 - FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
+		SetPlayerAttachedObject(npcid, 3, 19083, 1, .fRotX = FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 + FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
+		SetPlayerAttachedObject(npcid, 4, 19083, 1, .fRotX = -FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 + FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
 	} else {
 		RemovePlayerAttachedObject(npcid, 1);
 		RemovePlayerAttachedObject(npcid, 2);
-	}
-	if(FAI_DebugAngles[npcid] & FAI_DEBUG_VER_VIEWING_ANGLE) { // Blue
-		SetPlayerAttachedObject(npcid, 3, 19080, 1, .fRotZ = 90.0 - FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
-		SetPlayerAttachedObject(npcid, 4, 19080, 1, .fRotZ = 90.0 + FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
-	} else {
 		RemovePlayerAttachedObject(npcid, 3);
 		RemovePlayerAttachedObject(npcid, 4);
 	}
