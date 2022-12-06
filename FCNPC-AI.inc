@@ -445,9 +445,10 @@ static FAI_ChangeNPCTarget(npcid, newtargetid, reason) {
 }
 
 static bool:FAI_IsPlayerInAggroViewingAngle(playerid, npcid) {
-	// Get NPC position
-	new Float:xn, Float:yn, Float:zn;
+	// Get NPC position and special action
+	new Float:xn, Float:yn, Float:zn, npcAction;
 	FCNPC_GetPosition(npcid, xn, yn, zn);
+	npcAction = FCNPC_GetSpecialAction(npcid);
 
 	// Get player position
 	new Float:xp, Float:yp, Float:zp;
@@ -455,6 +456,13 @@ static bool:FAI_IsPlayerInAggroViewingAngle(playerid, npcid) {
 		GetPlayerPos(playerid, xp, yp, zp);
 	} else {
 		FCNPC_GetPosition(playerid, xp, yp, zp);
+	}
+
+	// Adjust height position of the NPC so that the viewing angles will be calculated from the face instead of the groin
+	if(npcAction == SPECIAL_ACTION_DUCK) {
+		zn -= 0.1;
+	} else {
+		zn += 0.7;
 	}
 
 	// ===== HORIZONTAL VIEWING ANGLE =====
@@ -511,16 +519,16 @@ static bool:FAI_IsPlayerInAggroLineOfSight(playerid, npcid) {
 	}
 
 	// Adjust height position of the NPC so that the ray will be cast from the shoulder instead of the groin
-	new Float:offset_from_z = 0.5;
+	new Float:offset_from_z = 0.7;
 	if(npcAction == SPECIAL_ACTION_DUCK) {
-		offset_from_z -= 0.2;
+		offset_from_z -= 0.1;
 	}
 
 	// Adjust height position of the player so that the ray will be cast to the shoulder instead of the groin
 	if(playerAction == SPECIAL_ACTION_DUCK) {
-		zp -= 0.2;
+		zp -= 0.1;
 	} else {
-		zp += 0.5;
+		zp += 0.7;
 	}
 
 	// Check if a ray cast between the NPC and the player collides with anything
@@ -633,15 +641,15 @@ static FAI_ToggleDebugRangeObjects(npcid) {
 
 static FAI_ToggleDebugAngleObjects(npcid) {
 	if(FAI_DebugAngles[npcid] & FAI_DEBUG_FACING_ANGLE) { // Red
-		SetPlayerAttachedObject(npcid, 0, 18643, 1, .fRotZ = 90.0);
+		SetPlayerAttachedObject(npcid, 0, 18643, 1, .fOffsetX = 0.5, .fRotZ = 90.0);
 	} else {
 		RemovePlayerAttachedObject(npcid, 0);
 	}
 	if(FAI_DebugAngles[npcid] & FAI_DEBUG_VIEWING_ANGLE) { // Green
-		SetPlayerAttachedObject(npcid, 1, 19083, 1, .fRotX = FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 - FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
-		SetPlayerAttachedObject(npcid, 2, 19083, 1, .fRotX = -FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 - FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
-		SetPlayerAttachedObject(npcid, 3, 19083, 1, .fRotX = FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 + FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
-		SetPlayerAttachedObject(npcid, 4, 19083, 1, .fRotX = -FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 + FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
+		SetPlayerAttachedObject(npcid, 1, 19083, 1, .fOffsetX = 0.5, .fRotX = FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 - FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
+		SetPlayerAttachedObject(npcid, 2, 19083, 1, .fOffsetX = 0.5, .fRotX = -FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 - FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
+		SetPlayerAttachedObject(npcid, 3, 19083, 1, .fOffsetX = 0.5, .fRotX = FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 + FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
+		SetPlayerAttachedObject(npcid, 4, 19083, 1, .fOffsetX = 0.5, .fRotX = -FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 + FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
 	} else {
 		RemovePlayerAttachedObject(npcid, 1);
 		RemovePlayerAttachedObject(npcid, 2);
