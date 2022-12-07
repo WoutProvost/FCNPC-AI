@@ -450,12 +450,14 @@ static bool:FAI_IsPlayerInAggroViewingAngle(playerid, npcid) {
 	FCNPC_GetPosition(npcid, xn, yn, zn);
 	npcAction = FCNPC_GetSpecialAction(npcid);
 
-	// Get player position
-	new Float:xp, Float:yp, Float:zp;
+	// Get player position and special action
+	new Float:xp, Float:yp, Float:zp, playerAction;
 	if(!IsPlayerNPC(playerid)) {
 		GetPlayerPos(playerid, xp, yp, zp);
+		playerAction = GetPlayerSpecialAction(playerid);
 	} else {
 		FCNPC_GetPosition(playerid, xp, yp, zp);
+		playerAction = FCNPC_GetSpecialAction(playerid);
 	}
 
 	// Adjust height position of the NPC so that the viewing angles will be calculated from the face instead of the groin
@@ -465,11 +467,18 @@ static bool:FAI_IsPlayerInAggroViewingAngle(playerid, npcid) {
 		zn += 0.7;
 	}
 
+	// Define which vertical parts of the player to check
+	new Float:zp_feet = zp - 1.0;
+	new Float:zp_head = zp + 0.8;
+	if(playerAction == SPECIAL_ACTION_DUCK) {
+		zp_head = zp;
+	}
+
 	// ===== HORIZONTAL VIEWING ANGLE =====
 	// Get the NPC horizontal facing angle adjusted for the weird GTA angle system
 	new Float:npcHorizontalFacingAngle = FCNPC_GetAngle(npcid) + 90.0;
 
-	// Calculate the angle between these 2 points in the horizontal plane
+	// Calculate the angle between the NPC and the player in the horizontal plane
 	new Float:horizontalAngleBetweenPoints = atan2(yp - yn, xp - xn);
 
 	// Calculate the smallest difference between these 2 angles as a value between -180.0 and 180.0
@@ -484,20 +493,28 @@ static bool:FAI_IsPlayerInAggroViewingAngle(playerid, npcid) {
 	// Get the absolute value of this angle
 	horizontalAngleDifference = floatabs(horizontalAngleDifference);
 
+	// Check if the player is within the horizontal aggro viewing angle
+	if(horizontalAngleDifference > FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][playerid]/2) {
+		return false;
+	}
+
 	// ===== VERTICAL VIEWING ANGLE =====
 	// Calculate the Euclidean distance in the horizontal plane
 	new Float:horizontalDistance = VectorSize(xp - xn, yp - yn, 0.0);
 
-	// Calculate the angle between these 2 points in the vertical plane as a value between -90.0 and 90.0
-	// The game only has the ability to rotate the NPC along the vertical axis, so the NPC vertical facing angle is always 0.0, so we don't need to subtract it from the calculated angle
-	new Float:verticalAngleBetweenPoints = atan2(zp - zn, horizontalDistance);
+	// Check if any vertical part of the player is within the vertical aggro viewing range, using decrements of 0.1m and starting from the most likely match which is the head
+	for (new Float:zp_part = zp_head; zp_part >= zp_feet; zp_part -= 0.1) {
+		// Calculate the angle between the NPC and the player in the vertical plane as a value between -90.0 and 90.0
+		// The game only has the ability to rotate the NPC along the vertical axis, so the NPC vertical facing angle is always 0.0, so we don't need to subtract it from the calculated angle
+		new Float:verticalAngleBetweenPoints = atan2(zp_part - zn, horizontalDistance);
 
-	// Get the absolute value of this angle
-	verticalAngleBetweenPoints = floatabs(verticalAngleBetweenPoints);
+		// Get the absolute value of this angle
+		verticalAngleBetweenPoints = floatabs(verticalAngleBetweenPoints);
 
-	// Check if the player is within the horizontal and vertical aggro viewing angles
-	if(horizontalAngleDifference <= FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][playerid]/2 && verticalAngleBetweenPoints <= FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][playerid]/2) {
-		return true;
+		// Check if the player is within the vertical aggro viewing angle
+		if(verticalAngleBetweenPoints <= FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][playerid]/2) {
+			return true;
+		}
 	}
 	return false;
 }
@@ -524,21 +541,23 @@ static bool:FAI_IsPlayerInAggroLineOfSight(playerid, npcid) {
 		offset_from_z -= 0.1;
 	}
 
-	// Adjust height position of the player so that the ray will be cast to the shoulder instead of the groin
+	// Define which vertical parts of the player to check
+	new Float:zp_feet = zp - 1.0;
+	new Float:zp_head = zp + 0.8;
 	if(playerAction == SPECIAL_ACTION_DUCK) {
-		zp -= 0.1;
-	} else {
-		zp += 0.7;
+		zp_head = zp;
 	}
 
-	// Check if a ray cast between the NPC and the player collides with anything
-	new Float:range = GetPlayerDistanceFromPoint(npcid, xp, yp, zp);
-	new entity_id;
-	FCNPC_GetClosestEntityInBetween(npcid, xp, yp, zp, range, FCNPC_ENTITY_MODE_COLANDREAS, FCNPC_ENTITY_CHECK_ALL, 0.0, 0.0, offset_from_z, entity_id);
-	if(entity_id != 0xFFFF) {
-		return false;
+	// Check if a ray cast between the NPC and any vertical part of the player does not collide with anything, using decrements of 0.1m and starting from the most likely match which is the head
+	for (new Float:zp_part = zp_head; zp_part >= zp_feet; zp_part -= 0.1) {
+		new Float:range = GetPlayerDistanceFromPoint(npcid, xp, yp, zp_part);
+		new entity_id;
+		FCNPC_GetClosestEntityInBetween(npcid, xp, yp, zp_part, range, FCNPC_ENTITY_MODE_COLANDREAS, FCNPC_ENTITY_CHECK_ALL, 0.0, 0.0, offset_from_z, entity_id);
+		if(entity_id == 0xFFFF) {
+			return true;
+		}
 	}
-	return true;
+	return false;
 }
 
 static bool:FAI_IsPlayerInAggroSightRange(playerid, npcid) {
