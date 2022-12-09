@@ -502,8 +502,8 @@ static bool:FAI_IsPlayerInAggroViewingAngle(playerid, npcid) {
 	// Calculate the Euclidean distance in the horizontal plane
 	new Float:horizontalDistance = VectorSize(xp - xn, yp - yn, 0.0);
 
-	// Check if any vertical part of the player is within the vertical aggro viewing range, using decrements of 0.1m and starting from the most likely match which is the head
-	for (new Float:zp_part = zp_head; zp_part >= zp_feet; zp_part -= 0.1) {
+	// Check if any vertical part of the player is within the vertical aggro viewing range, using decrements of one third the height of the player and starting from the most likely match which is the head
+	for (new Float:zp_part = zp_head, Float:zp_diff = (zp_head - zp_feet)/3; zp_part >= zp_feet; zp_part -= zp_diff) {
 		// Calculate the angle between the NPC and the player in the vertical plane as a value between -90.0 and 90.0
 		// The game only has the ability to rotate the NPC along the vertical axis, so the NPC vertical facing angle is always 0.0, so we don't need to subtract it from the calculated angle
 		new Float:verticalAngleBetweenPoints = atan2(zp_part - zn, horizontalDistance);
@@ -548,8 +548,8 @@ static bool:FAI_IsPlayerInAggroLineOfSight(playerid, npcid) {
 		zp_head = zp;
 	}
 
-	// Check if a ray cast between the NPC and any vertical part of the player does not collide with anything, using decrements of 0.1m and starting from the most likely match which is the head
-	for (new Float:zp_part = zp_head; zp_part >= zp_feet; zp_part -= 0.1) {
+	// Check if a ray cast between the NPC and any vertical part of the player does not collide with anything, using decrements of one third the height of the player and starting from the most likely match which is the head
+	for (new Float:zp_part = zp_head, Float:zp_diff = (zp_head - zp_feet)/3; zp_part >= zp_feet; zp_part -= zp_diff) {
 		new Float:range = GetPlayerDistanceFromPoint(npcid, xp, yp, zp_part);
 		new entity_id;
 		FCNPC_GetClosestEntityInBetween(npcid, xp, yp, zp_part, range, FCNPC_ENTITY_MODE_COLANDREAS, FCNPC_ENTITY_CHECK_ALL, 0.0, 0.0, offset_from_z, entity_id);
