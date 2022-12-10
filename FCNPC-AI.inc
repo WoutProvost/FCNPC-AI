@@ -763,7 +763,7 @@ static FAI_OnWeaponShot(npcid, shooterid, weaponid, hittype, hitid, Float:fX, Fl
 			}
 		}
 		if(FAI_IsSoundHeard(INVALID_PLAYER_ID, npcid, x + fX, y + fY, z + fZ, FAI_BulletImpactSoundRange)) {
-			CallLocalFunction("FCNPC_OnHearSound", "ddffffd", npcid, INVALID_PLAYER_ID, x, y, z, FAI_BulletImpactSoundRange, _:FCNPC_SOUND_REASON_BUL_IMPACT);
+			CallLocalFunction("FCNPC_OnHearSound", "ddffffd", npcid, INVALID_PLAYER_ID, x + fX, y + fY, z + fZ, FAI_BulletImpactSoundRange, _:FCNPC_SOUND_REASON_BUL_IMPACT);
 		}
 	}
 }
