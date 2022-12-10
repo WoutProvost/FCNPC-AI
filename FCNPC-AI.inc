@@ -36,10 +36,13 @@ native FCNPC_UseAggroLineOfSight(npcid, bool:use = true, playerid = -1);
 native bool:FCNPC_IsAggroLineOfSightUsed(npcid, playerid);
 native FCNPC_SetAggroSightRange(npcid, Float:range, playerid = -1);
 native Float:FCNPC_GetAggroSightRange(npcid, playerid);
+native FCNPC_SetAggroHearingPercentage(npcid, Float:percentage, playerid = -1);
+native Float:FCNPC_GetAggroHearingPercentage(npcid, playerid);
 native FCNPC_SetLeashRange(npcid, Float:range, playerid = -1);
 native Float:FCNPC_GetLeashRange(npcid, playerid);
 native FCNPC_SetThreat(npcid, Float:threat, playerid = -1);
 native Float:FCNPC_GetThreat(npcid, playerid);
+native FCNPC_TriggerSound(Float:x, Float:y, Float:z, Float:normalHearingSoundRange, npcid = -1, playerid = INVALID_PLAYER_ID);
 
 // Debug
 native FAI_ToggleRangeDebugging(npcid, playerid, FAI_E_DEBUG_RANGE:ranges);
@@ -54,15 +57,22 @@ forward FCNPC_OnEncounterStart(npcid, firsttargetid, FCNPC_E_START_REASON:reason
 forward FCNPC_OnEncounterStop(npcid, lasttargetid, FCNPC_E_STOP_REASON:reason);
 forward FCNPC_OnPlayerGetAggro(playerid, npcid);
 forward FCNPC_OnPlayerLoseAggro(playerid, npcid);
+forward FCNPC_OnHearSound(npcid, issuerid, Float:x, Float:y, Float:z, Float:normalHearingSoundRange, FCNPC_E_SOUND_REASON:reason);
 
 // ========================================CONSTANTS========================================
 // General
 #define FCNPC_AI_VERSION					"2.0.0"
 
 // NPCs
+enum FCNPC_E_BEHAVIOUR {
+	FCNPC_BEHAVIOUR_FRIENDLY,
+	FCNPC_BEHAVIOUR_NEUTRAL,
+	FCNPC_BEHAVIOUR_UNFRIENDLY
+}
 enum FCNPC_E_START_REASON {
 	FCNPC_START_REASON_DAMAGE,
-	FCNPC_START_REASON_AGGRO,
+	FCNPC_START_REASON_SIGHT,
+	FCNPC_START_REASON_SOUND,
 	FCNPC_START_REASON_MAN_TAR_SET
 }
 enum FCNPC_E_STOP_REASON {
@@ -72,11 +82,62 @@ enum FCNPC_E_STOP_REASON {
 	FCNPC_STOP_REASON_NO_VAL_TAR,
 	FCNPC_STOP_REASON_MAN_TAR_SET
 }
-enum FCNPC_E_BEHAVIOUR {
-	FCNPC_BEHAVIOUR_FRIENDLY,
-	FCNPC_BEHAVIOUR_NEUTRAL,
-	FCNPC_BEHAVIOUR_UNFRIENDLY
+enum FCNPC_E_SOUND_REASON {
+	FCNPC_SOUND_REASON_WEAPON_SHOT,
+	FCNPC_SOUND_REASON_BUL_IMPACT,
+	FCNPC_SOUND_REASON_MAN_TRIGGER
 }
+static const Float:FAI_BulletImpactSoundRange = 5.00;
+static const Float:FAI_WeaponShotSoundRange[] = {
+	// Weapon sound loudness at point blank range proportional to their inflicted damage
+	5.00, // fists (0)
+	5.00, // WEAPON_BRASSKNUCKLE (1)
+	5.00, // WEAPON_GOLFCLUB (2)
+	5.00, // WEAPON_NITESTICK (3)
+	5.00, // WEAPON_KNIFE (4)
+	5.00, // WEAPON_BAT (5)
+	5.00, // WEAPON_SHOVEL (6)
+	5.00, // WEAPON_POOLSTICK (7)
+	5.00, // WEAPON_KATANA (8)
+	5.00, // WEAPON_CHAINSAW (9)
+	5.00, // WEAPON_DILDO (10)
+	5.00, // WEAPON_DILDO2 (11)
+	5.00, // WEAPON_VIBRATOR (12)
+	5.00, // WEAPON_VIBRATOR2 (13)
+	5.00, // WEAPON_FLOWER (14)
+	5.00, // WEAPON_CANE (15)
+	5.00, // WEAPON_GRENADE (16)
+	5.00, // WEAPON_TEARGAS (17)
+	5.00, // WEAPON_MOLTOV (18)
+	0.00, // nothing (19)
+	0.00, // nothing (20)
+	0.00, // nothing (21)
+	8.25, // WEAPON_COLT45 (22)
+	13.2, // WEAPON_SILENCED (23)
+	46.2, // WEAPON_DEAGLE (24)
+	30.0, // WEAPON_SHOTGUN (25)
+	30.0, // WEAPON_SAWEDOFF (26)
+	30.0, // WEAPON_SHOTGSPA (27)
+	6.60, // WEAPON_UZI (28)
+	8.25, // WEAPON_MP5 (29)
+	9.90, // WEAPON_AK47 (30)
+	9.90, // WEAPON_M4 (31)
+	6.60, // WEAPON_TEC9 (32)
+	24.8, // WEAPON_RIFLE (33)
+	41.3, // WEAPON_SNIPER (34)
+	5.00, // WEAPON_ROCKETLAUNCHER (35)
+	5.00, // WEAPON_HEATSEEKER (36)
+	5.00, // WEAPON_FLAMETHROWER (37)
+	46.2, // WEAPON_MINIGUN (38)
+	5.00, // WEAPON_SATCHEL (39)
+	5.00, // WEAPON_BOMB (40)
+	5.00, // WEAPON_SPRAYCAN (41)
+	5.00, // WEAPON_FIREEXTINGUISHER (42)
+	0.00, // WEAPON_CAMERA (43)
+	0.00, // WEAPON_NIGHTVISION (44)
+	0.00, // WEAPON_INFRARED (45)
+	0.00 // WEAPON_PARACHUTE (46)
+};
 
 // Debug
 enum FAI_E_DEBUG_RANGE (<<=1) {
@@ -141,6 +202,8 @@ enum FAI_E_NPC {
 	Float:FAI_NPC_AGGRO_VER_VIEWING_ANGLE[MAX_PLAYERS],
 	bool:FAI_NPC_AGGRO_LINE_OF_SIGHT[MAX_PLAYERS],
 	Float:FAI_NPC_AGGRO_SIGHT_RANGE[MAX_PLAYERS],
+	Float:FAI_NPC_AGGRO_HEARING_PERCENT[MAX_PLAYERS],
+	Float:FAI_NPC_INVAL_HEARING_PERCENT,
 	Float:FAI_NPC_LEASH_RANGE[MAX_PLAYERS],
 	Float:FAI_NPC_THREAT[MAX_PLAYERS] // Can be changed automatically by the script
 }
@@ -263,6 +326,8 @@ static FAI_ResetNPC(npcid) {
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][playerid] = 180.0;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_LINE_OF_SIGHT][playerid] = false;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid] = 20.0;
+		FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_PERCENT][playerid] = 1.0;
+		FAI_NPCs[npcid][FAI_NPC_INVAL_HEARING_PERCENT] = 1.0;
 		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = 200.0; // The default SA-MP stream_distance
 		FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = 0.0;
 	}
@@ -385,7 +450,7 @@ static FAI_UpdateNPCTarget(npcid) {
 			|| !FAI_IsValidNPCForPlayer(npcid, FAI_NPCs[npcid][FAI_NPC_TARGET]) || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][FAI_NPCs[npcid][FAI_NPC_TARGET]] == FCNPC_BEHAVIOUR_FRIENDLY || !FAI_IsPlayerInLeashRange(FAI_NPCs[npcid][FAI_NPC_TARGET], npcid))) {
 				// Set target to player with highest threat
 				newtargetid = highestplayerid;
-				FAI_ChangeNPCTarget(npcid, newtargetid, FCNPC_START_REASON_AGGRO);
+				FAI_ChangeNPCTarget(npcid, newtargetid, FCNPC_START_REASON_SIGHT);
 			}
 		}
 		// When the encounter hasn't been started, or there is no overaggroing player
@@ -407,7 +472,7 @@ static FAI_UpdateNPCTarget(npcid) {
 					if(newtargetid == INVALID_PLAYER_ID) {
 						FAI_ChangeNPCTarget(npcid, newtargetid, FCNPC_STOP_REASON_NO_VAL_TAR);
 					} else {
-						FAI_ChangeNPCTarget(npcid, newtargetid, FCNPC_START_REASON_AGGRO);
+						FAI_ChangeNPCTarget(npcid, newtargetid, FCNPC_START_REASON_SIGHT);
 					}
 				}
 			}
@@ -574,6 +639,31 @@ static bool:FAI_IsPlayerInAggroSightRange(playerid, npcid) {
 	return false;
 }
 
+static bool:FAI_IsSoundHeard(playerid, npcid, Float:x, Float:y, Float:z, Float:normalHearingSoundRange) {
+	new Float:hearingPercent = FAI_NPCs[npcid][FAI_NPC_INVAL_HEARING_PERCENT];
+	if(playerid != INVALID_PLAYER_ID) {
+		hearingPercent = FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_PERCENT][playerid];
+	}
+
+	// When the NPC is deaf, or the sound is silent
+	if(hearingPercent == 0 || normalHearingSoundRange == 0) {
+		return false;
+	}
+
+	// When the NPC has unlimited hearing, or the sound is unlimitedly loud
+	if(hearingPercent < 0 || normalHearingSoundRange < 0) {
+		return true;
+	}
+
+	// Non-extreme cases
+	new Float:npcHearingSoundRange = normalHearingSoundRange * hearingPercent;
+	new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
+	if(npcHearingSoundRange >= npcRange) {
+		return true;
+	}
+	return false;
+}
+
 static bool:FAI_IsPlayerInLeashRange(playerid, npcid) {
 	new Float:x, Float:y, Float:z;
 	if(!IsPlayerNPC(playerid)) {
@@ -627,6 +717,55 @@ static FAI_GetHighestThreatPlayer(npcid) {
 		}
 	}
 	return highestPlayer;
+}
+
+static FAI_OnWeaponShot(npcid, shooterid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ) {	
+	new Float:x, Float:y, Float:z;
+	if(!IsPlayerNPC(shooterid)) {
+		GetPlayerPos(shooterid, x, y, z);
+	} else {
+		FCNPC_GetPosition(shooterid, x, y, z);
+	}
+
+	// If both the firing and the impact are heard, the firing will take precedence
+	if(FAI_IsSoundHeard(shooterid, npcid, x, y, z, FAI_WeaponShotSoundRange[weaponid])) {
+		CallLocalFunction("FCNPC_OnHearSound", "ddffffd", npcid, shooterid, x, y, z, FAI_WeaponShotSoundRange[weaponid], _:FCNPC_SOUND_REASON_WEAPON_SHOT);
+	} else {
+		switch(hittype) {
+			case BULLET_HIT_TYPE_NONE: {
+				// Don't act when nothing is hit, includes actors
+				if(fX == 0.0 && fY == 0.0 && fZ == 0.0) {
+					return;
+				}
+				x = 0.0; y = 0.0; z = 0.0;
+			}
+			case BULLET_HIT_TYPE_PLAYER: {
+				// NPC hits are already handled by the damage callback
+				if(hitid == npcid) {
+					return;
+				}
+				if(!IsPlayerNPC(hitid)) {
+					GetPlayerPos(hitid, x, y, z);
+				} else {
+					FCNPC_GetPosition(hitid, x, y, z);
+				}
+			}
+			case BULLET_HIT_TYPE_VEHICLE: {				
+				GetVehiclePos(hitid, x, y, z);
+			}			
+			case BULLET_HIT_TYPE_OBJECT: {
+				GetObjectPos(hitid, x, y, z);
+			}
+			case BULLET_HIT_TYPE_PLAYER_OBJECT: {
+				// We don't know which owner this object belongs to
+				// GetPlayerObjectPos(ownerid, hitid, x, y, z);
+				return;
+			}
+		}
+		if(FAI_IsSoundHeard(INVALID_PLAYER_ID, npcid, x + fX, y + fY, z + fZ, FAI_BulletImpactSoundRange)) {
+			CallLocalFunction("FCNPC_OnHearSound", "ddffffd", npcid, INVALID_PLAYER_ID, x, y, z, FAI_BulletImpactSoundRange, _:FCNPC_SOUND_REASON_BUL_IMPACT);
+		}
+	}
 }
 
 // Debug
@@ -823,6 +962,31 @@ public OnPlayerUpdate(playerid)
 	forward FAI_OnPlayerUpdate(playerid);
 #endif
 
+public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ)
+{
+	// NPCs
+	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
+		if(FAI_IsValidNPC(npcid)) {
+			FAI_OnWeaponShot(npcid, playerid, weaponid, hittype, hitid, fX, fY, fZ);
+		}
+	}
+
+	new ret = 1;
+	#if defined FAI_OnPlayerWeaponShot
+		ret = FAI_OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, fX, fY, fZ);
+	#endif
+	return ret;
+}
+#if defined _ALS_OnPlayerWeaponShot
+	#undef OnPlayerWeaponShot
+#else
+	#define _ALS_OnPlayerWeaponShot
+#endif
+#define OnPlayerWeaponShot FAI_OnPlayerWeaponShot
+#if defined FAI_OnPlayerWeaponShot
+	forward FAI_OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ);
+#endif
+
 // This will both handle NPCs being destroyed programmatically and NPCs being disconnected (kicked/banned)
 public FCNPC_OnDestroy(npcid)
 {
@@ -1015,6 +1179,92 @@ public FCNPC_OnTakeDamage(npcid, issuerid, Float:amount, weaponid, bodypart)
 #define FCNPC_OnTakeDamage FAI_FCNPC_OnTakeDamage
 #if defined FAI_FCNPC_OnTakeDamage
 	forward FAI_FCNPC_OnTakeDamage(npcid, issuerid, Float:amount, weaponid, bodypart);
+#endif
+
+public FCNPC_OnWeaponShot(npcid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ)
+{
+	// NPCs
+	for(new npcid1 = 0; npcid1 < MAX_PLAYERS; npcid1++) {
+		if(FAI_IsValidNPC(npcid1) && npcid1 != npcid) {			
+			FAI_OnWeaponShot(npcid1, npcid, weaponid, hittype, hitid, fX, fY, fZ);
+		}
+	}
+
+	new ret = 1;
+	#if defined FAI_FCNPC_OnWeaponShot
+		ret = FAI_FCNPC_OnWeaponShot(npcid, weaponid, hittype, hitid, fX, fY, fZ);
+	#endif
+	return ret;
+}
+#if defined _ALS_FCNPC_OnWeaponShot
+	#undef FCNPC_OnWeaponShot
+#else
+	#define _ALS_FCNPC_OnWeaponShot
+#endif
+#define FCNPC_OnWeaponShot FAI_FCNPC_OnWeaponShot
+#if defined FAI_FCNPC_OnWeaponShot
+	forward FAI_FCNPC_OnWeaponShot(npcid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ);
+#endif
+
+public FCNPC_OnHearSound(npcid, issuerid, Float:x, Float:y, Float:z, Float:normalHearingSoundRange, FCNPC_E_SOUND_REASON:reason)
+{
+	new ret = 1;
+	#if defined FAI_FCNPC_OnHearSound
+		// The user can override the decision for the sound to be heard by the NPC
+		ret = FAI_FCNPC_OnHearSound(npcid, issuerid, x, y, z, normalHearingSoundRange, reason);
+	#endif
+
+	if(ret == 1) { // Call after
+		// NPCs
+		if(FAI_IsValidNPC(npcid)) {
+			// 3rd part of condition: sounds not made by players (manually triggered, ...)
+			if(FCNPC_IsSpawned(npcid) && !FCNPC_IsDead(npcid) && (issuerid == INVALID_PLAYER_ID || FAI_IsValidNPCForPlayer(npcid, issuerid))) {
+				// If the behaviour is neutral or unfriendly for that player
+				// Threat won't increase and target won't be set when the behaviour is friendly for that player
+				if(issuerid == INVALID_PLAYER_ID || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][issuerid] != FCNPC_BEHAVIOUR_FRIENDLY) {
+					new Float:hearingPercent = FAI_NPCs[npcid][FAI_NPC_INVAL_HEARING_PERCENT];
+					if(issuerid != INVALID_PLAYER_ID) {
+						hearingPercent = FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_PERCENT][issuerid];
+					}
+					// When the NPC is deaf, or the sound is silent, the NPC should not have heard the sound
+					if(hearingPercent != 0 && normalHearingSoundRange != 0) {
+						// Increase threat according to sound loudness left at the position of the NPC
+						if(issuerid != INVALID_PLAYER_ID) {
+							// When the NPC has unlimited hearing, or the sound is unlimitedly loud, use a fixed value
+							if(hearingPercent < 0 || normalHearingSoundRange < 0) {
+								FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] += 100.0;
+							}
+							// Non-extreme cases
+							else {
+								new Float:npcHearingSoundRange = normalHearingSoundRange * hearingPercent;
+								new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
+								FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] += (npcHearingSoundRange - npcRange);
+							}
+						}
+						// If the encounter has been started
+						if(FAI_NPCs[npcid][FAI_NPC_TARGET] != INVALID_PLAYER_ID) {
+							FAI_UpdateNPCTarget(npcid);
+						}
+						// If the encounter has not been started
+						else {
+							// Set target to issuerid
+							FAI_ChangeNPCTarget(npcid, issuerid, FCNPC_START_REASON_SOUND);
+						}
+					}
+				}
+			}
+		}
+	}
+	return ret;
+}
+#if defined _ALS_FCNPC_OnHearSound
+	#undef FCNPC_OnHearSound
+#else
+	#define _ALS_FCNPC_OnHearSound
+#endif
+#define FCNPC_OnHearSound FAI_FCNPC_OnHearSound
+#if defined FAI_FCNPC_OnHearSound
+	forward FAI_FCNPC_OnHearSound(npcid, issuerid, Float:x, Float:y, Float:z, Float:normalHearingSoundRange, FCNPC_E_SOUND_REASON:reason);
 #endif
 
 // ========================================HOOKED FUNCTIONS========================================
@@ -1414,6 +1664,34 @@ stock Float:FCNPC_GetAggroSightRange(npcid, playerid) {
 	return 0.0;
 }
 
+stock FCNPC_SetAggroHearingPercentage(npcid, Float:percentage, playerid = -1) {
+	if(FAI_IsValidNPC(npcid) && ((playerid >= -1 && playerid < MAX_PLAYERS) || playerid == INVALID_PLAYER_ID)) {
+		if(playerid == INVALID_PLAYER_ID) {
+			FAI_NPCs[npcid][FAI_NPC_INVAL_HEARING_PERCENT] = percentage; // Can be negative
+		} else if(playerid != -1) {
+			FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_PERCENT][playerid] = percentage; // Can be negative
+		} else {
+			for(new playerid1 = 0; playerid1 < MAX_PLAYERS; playerid1++) {
+				FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_PERCENT][playerid1] = percentage; // Can be negative
+			}
+		}
+		FAI_UpdateNPCTarget(npcid); // Don't think the sound system affects anything here, but calling it can't do any harm
+		return 1;
+	}
+	return 0;
+}
+
+stock Float:FCNPC_GetAggroHearingPercentage(npcid, playerid) {
+	if(FAI_IsValidNPC(npcid) && ((playerid >= 0 && playerid < MAX_PLAYERS) || playerid == INVALID_PLAYER_ID)) {
+		if(playerid == INVALID_PLAYER_ID) {
+			return FAI_NPCs[npcid][FAI_NPC_INVAL_HEARING_PERCENT];
+		} else {
+			return FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_PERCENT][playerid];
+		}
+	}
+	return 0.0;
+}
+
 stock FCNPC_SetLeashRange(npcid, Float:range, playerid = -1) {
 	if(FAI_IsValidNPC(npcid) && playerid >= -1 && playerid < MAX_PLAYERS) {
 		if(playerid != -1) {
@@ -1469,6 +1747,26 @@ stock Float:FCNPC_GetThreat(npcid, playerid) {
 		return FAI_NPCs[npcid][FAI_NPC_THREAT][playerid];
 	}
 	return 0.0;
+}
+
+stock FCNPC_TriggerSound(Float:x, Float:y, Float:z, Float:normalHearingSoundRange, npcid = -1, playerid = INVALID_PLAYER_ID) {
+	if((FAI_IsValidNPC(npcid) || npcid == -1) && ((playerid >= 0 && playerid < MAX_PLAYERS) || playerid == INVALID_PLAYER_ID)) {
+		if(npcid != -1) {
+			if(FAI_IsSoundHeard(playerid, npcid, x, y, z, normalHearingSoundRange)) {
+				CallLocalFunction("FCNPC_OnHearSound", "ddffffd", npcid, playerid, x, y, z, normalHearingSoundRange, _:FCNPC_SOUND_REASON_MAN_TRIGGER);
+			}
+		} else {
+			for(new npcid1 = 0; npcid1 < MAX_PLAYERS; npcid1++) {
+				if(FAI_IsValidNPC(npcid1)) {
+					if(FAI_IsSoundHeard(playerid, npcid1, x, y, z, normalHearingSoundRange)) {
+						CallLocalFunction("FCNPC_OnHearSound", "ddffffd", npcid1, playerid, x, y, z, normalHearingSoundRange, _:FCNPC_SOUND_REASON_MAN_TRIGGER);
+					}
+				}
+			}
+		}
+		return 1;
+	}
+	return 0;
 }
 
 // Debug
