@@ -203,9 +203,9 @@ enum FAI_E_NPC {
 	bool:FAI_NPC_AGGRO_LINE_OF_SIGHT[MAX_PLAYERS],
 	Float:FAI_NPC_AGGRO_SIGHT_RANGE[MAX_PLAYERS],
 	Float:FAI_NPC_AGGRO_HEARING_PERCENT[MAX_PLAYERS],
-	Float:FAI_NPC_INVAL_HEARING_PERCENT,
 	Float:FAI_NPC_LEASH_RANGE[MAX_PLAYERS],
-	Float:FAI_NPC_THREAT[MAX_PLAYERS] // Can be changed automatically by the script
+	Float:FAI_NPC_THREAT[MAX_PLAYERS], // Can be changed automatically by the script
+	Float:FAI_NPC_INVAL_HEARING_PERCENT
 }
 static FAI_NPCs[MAX_PLAYERS][FAI_E_NPC];
 
@@ -327,10 +327,10 @@ static FAI_ResetNPC(npcid) {
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_LINE_OF_SIGHT][playerid] = false;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid] = 20.0;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_PERCENT][playerid] = 1.0;
-		FAI_NPCs[npcid][FAI_NPC_INVAL_HEARING_PERCENT] = 1.0;
 		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = 200.0; // The default SA-MP stream_distance
 		FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = 0.0;
 	}
+	FAI_NPCs[npcid][FAI_NPC_INVAL_HEARING_PERCENT] = 1.0;
 
 	// Debug
 	FAI_DebugRanges[npcid] = FAI_DEBUG_RANGE_NONE;
