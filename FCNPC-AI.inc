@@ -57,6 +57,7 @@ forward FCNPC_OnEncounterStart(npcid, firsttargetid, FCNPC_E_START_REASON:reason
 forward FCNPC_OnEncounterStop(npcid, lasttargetid, FCNPC_E_STOP_REASON:reason);
 forward FCNPC_OnPlayerGetAggro(playerid, npcid);
 forward FCNPC_OnPlayerLoseAggro(playerid, npcid);
+forward FCNCP_OnPlayerThreatChange(playerid, npcid, Float:newthreat, Float:oldthreat, FCNPC_E_THREAT_REASON:reason);
 forward FCNPC_OnHearSound(npcid, issuerid, Float:x, Float:y, Float:z, Float:normalHearingSoundRange, FCNPC_E_SOUND_REASON:reason);
 
 // ========================================CONSTANTS========================================
@@ -81,6 +82,12 @@ enum FCNPC_E_STOP_REASON {
 	FCNPC_STOP_REASON_NPC_DESTROY,
 	FCNPC_STOP_REASON_NO_VAL_TAR,
 	FCNPC_STOP_REASON_MAN_TAR_SET
+}
+enum FCNPC_E_THREAT_REASON {
+	FCNPC_THREAT_REASON_RESET,
+	FCNPC_THREAT_REASON_DAMAGE,
+	FCNPC_THREAT_REASON_SOUND,
+	FCNPC_THREAT_REASON_MAN_SET
 }
 enum FCNPC_E_SOUND_REASON {
 	FCNPC_SOUND_REASON_WEAPON_SHOT,
@@ -328,7 +335,7 @@ static FAI_ResetNPC(npcid) {
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid] = 20.0;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_PERCENT][playerid] = 1.0;
 		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = 200.0; // The default SA-MP stream_distance
-		FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = 0.0;
+		FAI_ChangeThreat(npcid, playerid, 0.0, FCNPC_THREAT_REASON_RESET);
 	}
 	FAI_NPCs[npcid][FAI_NPC_INVAL_HEARING_PERCENT] = 1.0;
 
@@ -497,7 +504,7 @@ static FAI_ChangeNPCTarget(npcid, newtargetid, {FCNPC_E_START_REASON,FCNPC_E_STO
 			} else {
 				if(oldtargetid != INVALID_PLAYER_ID) {
 					for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) {
-						FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = 0.0;
+						FAI_ChangeThreat(npcid, playerid, 0.0, FCNPC_THREAT_REASON_RESET);
 					}
 					FAI_ChangeNPCStopAttackMove(npcid);
 					CallLocalFunction("FCNPC_OnEncounterStop", "ddd", npcid, oldtargetid, _:reason);
@@ -507,6 +514,14 @@ static FAI_ChangeNPCTarget(npcid, newtargetid, {FCNPC_E_START_REASON,FCNPC_E_STO
 		}
 	}
 	return 0;
+}
+
+static FAI_ChangeThreat(npcid, playerid, Float:threat, FCNPC_E_THREAT_REASON:reason) {
+	new Float:oldThreat = FAI_NPCs[npcid][FAI_NPC_THREAT][playerid];
+	FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = threat;
+	if (FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] != oldThreat) {
+		CallLocalFunction("FCNCP_OnPlayerThreatChange", "ddffd", playerid, npcid, FAI_NPCs[npcid][FAI_NPC_THREAT][playerid], oldThreat, _:reason);
+	}
 }
 
 static bool:FAI_IsPlayerInAggroViewingAngle(playerid, npcid) {
@@ -568,7 +583,7 @@ static bool:FAI_IsPlayerInAggroViewingAngle(playerid, npcid) {
 	new Float:horizontalDistance = VectorSize(xp - xn, yp - yn, 0.0);
 
 	// Check if any vertical part of the player is within the vertical aggro viewing range, using decrements of one third the height of the player and starting from the most likely match which is the head
-	for (new Float:zp_part = zp_head, Float:zp_diff = (zp_head - zp_feet)/3; zp_part >= zp_feet; zp_part -= zp_diff) {
+	for(new Float:zp_part = zp_head, Float:zp_diff = (zp_head - zp_feet)/3; zp_part >= zp_feet; zp_part -= zp_diff) {
 		// Calculate the angle between the NPC and the player in the vertical plane as a value between -90.0 and 90.0
 		// The game only has the ability to rotate the NPC along the vertical axis, so the NPC vertical facing angle is always 0.0, so we don't need to subtract it from the calculated angle
 		new Float:verticalAngleBetweenPoints = atan2(zp_part - zn, horizontalDistance);
@@ -614,7 +629,7 @@ static bool:FAI_IsPlayerInAggroLineOfSight(playerid, npcid) {
 	}
 
 	// Check if a ray cast between the NPC and any vertical part of the player does not collide with anything, using decrements of one third the height of the player and starting from the most likely match which is the head
-	for (new Float:zp_part = zp_head, Float:zp_diff = (zp_head - zp_feet)/3; zp_part >= zp_feet; zp_part -= zp_diff) {
+	for(new Float:zp_part = zp_head, Float:zp_diff = (zp_head - zp_feet)/3; zp_part >= zp_feet; zp_part -= zp_diff) {
 		new Float:range = GetPlayerDistanceFromPoint(npcid, xp, yp, zp_part);
 		new entity_id;
 		FCNPC_GetClosestEntityInBetween(npcid, xp, yp, zp_part, range, FCNPC_ENTITY_MODE_COLANDREAS, FCNPC_ENTITY_CHECK_ALL, 0.0, 0.0, offset_from_z, entity_id);
@@ -1023,7 +1038,7 @@ public FCNPC_OnUpdate(npcid)
 		for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) {
 			// Don't check for death, because won't be called when dead
 			if(FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] != 0.0 && !FAI_IsValidNPCForPlayer(npcid, playerid)) {
-				FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = 0.0;
+				FAI_ChangeThreat(npcid, playerid, 0.0, FCNPC_THREAT_REASON_RESET);
 			}
 		}
 	}
@@ -1122,7 +1137,7 @@ public FCNPC_OnTakeDamage(npcid, issuerid, Float:amount, weaponid, bodypart)
 				if(issuerid == INVALID_PLAYER_ID || FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][issuerid] != FCNPC_BEHAVIOUR_FRIENDLY) {
 					// Increase threat according to damage done
 					if(issuerid != INVALID_PLAYER_ID) {
-						FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] += amount;
+						FAI_ChangeThreat(npcid, issuerid, FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] + amount, FCNPC_THREAT_REASON_DAMAGE);
 					}
 					// If the encounter has been started
 					if(FAI_NPCs[npcid][FAI_NPC_TARGET] != INVALID_PLAYER_ID) {
@@ -1232,13 +1247,13 @@ public FCNPC_OnHearSound(npcid, issuerid, Float:x, Float:y, Float:z, Float:norma
 						if(issuerid != INVALID_PLAYER_ID) {
 							// When the NPC has unlimited hearing, or the sound is unlimitedly loud, use a fixed value
 							if(hearingPercent < 0 || normalHearingSoundRange < 0) {
-								FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] += 100.0;
+								FAI_ChangeThreat(npcid, issuerid, FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] + 100.0, FCNPC_THREAT_REASON_SOUND);
 							}
 							// Non-extreme cases
 							else {
 								new Float:npcHearingSoundRange = normalHearingSoundRange * hearingPercent;
 								new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
-								FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] += (npcHearingSoundRange - npcRange);
+								FAI_ChangeThreat(npcid, issuerid, FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] + (npcHearingSoundRange - npcRange), FCNPC_THREAT_REASON_SOUND);
 							}
 						}
 						// If the encounter has been started
@@ -1730,10 +1745,10 @@ stock FCNPC_SetThreat(npcid, Float:threat, playerid = -1) {
 			threat = 0.0;
 		}
 		if(playerid != -1) {
-			FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = threat; // Can't be negative
+			FAI_ChangeThreat(npcid, playerid, threat, FCNPC_THREAT_REASON_MAN_SET); // Can't be negative
 		} else {
 			for(new playerid1 = 0; playerid1 < MAX_PLAYERS; playerid1++) {
-				FAI_NPCs[npcid][FAI_NPC_THREAT][playerid1] = threat; // Can't be negative
+				FAI_ChangeThreat(npcid, playerid1, threat, FCNPC_THREAT_REASON_MAN_SET); // Can't be negative
 			}
 		}
 		FAI_UpdateNPCTarget(npcid);
