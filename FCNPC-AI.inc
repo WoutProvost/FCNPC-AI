@@ -517,8 +517,8 @@ static FAI_ChangeNPCTarget(npcid, newtargetid, {FCNPC_E_START_REASON,FCNPC_E_STO
 }
 
 static FAI_ChangeThreat(npcid, playerid, Float:threat, FCNPC_E_THREAT_REASON:reason) {
+	// The actual threat change happens in the callback, to allow the user to override the decision to persist it
 	new Float:oldThreat = FAI_NPCs[npcid][FAI_NPC_THREAT][playerid];
-	FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = threat;
 	if (FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] != oldThreat) {
 		CallLocalFunction("FCNCP_OnPlayerThreatChange", "ddffd", playerid, npcid, FAI_NPCs[npcid][FAI_NPC_THREAT][playerid], oldThreat, _:reason);
 	}
@@ -1280,6 +1280,37 @@ public FCNPC_OnHearSound(npcid, issuerid, Float:x, Float:y, Float:z, Float:norma
 #define FCNPC_OnHearSound FAI_FCNPC_OnHearSound
 #if defined FAI_FCNPC_OnHearSound
 	forward FAI_FCNPC_OnHearSound(npcid, issuerid, Float:x, Float:y, Float:z, Float:normalHearingSoundRange, FCNPC_E_SOUND_REASON:reason);
+#endif
+
+public FCNCP_OnPlayerThreatChange(playerid, npcid, Float:newthreat, Float:oldthreat, FCNPC_E_THREAT_REASON:reason)
+{
+	new ret = 1;
+	#if defined FAI_FCNCP_OnPlayerThreatChange
+		// The user can override the decision for the threat change to persist
+		ret = FAI_FCNCP_OnPlayerThreatChange(playerid, npcid, newthreat, oldthreat, reason);
+	#endif
+
+	if(ret == 1) { // Call after
+		// NPCs
+		if(FAI_IsValidNPC(npcid)) {			
+			FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = newthreat;
+		}
+	} else if(ret == 0) {
+		// NPCs
+		if(FAI_IsValidNPC(npcid)) {	
+			FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] = oldthreat;
+		}
+	}
+	return ret;
+}
+#if defined _ALS_FCNCP_OnPlayerThreatChange
+	#undef FCNCP_OnPlayerThreatChange
+#else
+	#define _ALS_FCNCP_OnPlayerThreatChange
+#endif
+#define FCNCP_OnPlayerThreatChange FAI_FCNCP_OnPlayerThreatChange
+#if defined FAI_FCNCP_OnPlayerThreatChange
+	forward FAI_FCNCP_OnPlayerThreatChange(playerid, npcid, Float:newthreat, Float:oldthreat, FCNPC_E_THREAT_REASON:reason);
 #endif
 
 // ========================================HOOKED FUNCTIONS========================================
