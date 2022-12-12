@@ -22,7 +22,7 @@ native FCNPC_SetTarget(npcid, playerid);
 native FCNPC_GetTarget(npcid);
 native FCNPC_SetGoToInfo(npcid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, mode = FCNPC_MOVE_MODE_AUTO, pathfinding = FCNPC_MOVE_PATHFINDING_AUTO, Float:radius = 0.0, bool:set_angle = true, Float:min_distance = 0.0, Float:dist_check = 1.5, stop_delay = 250, playerid = -1);
 native FCNPC_GetGoToInfo(npcid, playerid, &type, &Float:speed, &mode, &pathfinding, &Float:radius, &bool:set_angle, &Float:min_distance, &Float:dist_check, &stop_delay);
-native FCNPC_SetAimAtInfo(npcid, Float:range = 20.0, bool:shoot = false, shoot_delay = -1, bool:set_angle = true, Float:offset_x = 0.0, Float:offset_y = 0.0, Float:offset_z = 0.0, Float:offset_from_x = 0.0, Float:offset_from_y = 0.0, Float:offset_from_z = 0.0, between_check_mode = FCNPC_ENTITY_MODE_AUTO, between_check_flags = FCNPC_ENTITY_CHECK_ALL, playerid = -1);
+native FCNPC_SetAimAtInfo(npcid, Float:range = 20.0, bool:shoot = true, shoot_delay = -1, bool:set_angle = true, Float:offset_x = 0.0, Float:offset_y = 0.0, Float:offset_z = 0.0, Float:offset_from_x = 0.0, Float:offset_from_y = 0.0, Float:offset_from_z = 0.0, between_check_mode = FCNPC_ENTITY_MODE_AUTO, between_check_flags = FCNPC_ENTITY_CHECK_ALL, playerid = -1);
 native FCNPC_GetAimAtInfo(npcid, playerid, &Float:range, &bool:shoot, &shoot_delay, &bool:set_angle, &Float:offset_x, &Float:offset_y, &Float:offset_z, &Float:offset_from_x, &Float:offset_from_y, &Float:offset_from_z, &between_check_mode, &between_check_flags);
 native FCNPC_SetMeleeAttackInfo(npcid, Float:range = 0.5, delay = -1, bool:fighting_style = false, playerid = -1);
 native FCNPC_GetMeleeAttackInfo(npcid, playerid, &Float:range, &delay, &bool:fighting_style);
@@ -263,7 +263,7 @@ static FAI_ResetNPC(npcid) {
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_DIST_CHECK][playerid] = 1.5;
 		FAI_NPCs[npcid][FAI_NPC_GO_TO_STOP_DELAY][playerid] = 250;
 		FAI_NPCs[npcid][FAI_NPC_AIM_AT_RANGE][playerid] = 20.0;
-		FAI_NPCs[npcid][FAI_NPC_AIM_AT_SHOOT][playerid] = false;
+		FAI_NPCs[npcid][FAI_NPC_AIM_AT_SHOOT][playerid] = true;
 		FAI_NPCs[npcid][FAI_NPC_AIM_AT_SHOOT_DELAY][playerid] = -1;
 		FAI_NPCs[npcid][FAI_NPC_AIM_AT_SET_ANGLE][playerid] = true;
 		FAI_NPCs[npcid][FAI_NPC_AIM_AT_OFFSET_X][playerid] = 0.0;
@@ -277,11 +277,11 @@ static FAI_ResetNPC(npcid) {
 		FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_RANGE][playerid] = 0.5;
 		FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_DELAY][playerid] = -1;
 		FAI_NPCs[npcid][FAI_NPC_MELEE_ATTACK_FIGHT_STL][playerid] = false;
-		FAI_NPCs[npcid][FAI_NPC_OUT_OF_AMMO_MELEE_WEAP][playerid] = 0; // Fist weapon
+		FAI_NPCs[npcid][FAI_NPC_OUT_OF_AMMO_MELEE_WEAP][playerid] = WEAPON_FISTS;
 		FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][playerid] = FCNPC_BEHAVIOUR_FRIENDLY;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][playerid] = 360.0;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][playerid] = 180.0;
-		FAI_NPCs[npcid][FAI_NPC_AGGRO_LINE_OF_SIGHT][playerid] = false;
+		FAI_NPCs[npcid][FAI_NPC_AGGRO_LINE_OF_SIGHT][playerid] = true;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_SIGHT_RANGE][playerid] = 20.0;
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_PERCENT][playerid] = 1.0;
 		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = 200.0; // The default SA-MP stream_distance
@@ -1436,7 +1436,7 @@ stock FCNPC_GetGoToInfo(npcid, playerid, &type, &Float:speed, &mode, &pathfindin
 	return 0;
 }
 
-stock FCNPC_SetAimAtInfo(npcid, Float:range = 20.0, bool:shoot = false, shoot_delay = -1, bool:set_angle = true, Float:offset_x = 0.0, Float:offset_y = 0.0, Float:offset_z = 0.0, Float:offset_from_x = 0.0, Float:offset_from_y = 0.0, Float:offset_from_z = 0.0, between_check_mode = FCNPC_ENTITY_MODE_AUTO, between_check_flags = FCNPC_ENTITY_CHECK_ALL, playerid = -1) {
+stock FCNPC_SetAimAtInfo(npcid, Float:range = 20.0, bool:shoot = true, shoot_delay = -1, bool:set_angle = true, Float:offset_x = 0.0, Float:offset_y = 0.0, Float:offset_z = 0.0, Float:offset_from_x = 0.0, Float:offset_from_y = 0.0, Float:offset_from_z = 0.0, between_check_mode = FCNPC_ENTITY_MODE_AUTO, between_check_flags = FCNPC_ENTITY_CHECK_ALL, playerid = -1) {
 	if(FAI_IsValidNPC(npcid) && playerid >= -1 && playerid < MAX_PLAYERS) {
 		if(playerid != -1) {
 			FAI_NPCs[npcid][FAI_NPC_AIM_AT_RANGE][playerid] = range; // Can be negative
