@@ -769,16 +769,24 @@ static FAI_ToggleDebugAngleObjects(npcid) {
 	} else {
 		RemovePlayerAttachedObject(npcid, 0);
 	}
-	if(FAI_DebugAngles[npcid] & FAI_DEBUG_VIEWING_ANGLE) { // Green
+	if(FAI_DebugAngles[npcid] & FAI_DEBUG_VIEWING_ANGLE) { // Green & blue
 		SetPlayerAttachedObject(npcid, 1, 19083, 1, .fOffsetX = 0.5, .fRotX = FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 - FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
 		SetPlayerAttachedObject(npcid, 2, 19083, 1, .fOffsetX = 0.5, .fRotX = -FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 - FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
 		SetPlayerAttachedObject(npcid, 3, 19083, 1, .fOffsetX = 0.5, .fRotX = FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 + FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
 		SetPlayerAttachedObject(npcid, 4, 19083, 1, .fOffsetX = 0.5, .fRotX = -FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0 + FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
+		SetPlayerAttachedObject(npcid, 5, 19080, 1, .fOffsetX = 0.5, .fRotX = FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0);
+		SetPlayerAttachedObject(npcid, 6, 19080, 1, .fOffsetX = 0.5, .fRotX = -FAI_NPCs[npcid][FAI_NPC_AGGRO_HOR_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2, .fRotZ = 90.0);
+		SetPlayerAttachedObject(npcid, 7, 19080, 1, .fOffsetX = 0.5, .fRotZ = 90.0 - FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
+		SetPlayerAttachedObject(npcid, 8, 19080, 1, .fOffsetX = 0.5, .fRotZ = 90.0 + FAI_NPCs[npcid][FAI_NPC_AGGRO_VER_VIEWING_ANGLE][FAI_DebugAnglesPlayerID[npcid]]/2);
 	} else {
 		RemovePlayerAttachedObject(npcid, 1);
 		RemovePlayerAttachedObject(npcid, 2);
 		RemovePlayerAttachedObject(npcid, 3);
 		RemovePlayerAttachedObject(npcid, 4);
+		RemovePlayerAttachedObject(npcid, 5);
+		RemovePlayerAttachedObject(npcid, 6);
+		RemovePlayerAttachedObject(npcid, 7);
+		RemovePlayerAttachedObject(npcid, 8);
 	}
 }
 
