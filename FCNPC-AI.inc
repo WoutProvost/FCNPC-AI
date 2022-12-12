@@ -519,8 +519,8 @@ static FAI_ChangeNPCTarget(npcid, newtargetid, {FCNPC_E_START_REASON,FCNPC_E_STO
 static FAI_ChangeThreat(npcid, playerid, Float:threat, FCNPC_E_THREAT_REASON:reason) {
 	// The actual threat change happens in the callback, to allow the user to override the decision to persist it
 	new Float:oldThreat = FAI_NPCs[npcid][FAI_NPC_THREAT][playerid];
-	if (FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] != oldThreat) {
-		CallLocalFunction("FCNCP_OnPlayerThreatChange", "ddffd", playerid, npcid, FAI_NPCs[npcid][FAI_NPC_THREAT][playerid], oldThreat, _:reason);
+	if(threat != oldThreat) {
+		CallLocalFunction("FCNCP_OnPlayerThreatChange", "ddffd", playerid, npcid, threat, oldThreat, _:reason);
 	}
 }
 
