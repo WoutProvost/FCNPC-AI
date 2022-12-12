@@ -90,10 +90,16 @@ enum FCNPC_E_THREAT_REASON {
 	FCNPC_THREAT_REASON_MAN_SET
 }
 enum FCNPC_E_SOUND_REASON {
+	FCNPC_SOUND_REASON_MOVEMENT,
 	FCNPC_SOUND_REASON_WEAPON_SHOT,
 	FCNPC_SOUND_REASON_BUL_IMPACT,
 	FCNPC_SOUND_REASON_MAN_TRIGGER
 }
+static const Float:FAI_CrouchSoundRange = 1.00;
+static const Float:FAI_WalkSoundRange = 2.00;
+static const Float:FAI_RunSoundRange = 5.00;
+static const Float:FAI_SprintSoundRange = 8.00;
+static const Float:FAI_VehicleSoundRange = 20.00;
 static const Float:FAI_BulletImpactSoundRange = 5.00;
 
 // Debug
@@ -734,6 +740,72 @@ static FAI_OnWeaponShot(npcid, shooterid, weaponid, hittype, hitid, Float:fX, Fl
 	}
 }
 
+static FAI_OnMovement(npcid, moverid) {
+	new Float:x, Float:y, Float:z, Float:normalHearingSoundRange;
+	new keys, updown, leftright;
+	if(!IsPlayerNPC(moverid)) {
+		GetPlayerKeys(moverid, keys, updown, leftright);
+	} else {
+		FCNPC_GetKeys(moverid, updown, leftright, keys);
+	}
+
+	// On foot
+	if(!IsPlayerInAnyVehicle(moverid)) {
+		// Don't act when there is no movement
+		if(updown == 0 && leftright == 0) {
+			return;
+		}
+
+		new moverAction, moverWeapon;
+		if(!IsPlayerNPC(moverid)) {
+			GetPlayerPos(moverid, x, y, z);
+			moverAction = GetPlayerSpecialAction(moverid);
+			moverWeapon = GetPlayerWeapon(moverid);
+		} else {
+			FCNPC_GetPosition(moverid, x, y, z);
+			moverAction = FCNPC_GetSpecialAction(moverid);
+			moverWeapon = FCNPC_GetWeapon(moverid);
+		}
+
+		if(moverAction == SPECIAL_ACTION_DUCK) {
+			normalHearingSoundRange = FAI_CrouchSoundRange;
+		} else {
+			// When both the walk and sprint button are pressed, sprinting takes precedence when that weapon allows sprinting
+			// Sprinting
+			if(IsWeaponSprintAllowed(moverWeapon) && (keys & KEY_SPRINT) == KEY_SPRINT) {
+				normalHearingSoundRange = FAI_SprintSoundRange;
+			}
+			// Walking
+			else if((keys & KEY_WALK) == KEY_WALK) {
+				normalHearingSoundRange = FAI_WalkSoundRange;
+			}
+			// Running
+			else {
+				normalHearingSoundRange = FAI_RunSoundRange;
+			}
+		}
+	}
+	// In vehicle
+	else {
+		// Don't act when there is no movement
+		if(updown == 0 && leftright == 0 && (keys & KEY_UP) != KEY_UP && (keys & KEY_DOWN) != KEY_DOWN) {
+			return;
+		}
+
+		if(!IsPlayerNPC(moverid)) {
+			GetVehiclePos(GetPlayerVehicleID(moverid), x, y, z);
+		} else {
+			GetVehiclePos(FCNPC_GetVehicleID(moverid), x, y, z);
+		}
+
+		normalHearingSoundRange = FAI_VehicleSoundRange;
+	}
+
+	if(FAI_IsSoundHeard(moverid, npcid, x, y, z, normalHearingSoundRange)) {
+		CallLocalFunction("FCNPC_OnHearSound", "ddffffd", npcid, moverid, x, y, z, normalHearingSoundRange, _:FCNPC_SOUND_REASON_MOVEMENT);
+	}
+}
+
 // Debug
 static FAI_ToggleDebugRangeObjects(npcid) {
 	new Float:iScale = 1.0, Float:radius = 50.0; // Radius of modelid is 50.0
@@ -920,6 +992,13 @@ public OnPlayerUpdate(playerid)
 	// Players
 	FAI_PauseTickCount[playerid] = GetTickCount();
 
+	// NPCs
+	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
+		if(FAI_IsValidNPC(npcid)) {
+			FAI_OnMovement(npcid, playerid);
+		}
+	}
+
 	new ret = 1;
 	#if defined FAI_OnPlayerUpdate
 		ret = FAI_OnPlayerUpdate(playerid);
@@ -998,6 +1077,11 @@ public FCNPC_OnUpdate(npcid)
 			// Don't check for death, because won't be called when dead
 			if(FAI_NPCs[npcid][FAI_NPC_THREAT][playerid] != 0.0 && !FAI_IsValidNPCForPlayer(npcid, playerid)) {
 				FAI_ChangeThreat(npcid, playerid, 0.0, FCNPC_THREAT_REASON_RESET);
+			}
+
+			// Check for movement heard
+			if(FAI_IsValidNPC(playerid) && playerid != npcid) {	
+				FAI_OnMovement(playerid, npcid);
 			}
 		}
 	}
@@ -1204,15 +1288,18 @@ public FCNPC_OnHearSound(npcid, issuerid, Float:x, Float:y, Float:z, Float:norma
 					if(hearingPercent != 0 && normalHearingSoundRange != 0) {
 						// Increase threat according to sound loudness left at the position of the NPC
 						if(issuerid != INVALID_PLAYER_ID) {
-							// When the NPC has unlimited hearing, or the sound is unlimitedly loud, use a fixed value
-							if(hearingPercent < 0 || normalHearingSoundRange < 0) {
-								FAI_ChangeThreat(npcid, issuerid, FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] + 100.0, FCNPC_THREAT_REASON_SOUND);
-							}
-							// Non-extreme cases
-							else {
-								new Float:npcHearingSoundRange = normalHearingSoundRange * hearingPercent;
-								new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
-								FAI_ChangeThreat(npcid, issuerid, FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] + (npcHearingSoundRange - npcRange), FCNPC_THREAT_REASON_SOUND);
+							// Only change threat due to movement when the encounter has not been started
+							if(reason != FCNPC_SOUND_REASON_MOVEMENT || FAI_NPCs[npcid][FAI_NPC_TARGET] == INVALID_PLAYER_ID) {
+								// When the NPC has unlimited hearing, or the sound is unlimitedly loud, use a fixed value
+								if(hearingPercent < 0 || normalHearingSoundRange < 0) {
+									FAI_ChangeThreat(npcid, issuerid, FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] + 100.0, FCNPC_THREAT_REASON_SOUND);
+								}
+								// Non-extreme cases
+								else {
+									new Float:npcHearingSoundRange = normalHearingSoundRange * hearingPercent;
+									new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
+									FAI_ChangeThreat(npcid, issuerid, FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] + (npcHearingSoundRange - npcRange), FCNPC_THREAT_REASON_SOUND);
+								}								
 							}
 						}
 						// If the encounter has been started
