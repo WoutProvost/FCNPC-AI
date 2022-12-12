@@ -95,56 +95,6 @@ enum FCNPC_E_SOUND_REASON {
 	FCNPC_SOUND_REASON_MAN_TRIGGER
 }
 static const Float:FAI_BulletImpactSoundRange = 5.00;
-static const Float:FAI_WeaponShotSoundRange[] = {
-	// Weapon sound loudness at point blank range proportional to their inflicted damage
-	5.00, // fists (0)
-	5.00, // WEAPON_BRASSKNUCKLE (1)
-	5.00, // WEAPON_GOLFCLUB (2)
-	5.00, // WEAPON_NITESTICK (3)
-	5.00, // WEAPON_KNIFE (4)
-	5.00, // WEAPON_BAT (5)
-	5.00, // WEAPON_SHOVEL (6)
-	5.00, // WEAPON_POOLSTICK (7)
-	5.00, // WEAPON_KATANA (8)
-	5.00, // WEAPON_CHAINSAW (9)
-	5.00, // WEAPON_DILDO (10)
-	5.00, // WEAPON_DILDO2 (11)
-	5.00, // WEAPON_VIBRATOR (12)
-	5.00, // WEAPON_VIBRATOR2 (13)
-	5.00, // WEAPON_FLOWER (14)
-	5.00, // WEAPON_CANE (15)
-	5.00, // WEAPON_GRENADE (16)
-	5.00, // WEAPON_TEARGAS (17)
-	5.00, // WEAPON_MOLTOV (18)
-	0.00, // nothing (19)
-	0.00, // nothing (20)
-	0.00, // nothing (21)
-	8.25, // WEAPON_COLT45 (22)
-	13.2, // WEAPON_SILENCED (23)
-	46.2, // WEAPON_DEAGLE (24)
-	30.0, // WEAPON_SHOTGUN (25)
-	30.0, // WEAPON_SAWEDOFF (26)
-	30.0, // WEAPON_SHOTGSPA (27)
-	6.60, // WEAPON_UZI (28)
-	8.25, // WEAPON_MP5 (29)
-	9.90, // WEAPON_AK47 (30)
-	9.90, // WEAPON_M4 (31)
-	6.60, // WEAPON_TEC9 (32)
-	24.8, // WEAPON_RIFLE (33)
-	41.3, // WEAPON_SNIPER (34)
-	5.00, // WEAPON_ROCKETLAUNCHER (35)
-	5.00, // WEAPON_HEATSEEKER (36)
-	5.00, // WEAPON_FLAMETHROWER (37)
-	46.2, // WEAPON_MINIGUN (38)
-	5.00, // WEAPON_SATCHEL (39)
-	5.00, // WEAPON_BOMB (40)
-	5.00, // WEAPON_SPRAYCAN (41)
-	5.00, // WEAPON_FIREEXTINGUISHER (42)
-	0.00, // WEAPON_CAMERA (43)
-	0.00, // WEAPON_NIGHTVISION (44)
-	0.00, // WEAPON_INFRARED (45)
-	0.00 // WEAPON_PARACHUTE (46)
-};
 
 // Debug
 enum FAI_E_DEBUG_RANGE (<<=1) {
@@ -743,8 +693,9 @@ static FAI_OnWeaponShot(npcid, shooterid, weaponid, hittype, hitid, Float:fX, Fl
 	}
 
 	// If both the firing and the impact are heard, the firing will take precedence
-	if(FAI_IsSoundHeard(shooterid, npcid, x, y, z, FAI_WeaponShotSoundRange[weaponid])) {
-		CallLocalFunction("FCNPC_OnHearSound", "ddffffd", npcid, shooterid, x, y, z, FAI_WeaponShotSoundRange[weaponid], _:FCNPC_SOUND_REASON_WEAPON_SHOT);
+	// Weapon sound loudness at point blank range proportional to their inflicted damage
+	if(FAI_IsSoundHeard(shooterid, npcid, x, y, z, GetWeaponDamage(weaponid))) {
+		CallLocalFunction("FCNPC_OnHearSound", "ddffffd", npcid, shooterid, x, y, z, GetWeaponDamage(weaponid), _:FCNPC_SOUND_REASON_WEAPON_SHOT);
 	} else {
 		switch(hittype) {
 			case BULLET_HIT_TYPE_NONE: {
