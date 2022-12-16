@@ -42,6 +42,8 @@ native FCNPC_SetLeashRange(npcid, Float:range, playerid = -1);
 native Float:FCNPC_GetLeashRange(npcid, playerid);
 native FCNPC_SetThreat(npcid, Float:threat, playerid = -1);
 native Float:FCNPC_GetThreat(npcid, playerid);
+native FCNPC_SetNormalHearingSoundRng(npcid, FCNPC_E_SOUND_RANGE:type, Float:normalHearingSoundRange, playerid = -1);
+native Float:FCNPC_GetNormalHearingSoundRng(npcid, FCNPC_E_SOUND_RANGE:type, playerid);
 native FCNPC_TriggerSound(Float:x, Float:y, Float:z, Float:normalHearingSoundRange, npcid = -1, playerid = INVALID_PLAYER_ID);
 
 // Debug
@@ -95,12 +97,14 @@ enum FCNPC_E_SOUND_REASON {
 	FCNPC_SOUND_REASON_BUL_IMPACT,
 	FCNPC_SOUND_REASON_MAN_TRIGGER
 }
-static const Float:FAI_CrouchSoundRange = 1.00;
-static const Float:FAI_WalkSoundRange = 2.00;
-static const Float:FAI_RunSoundRange = 5.00;
-static const Float:FAI_SprintSoundRange = 8.00;
-static const Float:FAI_VehicleSoundRange = 20.00;
-static const Float:FAI_BulletImpactSoundRange = 5.00;
+enum FCNPC_E_SOUND_RANGE { // When this changes, also change the getter and setter
+	FCNPC_SOUND_RANGE_DUCK,
+	FCNPC_SOUND_RANGE_WALK,
+	FCNPC_SOUND_RANGE_RUN,
+	FCNPC_SOUND_RANGE_SPRINT,
+	FCNPC_SOUND_RANGE_VEHICLE,
+	FCNPC_SOUND_RANGE_BUL_IMPACT
+}
 
 // Debug
 enum FAI_E_DEBUG_RANGE (<<=1) {
@@ -168,7 +172,14 @@ enum FAI_E_NPC {
 	Float:FAI_NPC_AGGRO_HEARING_PERCENT[MAX_PLAYERS],
 	Float:FAI_NPC_LEASH_RANGE[MAX_PLAYERS],
 	Float:FAI_NPC_THREAT[MAX_PLAYERS], // Can be changed automatically by the script
-	Float:FAI_NPC_INVAL_HEARING_PERCENT
+	Float:FAI_NPC_INVAL_HEARING_PERCENT,
+	// Float:FAI_NPC_SOUND_RANGE[MAX_PLAYERS][FCNPC_E_SOUND_RANGE]
+	Float:FAI_NPC_SOUND_RANGE_DUCK[MAX_PLAYERS],
+	Float:FAI_NPC_SOUND_RANGE_WALK[MAX_PLAYERS],
+	Float:FAI_NPC_SOUND_RANGE_RUN[MAX_PLAYERS],
+	Float:FAI_NPC_SOUND_RANGE_SPRINT[MAX_PLAYERS],
+	Float:FAI_NPC_SOUND_RANGE_VEHICLE[MAX_PLAYERS],
+	Float:FAI_NPC_SOUND_RANGE_BUL_IMPACT[MAX_PLAYERS]
 }
 static FAI_NPCs[MAX_PLAYERS][FAI_E_NPC];
 
@@ -292,6 +303,18 @@ static FAI_ResetNPC(npcid) {
 		FAI_NPCs[npcid][FAI_NPC_AGGRO_HEARING_PERCENT][playerid] = 1.0;
 		FAI_NPCs[npcid][FAI_NPC_LEASH_RANGE][playerid] = 200.0; // The default SA-MP stream_distance
 		FAI_ChangeThreat(npcid, playerid, 0.0, FCNPC_THREAT_REASON_RESET);
+		// FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][playerid][FCNPC_SOUND_RANGE_DUCK] = 1.0;
+		// FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][playerid][FCNPC_SOUND_RANGE_WALK] = 2.0;
+		// FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][playerid][FCNPC_SOUND_RANGE_RUN] = 5.0;
+		// FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][playerid][FCNPC_SOUND_RANGE_SPRINT] = 8.0;
+		// FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][playerid][FCNPC_SOUND_RANGE_VEHICLE] = 20.0;
+		// FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][playerid][FCNPC_SOUND_RANGE_BUL_IMPACT] = 5.0;
+		FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_DUCK][playerid] = 1.0;
+		FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_WALK][playerid] = 2.0;
+		FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_RUN][playerid] = 5.0;
+		FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_SPRINT][playerid] = 8.0;
+		FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_VEHICLE][playerid] = 20.0;
+		FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_BUL_IMPACT][playerid] = 5.0;
 	}
 	FAI_NPCs[npcid][FAI_NPC_INVAL_HEARING_PERCENT] = 1.0;
 
@@ -627,9 +650,9 @@ static bool:FAI_IsSoundHeard(playerid, npcid, Float:x, Float:y, Float:z, Float:n
 	}
 
 	// Non-extreme cases
-	new Float:npcHearingSoundRange = normalHearingSoundRange * hearingPercent;
+	new Float:npcNormalHearingSoundRange = normalHearingSoundRange * hearingPercent;
 	new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
-	if(npcHearingSoundRange >= npcRange) {
+	if(npcNormalHearingSoundRange >= npcRange) {
 		return true;
 	}
 	return false;
@@ -734,8 +757,11 @@ static FAI_OnWeaponShot(npcid, shooterid, weaponid, hittype, hitid, Float:fX, Fl
 				return;
 			}
 		}
-		if(FAI_IsSoundHeard(INVALID_PLAYER_ID, npcid, x + fX, y + fY, z + fZ, FAI_BulletImpactSoundRange)) {
-			CallLocalFunction("FCNPC_OnHearSound", "ddffffd", npcid, INVALID_PLAYER_ID, x + fX, y + fY, z + fZ, FAI_BulletImpactSoundRange, _:FCNPC_SOUND_REASON_BUL_IMPACT);
+		// if(FAI_IsSoundHeard(INVALID_PLAYER_ID, npcid, x + fX, y + fY, z + fZ, FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][shooterid][FCNPC_SOUND_RANGE_BUL_IMPACT])) {
+		// 	CallLocalFunction("FCNPC_OnHearSound", "ddffffd", npcid, INVALID_PLAYER_ID, x + fX, y + fY, z + fZ, FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][shooterid][FCNPC_SOUND_RANGE_BUL_IMPACT], _:FCNPC_SOUND_REASON_BUL_IMPACT);
+		// }
+		if(FAI_IsSoundHeard(INVALID_PLAYER_ID, npcid, x + fX, y + fY, z + fZ, FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_BUL_IMPACT][shooterid])) {
+			CallLocalFunction("FCNPC_OnHearSound", "ddffffd", npcid, INVALID_PLAYER_ID, x + fX, y + fY, z + fZ, FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_BUL_IMPACT][shooterid], _:FCNPC_SOUND_REASON_BUL_IMPACT);
 		}
 	}
 }
@@ -768,20 +794,24 @@ static FAI_OnMovement(npcid, moverid) {
 		}
 
 		if(moverAction == SPECIAL_ACTION_DUCK) {
-			normalHearingSoundRange = FAI_CrouchSoundRange;
+			// normalHearingSoundRange = FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][moverid][FCNPC_SOUND_RANGE_DUCK];
+			normalHearingSoundRange = FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_DUCK][moverid];
 		} else {
 			// When both the walk and sprint button are pressed, sprinting takes precedence when that weapon allows sprinting
 			// Sprinting
 			if(IsWeaponSprintAllowed(moverWeapon) && (keys & KEY_SPRINT) == KEY_SPRINT) {
-				normalHearingSoundRange = FAI_SprintSoundRange;
+				// normalHearingSoundRange = FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][moverid][FCNPC_SOUND_RANGE_SPRINT];
+				normalHearingSoundRange = FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_SPRINT][moverid];
 			}
 			// Walking
 			else if((keys & KEY_WALK) == KEY_WALK) {
-				normalHearingSoundRange = FAI_WalkSoundRange;
+				// normalHearingSoundRange = FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][moverid][FCNPC_SOUND_RANGE_WALK];
+				normalHearingSoundRange = FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_WALK][moverid];
 			}
 			// Running
 			else {
-				normalHearingSoundRange = FAI_RunSoundRange;
+				// normalHearingSoundRange = FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][moverid][FCNPC_SOUND_RANGE_RUN];
+				normalHearingSoundRange = FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_RUN][moverid];
 			}
 		}
 	}
@@ -798,7 +828,8 @@ static FAI_OnMovement(npcid, moverid) {
 			GetVehiclePos(FCNPC_GetVehicleID(moverid), x, y, z);
 		}
 
-		normalHearingSoundRange = FAI_VehicleSoundRange;
+		// normalHearingSoundRange = FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][moverid][FCNPC_SOUND_RANGE_VEHICLE];
+		normalHearingSoundRange = FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_VEHICLE][moverid];
 	}
 
 	if(FAI_IsSoundHeard(moverid, npcid, x, y, z, normalHearingSoundRange)) {
@@ -1296,9 +1327,9 @@ public FCNPC_OnHearSound(npcid, issuerid, Float:x, Float:y, Float:z, Float:norma
 								}
 								// Non-extreme cases
 								else {
-									new Float:npcHearingSoundRange = normalHearingSoundRange * hearingPercent;
+									new Float:npcNormalHearingSoundRange = normalHearingSoundRange * hearingPercent;
 									new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
-									FAI_ChangeThreat(npcid, issuerid, FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] + (npcHearingSoundRange - npcRange), FCNPC_THREAT_REASON_SOUND);
+									FAI_ChangeThreat(npcid, issuerid, FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] + (npcNormalHearingSoundRange - npcRange), FCNPC_THREAT_REASON_SOUND);
 								}
 							}
 							// If the encounter has been started
@@ -1837,6 +1868,56 @@ stock FCNPC_SetThreat(npcid, Float:threat, playerid = -1) {
 stock Float:FCNPC_GetThreat(npcid, playerid) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
 		return FAI_NPCs[npcid][FAI_NPC_THREAT][playerid];
+	}
+	return 0.0;
+}
+
+stock FCNPC_SetNormalHearingSoundRng(npcid, FCNPC_E_SOUND_RANGE:type, Float:normalHearingSoundRange, playerid = -1) {
+	if(FAI_IsValidNPC(npcid) && playerid >= -1 && playerid < MAX_PLAYERS) {
+		if(type >= FCNPC_E_SOUND_RANGE:0 && type < FCNPC_E_SOUND_RANGE) {
+			if(playerid != -1) {
+				// FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][playerid][type] = normalHearingSoundRange; // Can be negative
+				switch(type) {
+					case FCNPC_SOUND_RANGE_DUCK: FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_DUCK][playerid] = normalHearingSoundRange; // Can be negative
+					case FCNPC_SOUND_RANGE_WALK: FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_WALK][playerid] = normalHearingSoundRange; // Can be negative
+					case FCNPC_SOUND_RANGE_RUN: FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_RUN][playerid] = normalHearingSoundRange; // Can be negative
+					case FCNPC_SOUND_RANGE_SPRINT: FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_SPRINT][playerid] = normalHearingSoundRange; // Can be negative
+					case FCNPC_SOUND_RANGE_VEHICLE: FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_VEHICLE][playerid] = normalHearingSoundRange; // Can be negative
+					case FCNPC_SOUND_RANGE_BUL_IMPACT: FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_BUL_IMPACT][playerid] = normalHearingSoundRange; // Can be negative
+				}
+			} else {
+				for(new playerid1 = 0; playerid1 < MAX_PLAYERS; playerid1++) {
+					// FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][playerid1][type] = normalHearingSoundRange; // Can be negative
+					switch(type) {
+						case FCNPC_SOUND_RANGE_DUCK: FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_DUCK][playerid1] = normalHearingSoundRange; // Can be negative
+						case FCNPC_SOUND_RANGE_WALK: FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_WALK][playerid1] = normalHearingSoundRange; // Can be negative
+						case FCNPC_SOUND_RANGE_RUN: FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_RUN][playerid1] = normalHearingSoundRange; // Can be negative
+						case FCNPC_SOUND_RANGE_SPRINT: FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_SPRINT][playerid1] = normalHearingSoundRange; // Can be negative
+						case FCNPC_SOUND_RANGE_VEHICLE: FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_VEHICLE][playerid1] = normalHearingSoundRange; // Can be negative
+						case FCNPC_SOUND_RANGE_BUL_IMPACT: FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_BUL_IMPACT][playerid1] = normalHearingSoundRange; // Can be negative
+					}
+				}
+			}			
+			FAI_UpdateNPCTarget(npcid); // Don't think the sound system affects anything here, but calling it can't do any harm
+			return 1;
+		}
+	}
+	return 0;
+}
+
+stock Float:FCNPC_GetNormalHearingSoundRng(npcid, FCNPC_E_SOUND_RANGE:type, playerid) {
+	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
+		if(type >= FCNPC_E_SOUND_RANGE:0 && type < FCNPC_E_SOUND_RANGE) {
+			// return FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][playerid][type];
+			switch(type) {
+				case FCNPC_SOUND_RANGE_DUCK: return FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_DUCK][playerid]; // Can be negative
+				case FCNPC_SOUND_RANGE_WALK: return FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_WALK][playerid]; // Can be negative
+				case FCNPC_SOUND_RANGE_RUN: return FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_RUN][playerid]; // Can be negative
+				case FCNPC_SOUND_RANGE_SPRINT: return FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_SPRINT][playerid]; // Can be negative
+				case FCNPC_SOUND_RANGE_VEHICLE: return FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_VEHICLE][playerid]; // Can be negative
+				case FCNPC_SOUND_RANGE_BUL_IMPACT: return FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_BUL_IMPACT][playerid]; // Can be negative
+			}
+		}
 	}
 	return 0.0;
 }
