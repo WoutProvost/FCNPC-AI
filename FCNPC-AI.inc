@@ -1286,10 +1286,10 @@ public FCNPC_OnHearSound(npcid, issuerid, Float:x, Float:y, Float:z, Float:norma
 					}
 					// When the NPC is deaf, or the sound is silent, the NPC should not have heard the sound
 					if(hearingPercent != 0 && normalHearingSoundRange != 0) {
-						// Increase threat according to sound loudness left at the position of the NPC
-						if(issuerid != INVALID_PLAYER_ID) {
-							// Only change threat due to movement when the encounter has not been started
-							if(reason != FCNPC_SOUND_REASON_MOVEMENT || FAI_NPCs[npcid][FAI_NPC_TARGET] == INVALID_PLAYER_ID) {
+						// Only process movement when the encounter has not been started and the behaviour is unfriendly for that player
+						if(reason != FCNPC_SOUND_REASON_MOVEMENT || (FAI_NPCs[npcid][FAI_NPC_TARGET] == INVALID_PLAYER_ID && FAI_NPCs[npcid][FAI_NPC_BEHAVIOUR][issuerid] == FCNPC_BEHAVIOUR_UNFRIENDLY)) {
+							// Increase threat according to sound loudness left at the position of the NPC
+							if(issuerid != INVALID_PLAYER_ID) {
 								// When the NPC has unlimited hearing, or the sound is unlimitedly loud, use a fixed value
 								if(hearingPercent < 0 || normalHearingSoundRange < 0) {
 									FAI_ChangeThreat(npcid, issuerid, FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] + 100.0, FCNPC_THREAT_REASON_SOUND);
@@ -1299,17 +1299,17 @@ public FCNPC_OnHearSound(npcid, issuerid, Float:x, Float:y, Float:z, Float:norma
 									new Float:npcHearingSoundRange = normalHearingSoundRange * hearingPercent;
 									new Float:npcRange = GetPlayerDistanceFromPoint(npcid, x, y, z);
 									FAI_ChangeThreat(npcid, issuerid, FAI_NPCs[npcid][FAI_NPC_THREAT][issuerid] + (npcHearingSoundRange - npcRange), FCNPC_THREAT_REASON_SOUND);
-								}								
+								}
 							}
-						}
-						// If the encounter has been started
-						if(FAI_NPCs[npcid][FAI_NPC_TARGET] != INVALID_PLAYER_ID) {
-							FAI_UpdateNPCTarget(npcid);
-						}
-						// If the encounter has not been started
-						else {
-							// Set target to issuerid
-							FAI_ChangeNPCTarget(npcid, issuerid, FCNPC_START_REASON_SOUND);
+							// If the encounter has been started
+							if(FAI_NPCs[npcid][FAI_NPC_TARGET] != INVALID_PLAYER_ID) {
+								FAI_UpdateNPCTarget(npcid);
+							}
+							// If the encounter has not been started
+							else {
+								// Set target to issuerid
+								FAI_ChangeNPCTarget(npcid, issuerid, FCNPC_START_REASON_SOUND);
+							}
 						}
 					}
 				}
