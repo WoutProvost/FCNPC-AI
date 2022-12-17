@@ -49,6 +49,8 @@ native FCNPC_TriggerSound(Float:x, Float:y, Float:z, Float:normalHearingSoundRan
 // Debug
 native FAI_ToggleRangeDebugging(npcid, playerid, FAI_E_DEBUG_RANGE:ranges);
 native FAI_E_DEBUG_RANGE:FAI_GetRangeDebugging(npcid);
+native FAI_ToggleSoundRangeDebugging(npcid, playerid, FAI_E_DEBUG_SOUND_RANGE:ranges);
+native FAI_E_DEBUG_SOUND_RANGE:FAI_GetSoundRangeDebugging(npcid);
 native FAI_ToggleAngleDebugging(npcid, playerid, FAI_E_DEBUG_ANGLE:angles);
 native FAI_E_DEBUG_ANGLE:FAI_GetAngleDebugging(npcid);
 */
@@ -114,6 +116,16 @@ enum FAI_E_DEBUG_RANGE (<<=1) {
 	FAI_DEBUG_MELEE_ATTACK_RANGE,
 	FAI_DEBUG_AGGRO_SIGHT_RANGE,
 	FAI_DEBUG_LEASH_RANGE
+}
+enum FAI_E_DEBUG_SOUND_RANGE (<<=1) {
+	FAI_DEBUG_SOUND_RANGE_ALL = -1,
+	FAI_DEBUG_SOUND_RANGE_NONE = 0,
+	FAI_DEBUG_DUCK_SOUND_RANGE = 1,
+	FAI_DEBUG_WALK_SOUND_RANGE,
+	FAI_DEBUG_RUN_SOUND_RANGE,
+	FAI_DEBUG_SPRINT_SOUND_RANGE,
+	FAI_DEBUG_VEHICLE_SOUND_RANGE,
+	FAI_DEBUG_BUL_IMPCT_SOUND_RANGE
 }
 enum FAI_E_DEBUG_ANGLE (<<=1) {
 	FAI_DEBUG_ANGLE_ALL = -1,
@@ -186,6 +198,8 @@ static FAI_NPCs[MAX_PLAYERS][FAI_E_NPC];
 // Debug
 static FAI_E_DEBUG_RANGE:FAI_DebugRanges[MAX_PLAYERS] = {FAI_DEBUG_RANGE_NONE, ...};
 static FAI_DebugRangesPlayerID[MAX_PLAYERS] = INVALID_PLAYER_ID;
+static FAI_E_DEBUG_SOUND_RANGE:FAI_DebugSoundRanges[MAX_PLAYERS] = {FAI_DEBUG_SOUND_RANGE_NONE, ...};
+static FAI_DebugSoundRangesPlayerID[MAX_PLAYERS] = INVALID_PLAYER_ID;
 static FAI_E_DEBUG_ANGLE:FAI_DebugAngles[MAX_PLAYERS] = {FAI_DEBUG_ANGLE_NONE, ...};
 static FAI_DebugAnglesPlayerID[MAX_PLAYERS] = INVALID_PLAYER_ID;
 
@@ -321,6 +335,8 @@ static FAI_ResetNPC(npcid) {
 	// Debug
 	FAI_DebugRanges[npcid] = FAI_DEBUG_RANGE_NONE;
 	FAI_DebugRangesPlayerID[npcid] = INVALID_PLAYER_ID;
+	FAI_DebugSoundRanges[npcid] = FAI_DEBUG_SOUND_RANGE_NONE;
+	FAI_DebugSoundRangesPlayerID[npcid] = INVALID_PLAYER_ID;
 	FAI_DebugAngles[npcid] = FAI_DEBUG_ANGLE_NONE;
 	FAI_DebugAnglesPlayerID[npcid] = INVALID_PLAYER_ID;
 }
@@ -866,6 +882,46 @@ static FAI_ToggleDebugRangeObjects(npcid) {
 	}
 }
 
+static FAI_ToggleDebugSoundRngObjects(npcid) {
+	new Float:iScale = 1.0, Float:radius = 50.0; // Radius of modelid is 50.0
+	if(FAI_DebugSoundRanges[npcid] & FAI_DEBUG_DUCK_SOUND_RANGE && FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_DUCK][FAI_DebugSoundRangesPlayerID[npcid]] > 0.0) { // Yellow
+		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_DUCK][FAI_DebugSoundRangesPlayerID[npcid]];
+		SetPlayerAttachedObject(npcid, 0, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFFFFFF00);
+	} else {
+		RemovePlayerAttachedObject(npcid, 0);
+	}
+	if(FAI_DebugSoundRanges[npcid] & FAI_DEBUG_WALK_SOUND_RANGE && FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_WALK][FAI_DebugSoundRangesPlayerID[npcid]] > 0.0) { // Purple
+		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_WALK][FAI_DebugSoundRangesPlayerID[npcid]];
+		SetPlayerAttachedObject(npcid, 1, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFF800080);
+	} else {
+		RemovePlayerAttachedObject(npcid, 1);
+	}
+	if(FAI_DebugSoundRanges[npcid] & FAI_DEBUG_RUN_SOUND_RANGE && FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_RUN][FAI_DebugSoundRangesPlayerID[npcid]] > 0.0) { // Red
+		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_RUN][FAI_DebugSoundRangesPlayerID[npcid]];
+		SetPlayerAttachedObject(npcid, 2, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFFFF0000);
+	} else {
+		RemovePlayerAttachedObject(npcid, 2);
+	}
+	if(FAI_DebugSoundRanges[npcid] & FAI_DEBUG_SPRINT_SOUND_RANGE && FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_SPRINT][FAI_DebugSoundRangesPlayerID[npcid]] > 0.0) { // Green
+		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_SPRINT][FAI_DebugSoundRangesPlayerID[npcid]];
+		SetPlayerAttachedObject(npcid, 3, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFF00FF00);
+	} else {
+		RemovePlayerAttachedObject(npcid, 3);
+	}
+	if(FAI_DebugSoundRanges[npcid] & FAI_DEBUG_VEHICLE_SOUND_RANGE && FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_VEHICLE][FAI_DebugSoundRangesPlayerID[npcid]] > 0.0) { // Blue
+		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_VEHICLE][FAI_DebugSoundRangesPlayerID[npcid]];
+		SetPlayerAttachedObject(npcid, 4, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFF0000FF);
+	} else {
+		RemovePlayerAttachedObject(npcid, 4);
+	}
+	if(FAI_DebugSoundRanges[npcid] & FAI_DEBUG_BUL_IMPCT_SOUND_RANGE && FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_BUL_IMPACT][FAI_DebugSoundRangesPlayerID[npcid]] > 0.0) { // Cyan
+		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE_BUL_IMPACT][FAI_DebugSoundRangesPlayerID[npcid]];
+		SetPlayerAttachedObject(npcid, 5, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFF00FFFF);
+	} else {
+		RemovePlayerAttachedObject(npcid, 5);
+	}
+}
+
 static FAI_ToggleDebugAngleObjects(npcid) {
 	if(FAI_DebugAngles[npcid] & FAI_DEBUG_FACING_ANGLE) { // Red
 		SetPlayerAttachedObject(npcid, 0, 18643, 1, .fOffsetX = 0.5, .fRotZ = 90.0);
@@ -1145,6 +1201,7 @@ public FCNPC_OnRespawn(npcid)
 
 		// Debug
 		FAI_ToggleDebugRangeObjects(npcid);
+		FAI_ToggleDebugSoundRngObjects(npcid);
 		FAI_ToggleDebugAngleObjects(npcid);
 	}
 
@@ -1597,6 +1654,7 @@ stock FCNPC_SetAimAtInfo(npcid, Float:range = 20.0, bool:shoot = true, shoot_del
 
 		// Debug
 		FAI_ToggleDebugRangeObjects(npcid);
+		FAI_ToggleDebugSoundRngObjects(npcid);
 		FAI_ToggleDebugAngleObjects(npcid);
 		return 1;
 	}
@@ -1639,6 +1697,7 @@ stock FCNPC_SetMeleeAttackInfo(npcid, Float:range = 0.5, delay = -1, bool:fighti
 
 		// Debug
 		FAI_ToggleDebugRangeObjects(npcid);
+		FAI_ToggleDebugSoundRngObjects(npcid);
 		FAI_ToggleDebugAngleObjects(npcid);
 		return 1;
 	}
@@ -1719,6 +1778,7 @@ stock FCNPC_SetAggroViewingAngle(npcid, Float:angle, Float:vangle = 180.0, playe
 
 			// Debug
 			FAI_ToggleDebugRangeObjects(npcid);
+			FAI_ToggleDebugSoundRngObjects(npcid);
 			FAI_ToggleDebugAngleObjects(npcid);
 			return 1;
 		}
@@ -1774,6 +1834,7 @@ stock FCNPC_SetAggroSightRange(npcid, Float:range, playerid = -1) {
 
 		// Debug
 		FAI_ToggleDebugRangeObjects(npcid);
+		FAI_ToggleDebugSoundRngObjects(npcid);
 		FAI_ToggleDebugAngleObjects(npcid);
 		return 1;
 	}
@@ -1834,6 +1895,7 @@ stock FCNPC_SetLeashRange(npcid, Float:range, playerid = -1) {
 
 		// Debug
 		FAI_ToggleDebugRangeObjects(npcid);
+		FAI_ToggleDebugSoundRngObjects(npcid);
 		FAI_ToggleDebugAngleObjects(npcid);
 		return 1;
 	}
@@ -1945,9 +2007,11 @@ stock FCNPC_TriggerSound(Float:x, Float:y, Float:z, Float:normalHearingSoundRang
 // Debug
 stock FAI_ToggleRangeDebugging(npcid, playerid, FAI_E_DEBUG_RANGE:ranges) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
-		// Not enough attached object slots to show both ranges and angles
+		// Not enough attached object slots to show both (sound) ranges and angles
 		FAI_DebugAngles[npcid] = FAI_DEBUG_ANGLE_NONE;
 		FAI_ToggleDebugAngleObjects(npcid);
+		FAI_DebugSoundRanges[npcid] = FAI_DEBUG_SOUND_RANGE_NONE;
+		FAI_ToggleDebugSoundRngObjects(npcid);
 
 		FAI_DebugRanges[npcid] = ranges;
 		FAI_DebugRangesPlayerID[npcid] = playerid;
@@ -1964,11 +2028,36 @@ stock FAI_E_DEBUG_RANGE:FAI_GetRangeDebugging(npcid) {
 	return FAI_DEBUG_RANGE_NONE;
 }
 
-stock FAI_ToggleAngleDebugging(npcid, playerid, FAI_E_DEBUG_ANGLE:angles) {
+stock FAI_ToggleSoundRangeDebugging(npcid, playerid, FAI_E_DEBUG_SOUND_RANGE:ranges) {
 	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
-		// Not enough attached object slots to show both ranges and angles
+		// Not enough attached object slots to show both (sound) ranges and angles
+		FAI_DebugAngles[npcid] = FAI_DEBUG_ANGLE_NONE;
+		FAI_ToggleDebugAngleObjects(npcid);
 		FAI_DebugRanges[npcid] = FAI_DEBUG_RANGE_NONE;
 		FAI_ToggleDebugRangeObjects(npcid);
+
+		FAI_DebugSoundRanges[npcid] = ranges;
+		FAI_DebugSoundRangesPlayerID[npcid] = playerid;
+		FAI_ToggleDebugSoundRngObjects(npcid);
+		return 1;
+	}
+	return 0;
+}
+
+stock FAI_E_DEBUG_SOUND_RANGE:FAI_GetSoundRangeDebugging(npcid) {
+	if(FAI_IsValidNPC(npcid)) {
+		return FAI_DebugSoundRanges[npcid];
+	}
+	return FAI_DEBUG_SOUND_RANGE_NONE;
+}
+
+stock FAI_ToggleAngleDebugging(npcid, playerid, FAI_E_DEBUG_ANGLE:angles) {
+	if(FAI_IsValidNPC(npcid) && playerid >= 0 && playerid < MAX_PLAYERS) {
+		// Not enough attached object slots to show both (sound) ranges and angles
+		FAI_DebugRanges[npcid] = FAI_DEBUG_RANGE_NONE;
+		FAI_ToggleDebugRangeObjects(npcid);
+		FAI_DebugSoundRanges[npcid] = FAI_DEBUG_SOUND_RANGE_NONE;
+		FAI_ToggleDebugSoundRngObjects(npcid);
 
 		FAI_DebugAngles[npcid] = angles;
 		FAI_DebugAnglesPlayerID[npcid] = playerid;
