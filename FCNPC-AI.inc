@@ -105,6 +105,7 @@ enum FCNPC_E_SOUND_RANGE {
 	FCNPC_SOUND_RANGE_RUN,
 	FCNPC_SOUND_RANGE_SPRINT,
 	FCNPC_SOUND_RANGE_VEHICLE,
+	FCNPC_SOUND_RANGE_WEAPON,
 	FCNPC_SOUND_RANGE_BUL_IMPACT
 }
 
@@ -125,6 +126,7 @@ enum FAI_E_DEBUG_SOUND_RANGE (<<=1) {
 	FAI_DEBUG_RUN_SOUND_RANGE,
 	FAI_DEBUG_SPRINT_SOUND_RANGE,
 	FAI_DEBUG_VEHICLE_SOUND_RANGE,
+	FAI_DEBUG_WEAPON_SOUND_RANGE,
 	FAI_DEBUG_BUL_IMPCT_SOUND_RANGE
 }
 enum FAI_E_DEBUG_ANGLE (<<=1) {
@@ -316,6 +318,7 @@ static FAI_ResetNPC(npcid) {
 		FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][playerid * _:FCNPC_E_SOUND_RANGE + _:FCNPC_SOUND_RANGE_RUN] = 5.0;
 		FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][playerid * _:FCNPC_E_SOUND_RANGE + _:FCNPC_SOUND_RANGE_SPRINT] = 8.0;
 		FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][playerid * _:FCNPC_E_SOUND_RANGE + _:FCNPC_SOUND_RANGE_VEHICLE] = 20.0;
+		FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][playerid * _:FCNPC_E_SOUND_RANGE + _:FCNPC_SOUND_RANGE_WEAPON] = 40.0;
 		FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][playerid * _:FCNPC_E_SOUND_RANGE + _:FCNPC_SOUND_RANGE_BUL_IMPACT] = 5.0;
 	}
 	FAI_NPCs[npcid][FAI_NPC_INVAL_HEARING_PERCENT] = 1.0;
@@ -717,7 +720,7 @@ static FAI_GetHighestThreatPlayer(npcid) {
 	return highestPlayer;
 }
 
-static FAI_OnWeaponShot(npcid, shooterid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ) {	
+static FAI_OnWeaponShot(npcid, shooterid, hittype, hitid, Float:fX, Float:fY, Float:fZ) {	
 	new Float:x, Float:y, Float:z;
 	if(!IsPlayerNPC(shooterid)) {
 		GetPlayerPos(shooterid, x, y, z);
@@ -726,9 +729,8 @@ static FAI_OnWeaponShot(npcid, shooterid, weaponid, hittype, hitid, Float:fX, Fl
 	}
 
 	// If both the firing and the impact are heard, the firing will take precedence
-	// Weapon sound loudness at point blank range proportional to their inflicted damage
-	if(FAI_IsSoundHeard(shooterid, npcid, x, y, z, GetWeaponDamage(weaponid))) {
-		CallLocalFunction("FCNPC_OnHearSound", "ddffffd", npcid, shooterid, x, y, z, GetWeaponDamage(weaponid), _:FCNPC_SOUND_REASON_WEAPON_SHOT);
+	if(FAI_IsSoundHeard(shooterid, npcid, x, y, z, FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][shooterid * _:FCNPC_E_SOUND_RANGE + _:FCNPC_SOUND_RANGE_WEAPON])) {
+		CallLocalFunction("FCNPC_OnHearSound", "ddffffd", npcid, shooterid, x, y, z, FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][shooterid * _:FCNPC_E_SOUND_RANGE + _:FCNPC_SOUND_RANGE_WEAPON], _:FCNPC_SOUND_REASON_WEAPON_SHOT);
 	} else {
 		switch(hittype) {
 			case BULLET_HIT_TYPE_NONE: {
@@ -894,11 +896,17 @@ static FAI_ToggleDebugSoundRngObjects(npcid) {
 	} else {
 		RemovePlayerAttachedObject(npcid, 4);
 	}
-	if(FAI_DebugSoundRanges[npcid] & FAI_DEBUG_BUL_IMPCT_SOUND_RANGE && FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][FAI_DebugSoundRangesPlayerID[npcid] * _:FCNPC_E_SOUND_RANGE + _:FCNPC_SOUND_RANGE_BUL_IMPACT] > 0.0) { // Cyan
-		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][FAI_DebugSoundRangesPlayerID[npcid] * _:FCNPC_E_SOUND_RANGE + _:FCNPC_SOUND_RANGE_BUL_IMPACT];
-		SetPlayerAttachedObject(npcid, 5, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFF00FFFF);
+	if(FAI_DebugSoundRanges[npcid] & FAI_DEBUG_WEAPON_SOUND_RANGE && FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][FAI_DebugSoundRangesPlayerID[npcid] * _:FCNPC_E_SOUND_RANGE + _:FCNPC_SOUND_RANGE_WEAPON] > 0.0) { // White
+		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][FAI_DebugSoundRangesPlayerID[npcid] * _:FCNPC_E_SOUND_RANGE + _:FCNPC_SOUND_RANGE_WEAPON];
+		SetPlayerAttachedObject(npcid, 5, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFFFFFFFF);
 	} else {
 		RemovePlayerAttachedObject(npcid, 5);
+	}
+	if(FAI_DebugSoundRanges[npcid] & FAI_DEBUG_BUL_IMPCT_SOUND_RANGE && FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][FAI_DebugSoundRangesPlayerID[npcid] * _:FCNPC_E_SOUND_RANGE + _:FCNPC_SOUND_RANGE_BUL_IMPACT] > 0.0) { // Cyan
+		new Float:scale = iScale / radius * FAI_NPCs[npcid][FAI_NPC_SOUND_RANGE][FAI_DebugSoundRangesPlayerID[npcid] * _:FCNPC_E_SOUND_RANGE + _:FCNPC_SOUND_RANGE_BUL_IMPACT];
+		SetPlayerAttachedObject(npcid, 6, 18843, 1, .fRotY = 90.0, .fScaleX = scale, .fScaleY = scale, .fScaleZ = scale, .materialcolor1 = 0xFF00FFFF);
+	} else {
+		RemovePlayerAttachedObject(npcid, 6);
 	}
 }
 
@@ -1087,7 +1095,7 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
 	// NPCs
 	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
 		if(FAI_IsValidNPC(npcid)) {
-			FAI_OnWeaponShot(npcid, playerid, weaponid, hittype, hitid, fX, fY, fZ);
+			FAI_OnWeaponShot(npcid, playerid, hittype, hitid, fX, fY, fZ);
 		}
 	}
 
@@ -1312,7 +1320,7 @@ public FCNPC_OnWeaponShot(npcid, weaponid, hittype, hitid, Float:fX, Float:fY, F
 	// NPCs
 	for(new npcid1 = 0; npcid1 < MAX_PLAYERS; npcid1++) {
 		if(FAI_IsValidNPC(npcid1) && npcid1 != npcid) {			
-			FAI_OnWeaponShot(npcid1, npcid, weaponid, hittype, hitid, fX, fY, fZ);
+			FAI_OnWeaponShot(npcid1, npcid, hittype, hitid, fX, fY, fZ);
 		}
 	}
 
