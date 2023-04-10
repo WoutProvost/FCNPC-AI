@@ -9,10 +9,6 @@
 
 // ========================================FAKE NATIVES========================================
 /*
-// General
-native FAI_UseDestroyNPCsOnExit(bool:use = true);
-native bool:FAI_IsDestroyNPCsOnExitUsed();
-
 // NPCs
 native bool:FAI_IsValidNPC(npcid);
 native bool:FAI_IsValidNPCForPlayer(npcid, playerid);
@@ -137,9 +133,6 @@ enum FAI_E_DEBUG_ANGLE (<<=1) {
 }
 
 // ========================================VARIABLES========================================
-// General
-static bool:FAI_DestroyNPCsOnExit = false;
-
 // Players
 static FAI_PauseTickCount[MAX_PLAYERS] = {0, ...};
 static bool:FAI_PlayerPaused[MAX_PLAYERS] = {false, ...};
@@ -207,9 +200,6 @@ forward bool:FAI_IsValidNPCForPlayer(npcid, playerid);
 
 // General
 static FAI_ScriptInit() {
-	// General
-	FAI_DestroyNPCsOnExit = false;
-
 	// Players
 	for(new playerid = 0; playerid < MAX_PLAYERS; playerid++) {
 		FAI_PauseTickCount[playerid] = GetTickCount();
@@ -221,12 +211,6 @@ static FAI_ScriptInit() {
 	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
 		FAI_ResetNPC(npcid);
 	}
-
-	// printf("---------------------");
-	// printf("  FCNPC-AI loaded    ");
-	// printf("- Version: %s     ", FCNPC_AI_VERSION);
-	// printf("- Author: Freaksken  ");
-	// printf("---------------------");
 }
 
 static FAI_ScriptExit() {
@@ -239,17 +223,12 @@ static FAI_ScriptExit() {
 	FAI_PauseTimer = INVALID_TIMER_ID;
 
 	// NPCs
-	if(FAI_DestroyNPCsOnExit) {
-		// Automatically destroy NPCs on script exit
-		for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
-			if(FAI_IsValidNPC(npcid)) {
-				FCNPC_Destroy(npcid);
-			}
+	// Automatically destroy NPCs on script exit
+	for(new npcid = 0; npcid < MAX_PLAYERS; npcid++) {
+		if(FAI_IsValidNPC(npcid)) {
+			FCNPC_Destroy(npcid);
 		}
 	}
-
-	// General
-	FAI_DestroyNPCsOnExit = false;
 }
 
 // Players
@@ -1505,16 +1484,6 @@ stock Float:FAI_FCNPC_GetHealth(npcid, &Float:max = 100.0) {
 #define FCNPC_GetHealth FAI_FCNPC_GetHealth
 
 // ========================================FUNCTIONS========================================
-// General
-stock FAI_UseDestroyNPCsOnExit(bool:use = true) {
-	FAI_DestroyNPCsOnExit = use;
-	return 1;
-}
-
-stock bool:FAI_IsDestroyNPCsOnExitUsed() {
-	return FAI_DestroyNPCsOnExit;
-}
-
 // NPCs
 // Only handle NPCs created in this FS/GM
 stock bool:FAI_IsValidNPC(npcid) {
