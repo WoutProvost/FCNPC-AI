@@ -46,6 +46,8 @@ new ExplosionCount = 0;
 new BossAdds[2] = {FAI_INVALID_BOSS_ID, ...};
 new SpellRockOfLifeTarget = INVALID_PLAYER_ID;
 
+forward Float:RandomFloatGivenInteger(integer);
+
 #if defined FILTERSCRIPT
 public OnFilterScriptInit()
 {
@@ -54,7 +56,7 @@ public OnFilterScriptInit()
 	FAI_SetBossMapiconInfo(BossBigSmoke, 65, 8);
  	FAI_SetBossMaxHealth(BossBigSmoke, 5000.0);
  	FAI_SetBossDisplayRange(BossBigSmoke, 100.0);
-	FAI_SetBossMoveInfo(BossBigSmoke, MOVE_TYPE_SPRINT, MOVE_SPEED_AUTO, true);
+	FAI_SetBossMoveInfo(BossBigSmoke, FCNPC_MOVE_TYPE_SPRINT, FCNPC_MOVE_SPEED_AUTO, true);
 	FAI_SetBossAllowNPCTargets(BossBigSmoke, false);
 	FAI_SetBossBehaviour(BossBigSmoke, FAI_BOSS_BEHAVIOUR_UNFRIENDLY);
 	SetBossAtSpawn(BossBigSmoke);
@@ -86,7 +88,7 @@ public OnFilterScriptInit()
 		BossAdds[add] = FAI_CreateBoss(name);
 		FAI_SetBossAggroRange(BossAdds[add], 1000.0);
 		FAI_SetBossBehaviour(BossAdds[add], FAI_BOSS_BEHAVIOUR_FRIENDLY);
-		FAI_SetBossMoveInfo(BossAdds[add], MOVE_TYPE_AUTO, MOVE_SPEED_AUTO, true);
+		FAI_SetBossMoveInfo(BossAdds[add], FCNPC_MOVE_TYPE_AUTO, FCNPC_MOVE_SPEED_AUTO, true);
 		FAI_SetBossAllowNPCTargets(BossAdds[add], false);
 		new npcid = FAI_GetBossNPCID(BossAdds[add]);
 		SetPlayerColor(npcid, 0xffffff00);
@@ -197,7 +199,7 @@ public FCNPC_OnRespawn(npcid)
 	return 1;
 }
 
-public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss)
+public FCNPC_OnTakeDamage(npcid, issuerid, Float:amount, weaponid, bodypart)
 {
 	new bossid = FAI_GetBossIDFromNPCID(npcid);
 	if(bossid != FAI_INVALID_BOSS_ID) {
@@ -221,7 +223,7 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 			}
 			//Reduce cast progress a bit when damaged
 			if(FAI_IsBossCastingSpell(bossid, SpellFlightOfTheBumblebee)) {
-			    FAI_SetBossCastingProgress(bossid, FAI_GetBossCastingProgress(bossid) - floatround(health_loss, floatround_floor));
+			    FAI_SetBossCastingProgress(bossid, FAI_GetBossCastingProgress(bossid) - floatround(amount, floatround_floor));
 			}
 		}
 	}
@@ -642,8 +644,8 @@ public FAI_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete)
 							FCNPC_SetAngle(addplayerid, angle + 180);
 							FCNPC_SetInterior(addplayerid, INTERIOR_NORMAL);
 							FCNPC_SetVirtualWorld(addplayerid, VIRTUAL_WORLD_NORMAL);
-							FCNPC_ToggleReloading(addplayerid, true);
-							FCNPC_ToggleInfiniteAmmo(addplayerid, true);
+							FCNPC_UseReloading(addplayerid, true);
+							FCNPC_UseInfiniteAmmo(addplayerid, true);
 							switch(randomWeapon) {
 								case 0: {
 									FCNPC_SetWeapon(addplayerid, WEAPON_UZI);
@@ -795,7 +797,7 @@ stock GetRandomPlayerInRange(bossid, bool:vehicleAllowed = true) {
 }
 
 //Display a message in the playercolor of the boss and play a sound, to all players (not npcs) who are in the same interior and world as the boss
-stock BossYell(bossid, message[], soundid = -1, Float:soundX = 0.0, Float:soundY = 0.0, Float:soundZ = 0.0) {
+stock BossYell(bossid, const message[], soundid = -1, Float:soundX = 0.0, Float:soundY = 0.0, Float:soundZ = 0.0) {
 	new string[144 + 1], fullName[FAI_MAX_BOSS_FULL_NAME + 1];
 	new bossplayerid = FAI_GetBossNPCID(bossid);
 	new bossInterior = FCNPC_GetInterior(bossplayerid);
@@ -845,7 +847,6 @@ stock CreateExplosionForValidPlayers(bossid, Float:markX, Float:markY, Float:mar
 	}
 #endif
 
-forward Float:RandomFloatGivenInteger(integer);
 stock Float:RandomFloatGivenInteger(integer) {
 	//Float has 6 decimals
 	//0.1 => 10
@@ -876,8 +877,8 @@ public SetBossAtSpawn(bossid) {
 	    FCNPC_SetAngle(bossplayerid, 39.3813);
 		FCNPC_SetInterior(bossplayerid, INTERIOR_NORMAL);
 		FCNPC_SetVirtualWorld(bossplayerid, VIRTUAL_WORLD_NORMAL);
-		FCNPC_ToggleReloading(bossplayerid, true);
-		FCNPC_ToggleInfiniteAmmo(bossplayerid, true);
+		FCNPC_UseReloading(bossplayerid, true);
+		FCNPC_UseInfiniteAmmo(bossplayerid, true);
 	    //FCNPC_SetWeapon(bossplayerid, WEAPON_COLT45);
 	    //FCNPC_SetAmmo(bossplayerid, 1000);
 	    //FCNPC_SetAmmoInClip(bossplayerid, 17);

@@ -9,9 +9,9 @@
 //FAKE NATIVES
 /*
 //Boss
-native FAI_CreateBoss(name[]);
+native FAI_CreateBoss(const name[]);
 native FAI_GetBossFullName(bossid, name[], len);
-native FAI_SetBossFullName(bossid, name[]);
+native FAI_SetBossFullName(bossid, const name[]);
 native FAI_GetBossMapiconInfo(bossid, &iconid, &iconMarker, &iconColor, &iconStyle);
 native FAI_SetBossMapiconInfo(bossid, iconid = FAI_INVALID_ICON_ID, iconMarker = 23, iconColor = 0xff0000ff, iconStyle = MAPICON_LOCAL);
 native FAI_GetBossMaxHealth(bossid, &Float:health);
@@ -27,7 +27,7 @@ native FAI_SetBossCurrentHealth(bossid, Float:health, bool:keepHealthPercent = f
 native FAI_GetBossTarget(bossid);
 native FAI_SetBossTarget(bossid, playerid, bool:checkForAggroRange = false);
 native FAI_GetBossMoveInfo(bossid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle);
-native FAI_SetBossMoveInfo(bossid, type = MOVE_TYPE_AUTO, Float:speed = MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true);
+native FAI_SetBossMoveInfo(bossid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true);
 native FAI_GetBossRangedAttackInfo(bossid, &Float:range, &delay, &bool:setAngle);
 native FAI_SetBossRangedAttackInfo(bossid, Float:range = 20.0, delay = -1, bool:setAngle = true);
 native FAI_GetBossMeleeAttackInfo(bossid, &Float:range, &delay, &bool:useFightStyle);
@@ -55,9 +55,9 @@ native bool:FAI_IsEncounterStarted(bossid);
 native FAI_StopEncounter(bossid);
 
 //Spell
-native FAI_CreateSpell(name[]);
+native FAI_CreateSpell(const name[]);
 native FAI_GetSpellName(spellid, name[], len);
-native FAI_SetSpellName(spellid, name[]);
+native FAI_SetSpellName(spellid, const name[]);
 native FAI_GetSpellCastTime(spellid);
 native FAI_SetSpellCastTime(spellid, castTime, bool:keepCastPercent = false);
 native FAI_GetSpellAmount(spellid, &Float:amount);
@@ -75,7 +75,7 @@ native FAI_SetSpellCanMove(spellid, bool:canMove);
 native bool:FAI_GetSpellCanAttack(spellid);
 native FAI_SetSpellCanAttack(spellid, bool:canAttack);
 native FAI_GetSpellInfo(spellid, info[], len);
-native FAI_SetSpellInfo(spellid, info[]);
+native FAI_SetSpellInfo(spellid, const info[]);
 native FAI_DestroySpell(spellid);
 native FAI_DestroyAllSpells();
 native bool:FAI_IsValidSpell(spellid);
@@ -108,9 +108,19 @@ forward FAI_OnBossEncounterStop(bossid, bool:reasonDeath, lastTarget);
 forward FAI_OnPlayerGetAggro(playerid, bossid);
 forward FAI_OnPlayerLoseAggro(playerid, bossid);
 
+forward bool:FAI_IsValidBoss(bossid); //Silence 'used before declaration' warning
+forward bool:FAI_IsBossValidForPlayer(playerid, bossid); //Silence 'used before declaration' warning
+forward bool:FAI_IsPlayerInDisplayRange(playerid, bossid); //Silence 'used before declaration' warning
+forward bool:FAI_IsPlayerInAggroRange(playerid, bossid); //Silence 'used before declaration' warning
+
 //Casting
 forward FAI_OnBossStartCasting(bossid, spellid, targetid);
 forward FAI_OnBossStopCasting(bossid, spellid, targetid, bool:castComplete);
+
+forward bool:FAI_IsBossCasting(bossid); //Silence 'used before declaration' warning
+forward bool:FAI_IsBossCastingSpell(bossid, spellid); //Silence used before definition warning
+forward bool:FAI_IsBossCastBarExtra(bossid); //Silence used before definition warning
+forward bool:FAI_IsBossCastBarExtraForSpell(bossid, spellid); //Silence used before definition warning
 
 //General
 //Include guards are already built into pawn, so no need to check
@@ -175,8 +185,8 @@ enum FAI_ENUM_BOSS {
 	bool:DISPLAY_IF_DEAD,
 	Float:CUR_HEALTH, //Changes during the encounter
 	TARGET, //Changes at the beginning, at the end and during the encounter
- 	MOVE_TYPE,
-	Float:MOVE_SPEED,
+ 	FCNPC_MOVE_TYPE,
+	Float:FCNPC_MOVE_SPEED,
 	bool:MOVE_USE_MAP_ANDREAS,
 	Float:MOVE_RADIUS,
 	bool:MOVE_SET_ANGLE,
@@ -407,7 +417,7 @@ static FAI_InitScript() {
 		if(MapAndreasAddress == 0) {
 	    	MapAndreas_Init(FAI_MAP_ANDREAS_MODE); //MapAndreas
 	    }
-		FCNPC_InitMapAndreas(MapAndreas_GetAddress()); //MapAndreas
+		// FCNPC_InitMapAndreas(MapAndreas_GetAddress()); //MapAndreas
 	#endif
 	FCNPC_SetUpdateRate(50);
  	FAI_UpdateTimer = SetTimer("FAI_Update", FAI_UPDATE_TIME, true);
@@ -582,15 +592,15 @@ public FCNPC_OnRespawn(npcid)
 #if defined FAI_FCNPC_OnRespawn
     forward FAI_FCNPC_OnRespawn(npcid);
 #endif
-public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss)
+public FCNPC_OnTakeDamage(npcid, issuerid, Float:amount, weaponid, bodypart)
 {
 	new ret = 1;
 	new bossid = FAI_GetBossIDFromNPCID(npcid);
 	if(FAI_IsValidBoss(bossid)) {
-		ret = FAI_DamageBoss(bossid, damagerid, health_loss);
+		ret = FAI_DamageBoss(bossid, issuerid, amount);
 	}
     #if defined FAI_FCNPC_OnTakeDamage
-        FAI_FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss);
+        FAI_FCNPC_OnTakeDamage(npcid, issuerid, Float:amount, weaponid, bodypart);
     #endif
     return ret;
 }
@@ -601,7 +611,7 @@ public FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_los
 #endif
 #define FCNPC_OnTakeDamage FAI_FCNPC_OnTakeDamage
 #if defined FAI_FCNPC_OnTakeDamage
-    forward FAI_FCNPC_OnTakeDamage(npcid, damagerid, weaponid, bodypart, Float:health_loss);
+    forward FAI_FCNPC_OnTakeDamage(npcid, issuerid, Float:amount, weaponid, bodypart);
 #endif
 stock FAI_DamageBoss(bossid, damagerid, Float:amount) {
 	if(FAI_IsValidBoss(bossid) && (IsPlayerConnected(damagerid) || damagerid == INVALID_PLAYER_ID)) {
@@ -645,7 +655,7 @@ stock FAI_HealBoss(bossid, healerid, Float:amount) {
 	}
 	return 0;
 }
-public FCNPC_OnDeath(npcid, killerid, weaponid)
+public FCNPC_OnDeath(npcid, killerid, reason)
 {
 	new bossid = FAI_GetBossIDFromNPCID(npcid);
 	if(FAI_IsValidBoss(bossid)) {
@@ -659,7 +669,7 @@ public FCNPC_OnDeath(npcid, killerid, weaponid)
 		FAI_SetBossCurrentHealth(bossid, 0);
 	}
 	#if defined FAI_FCNPC_OnDeath
-        FAI_FCNPC_OnDeath(npcid, killerid, weaponid);
+        FAI_FCNPC_OnDeath(npcid, killerid, reason);
     #endif
 	return 1;
 }
@@ -670,7 +680,7 @@ public FCNPC_OnDeath(npcid, killerid, weaponid)
 #endif
 #define FCNPC_OnDeath FAI_FCNPC_OnDeath
 #if defined FAI_FCNPC_OnDeath
-    forward FAI_FCNPC_OnDeath(npcid, killerid, weaponid);
+    forward FAI_FCNPC_OnDeath(npcid, killerid, reason);
 #endif
 
 forward FAI_Update();
@@ -889,8 +899,8 @@ static FAI_ResetBossStats(bossid) {
 		FAI_Bosses[bossid][DISPLAY_IF_DEAD] = false;
 		FAI_Bosses[bossid][CUR_HEALTH] = 0.0;
 		FAI_Bosses[bossid][TARGET] = INVALID_PLAYER_ID;
-		FAI_Bosses[bossid][MOVE_TYPE] = MOVE_TYPE_AUTO;
-		FAI_Bosses[bossid][MOVE_SPEED] = 0.0;
+		FAI_Bosses[bossid][FCNPC_MOVE_TYPE] = FCNPC_MOVE_TYPE_AUTO;
+		FAI_Bosses[bossid][FCNPC_MOVE_SPEED] = 0.0;
 		FAI_Bosses[bossid][MOVE_USE_MAP_ANDREAS] = false;
 		FAI_Bosses[bossid][MOVE_RADIUS] = 0.0;
 		FAI_Bosses[bossid][MOVE_SET_ANGLE] = false;
@@ -908,7 +918,6 @@ static FAI_ResetBossStats(bossid) {
 		FAI_Bosses[bossid][NPCID] = INVALID_PLAYER_ID;
 	}
 }
-forward bool:FAI_IsValidBoss(bossid); //Silence 'used before declaration' warning
 stock bool:FAI_IsValidBoss(bossid) {
 	if(bossid >= 0 && bossid < FAI_MAX_BOSSES && FAI_Bosses[bossid][NPCID] != INVALID_PLAYER_ID) {
 	    return true;
@@ -965,7 +974,7 @@ static FAI_DestroyBossNoFCNPC_Destroy(bossid) {
 	    FAI_ResetBossStats(bossid);
 	}
 }
-stock FAI_CreateBoss(name[]) {
+stock FAI_CreateBoss(const name[]) {
 	for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
 		if(FAI_Bosses[bossid][NPCID] == INVALID_PLAYER_ID) {
 			FAI_Bosses[bossid][NPCID] = FCNPC_Create(name);
@@ -978,7 +987,7 @@ stock FAI_CreateBoss(name[]) {
 				FAI_SetBossDisplayIfDead(bossid, true);
 				FAI_SetBossCurrentHealth(bossid, -1.0, false);
 				FAI_SetBossTarget(bossid, INVALID_PLAYER_ID, false);
-				FAI_SetBossMoveInfo(bossid, MOVE_TYPE_AUTO, MOVE_SPEED_AUTO, false, 0.0, true);
+				FAI_SetBossMoveInfo(bossid, FCNPC_MOVE_TYPE_AUTO, FCNPC_MOVE_SPEED_AUTO, false, 0.0, true);
 				FAI_SetBossRangedAttackInfo(bossid, 20.0, -1, true);
 				FAI_SetBossMeleeAttackInfo(bossid, 1.0, -1, false);
 				FAI_SetBossAllowNPCTargets(bossid, true, false);
@@ -1000,7 +1009,7 @@ stock FAI_GetBossFullName(bossid, name[], len) {
 	}
 	return -1;
 }
-stock FAI_SetBossFullName(bossid, name[]) {
+stock FAI_SetBossFullName(bossid, const name[]) {
 	if(FAI_IsValidBoss(bossid)) {
 	    //If the user didn't provide a valid fullName, use the playerName
 	    if(!FAI_isnull(name) && !strcmp(name, FAI_INVALID_STRING, true)) {
@@ -1273,8 +1282,8 @@ static FAI_SetBossTargetWithReason(bossid, newtargetid, reason, bool:checkForAgg
 }
 stock FAI_GetBossMoveInfo(bossid, &type, &Float:speed, &bool:useMapAndreas, &Float:radius, &bool:setAngle) {
 	if(FAI_IsValidBoss(bossid)) {
-	    type = FAI_Bosses[bossid][MOVE_TYPE];
-	    speed = FAI_Bosses[bossid][MOVE_SPEED];
+	    type = FAI_Bosses[bossid][FCNPC_MOVE_TYPE];
+	    speed = FAI_Bosses[bossid][FCNPC_MOVE_SPEED];
 	    useMapAndreas = FAI_Bosses[bossid][MOVE_USE_MAP_ANDREAS];
 	    radius = FAI_Bosses[bossid][MOVE_RADIUS];
 	    setAngle = FAI_Bosses[bossid][MOVE_SET_ANGLE];
@@ -1282,10 +1291,10 @@ stock FAI_GetBossMoveInfo(bossid, &type, &Float:speed, &bool:useMapAndreas, &Flo
 	}
 	return 0;
 }
-stock FAI_SetBossMoveInfo(bossid, type = MOVE_TYPE_AUTO, Float:speed = MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true) {
+stock FAI_SetBossMoveInfo(bossid, type = FCNPC_MOVE_TYPE_AUTO, Float:speed = FCNPC_MOVE_SPEED_AUTO, bool:useMapAndreas = false, Float:radius = 0.0, bool:setAngle = true) {
 	if(FAI_IsValidBoss(bossid)) {
-	    FAI_Bosses[bossid][MOVE_TYPE] = type;
-	    FAI_Bosses[bossid][MOVE_SPEED] = speed;
+	    FAI_Bosses[bossid][FCNPC_MOVE_TYPE] = type;
+	    FAI_Bosses[bossid][FCNPC_MOVE_SPEED] = speed;
 	    FAI_Bosses[bossid][MOVE_USE_MAP_ANDREAS] = useMapAndreas;
 	    FAI_Bosses[bossid][MOVE_RADIUS] = radius;
 	    FAI_Bosses[bossid][MOVE_SET_ANGLE] = setAngle;
@@ -1413,7 +1422,6 @@ stock FAI_GetBossIDFromNPCID(npcid) {
 /*stock FAI_GetBossIDFromPlayerID(playerid) {
 	return FAI_GetBossIDFromNPCID(playerid);
 }*/
-forward bool:FAI_IsBossValidForPlayer(playerid, bossid); //Silence 'used before declaration' warning
 stock bool:FAI_IsBossValidForPlayer(playerid, bossid) {
 	if(IsPlayerConnected(playerid) && FAI_IsValidBoss(bossid)) {
 	    new playerState = GetPlayerState(playerid);
@@ -1479,7 +1487,6 @@ static FAI_GetClosestPlayerToTakeAggro(bossid) {
 	}
 	return closestPlayer;
 }
-forward bool:FAI_IsPlayerInDisplayRange(playerid, bossid); //Silence 'used before declaration' warning
 stock bool:FAI_IsPlayerInDisplayRange(playerid, bossid) {
 	if(IsPlayerConnected(playerid) && FAI_IsValidBoss(bossid) && FAI_IsBossValidForPlayer(playerid, bossid)) {
 		new Float:bossX, Float:bossY, Float:bossZ;
@@ -1492,7 +1499,6 @@ stock bool:FAI_IsPlayerInDisplayRange(playerid, bossid) {
 	}
 	return false;
 }
-forward bool:FAI_IsPlayerInAggroRange(playerid, bossid); //Silence 'used before declaration' warning
 stock bool:FAI_IsPlayerInAggroRange(playerid, bossid) {
 	if(IsPlayerConnected(playerid) && FAI_IsValidBoss(bossid) && FAI_IsBossValidForPlayer(playerid, bossid)) {
 		new Float:playerX, Float:playerY, Float:playerZ;
@@ -1714,9 +1720,9 @@ static FAI_BossAttackMove(bossid, targetid) {
     	}
     	if(!FCNPC_IsMovingAtPlayer(bossplayerid, targetid)) { //So we don't move again when we were already moving to that same player. If moving at another player, this will execute
     	    #if FAI_USE_MAP_ANDREAS == true
-				FCNPC_GoToPlayer(bossplayerid, targetid, FAI_Bosses[bossid][MOVE_TYPE], FAI_Bosses[bossid][MOVE_SPEED], FAI_Bosses[bossid][MOVE_USE_MAP_ANDREAS], FAI_Bosses[bossid][MOVE_RADIUS], FAI_Bosses[bossid][MOVE_SET_ANGLE]);
+				FCNPC_GoToPlayer(bossplayerid, targetid, FAI_Bosses[bossid][FCNPC_MOVE_TYPE], FAI_Bosses[bossid][FCNPC_MOVE_SPEED], FAI_Bosses[bossid][MOVE_USE_MAP_ANDREAS] ? FCNPC_MOVE_MODE_MAPANDREAS : FCNPC_MOVE_MODE_NONE, FCNPC_MOVE_PATHFINDING_NONE, FAI_Bosses[bossid][MOVE_RADIUS], FAI_Bosses[bossid][MOVE_SET_ANGLE]);
 			#else
-				FCNPC_GoToPlayer(bossplayerid, targetid, FAI_Bosses[bossid][MOVE_TYPE], FAI_Bosses[bossid][MOVE_SPEED], false, FAI_Bosses[bossid][MOVE_RADIUS], FAI_Bosses[bossid][MOVE_SET_ANGLE]);
+				FCNPC_GoToPlayer(bossplayerid, targetid, FAI_Bosses[bossid][FCNPC_MOVE_TYPE], FAI_Bosses[bossid][FCNPC_MOVE_SPEED], FCNPC_MOVE_MODE_NONE, FCNPC_MOVE_PATHFINDING_NONE, FAI_Bosses[bossid][MOVE_RADIUS], FAI_Bosses[bossid][MOVE_SET_ANGLE]);
 			#endif
 		}
 	}
@@ -1793,7 +1799,7 @@ stock FAI_DestroySpell(spellid) {
 	}
 	return 0;
 }
-stock FAI_CreateSpell(name[]) {
+stock FAI_CreateSpell(const name[]) {
 	for(new spellid = 0; spellid < FAI_MAX_SPELLS; spellid++) {
 	    if(!strcmp(FAI_Spells[spellid][NAME], FAI_INVALID_STRING, true)) {
 	    	FAI_strcpy(FAI_Spells[spellid][NAME], name, FAI_MAX_SPELL_NAME + 1);
@@ -1820,7 +1826,7 @@ stock FAI_GetSpellName(spellid, name[], len) {
 	}
 	return -1;
 }
-stock FAI_SetSpellName(spellid, name[]) {
+stock FAI_SetSpellName(spellid, const name[]) {
 	if(FAI_IsValidSpell(spellid)) {
 	    FAI_strcpy(FAI_Spells[spellid][NAME], name, FAI_MAX_SPELL_NAME + 1);
 	    for(new bossid = 0; bossid < FAI_MAX_BOSSES; bossid++) {
@@ -2063,7 +2069,7 @@ stock FAI_GetSpellInfo(spellid, info[], len) {
 	}
 	return -1;
 }
-stock FAI_SetSpellInfo(spellid, info[]) {
+stock FAI_SetSpellInfo(spellid, const info[]) {
 	if(FAI_IsValidSpell(spellid)) {
 		//If the user didn't provide info, construct info based on other settings
 		if(!FAI_isnull(info) && !strcmp(info, FAI_INVALID_STRING, true)) {
@@ -2138,7 +2144,6 @@ static FAI_InitBossCasting(bossid) {
 		FAI_Casting[bossid][TARGETID] = INVALID_PLAYER_ID;
 	}
 }
-forward bool:FAI_IsBossCasting(bossid); //Silence 'used before declaration' warning
 stock bool:FAI_IsBossCasting(bossid) {
 	if(FAI_IsValidBoss(bossid)) {
 		new spellid = FAI_Casting[bossid][SPELLID];
@@ -2148,12 +2153,10 @@ stock bool:FAI_IsBossCasting(bossid) {
 	}
 	return false;
 }
-forward bool:FAI_IsBossCastingSpell(bossid, spellid); //Silence used before definition warning
 stock bool:FAI_IsBossCastingSpell(bossid, spellid) {
 	//FAI_IsValidBoss & FAI_IsValidSpell in FAI_IsBossCasting
 	return FAI_IsBossCasting(bossid) && spellid == FAI_Casting[bossid][SPELLID];
 }
-forward bool:FAI_IsBossCastBarExtra(bossid); //Silence used before definition warning
 stock bool:FAI_IsBossCastBarExtra(bossid) {
 	if(FAI_IsValidBoss(bossid)) {
 		new spellid = FAI_Casting[bossid][SPELLID];
@@ -2163,7 +2166,6 @@ stock bool:FAI_IsBossCastBarExtra(bossid) {
 	}
 	return false;
 }
-forward bool:FAI_IsBossCastBarExtraForSpell(bossid, spellid); //Silence used before definition warning
 stock bool:FAI_IsBossCastBarExtraForSpell(bossid, spellid) {
 	//FAI_IsValidBoss & FAI_IsValidSpell in FAI_IsBossCastBarExtra
 	return FAI_IsBossCastBarExtra(bossid) && spellid == FAI_Casting[bossid][SPELLID];
