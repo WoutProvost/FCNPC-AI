@@ -3,6 +3,9 @@
 ## 2.0.0
 - TODO
 
+## 1.1.2
+- Bring the old 1.1.1 include and examples up to date with the newest versions of FCNPC and the compiler
+
 ## 1.1.1
 - Added behaviour
 - Added billion suffix to FAI_SHORTEN_HEALTH
